@@ -1,30 +1,44 @@
 import os
 import requests
 
-TOKEN = os.environ["TELEGRAM_TOKEN"]
-CHAT_ID = os.environ["TELEGRAM_CHAT_ID"]
+# Environment Variables
+TELEGRAM_TOKEN = os.environ["TELEGRAM_TOKEN"]
+TELEGRAM_CHAT_ID = os.environ["TELEGRAM_CHAT_ID"]
+FINNHUB_API_KEY = os.environ["FINNHUB_API_KEY"]
 
-message = """🚀 Stock Sentinel
+# Stock to test
+SYMBOL = "AAPL"
 
-Hello Moti!
+# Finnhub Quote API
+quote = requests.get(
+    f"https://finnhub.io/api/v1/quote?symbol={SYMBOL}&token={FINNHUB_API_KEY}"
+).json()
 
-The system is alive.
+price = quote["c"]
+change = quote["d"]
+percent = quote["dp"]
 
-Next step:
-News
-SEC
-FDA
-Market
+message = f"""
+📈 Stock Sentinel
+
+Symbol: {SYMBOL}
+
+Price: ${price}
+
+Change: {change}
+
+Percent: {percent}%
 """
 
-url = f"https://api.telegram.org/bot{TOKEN}/sendMessage"
+# Telegram
+url = f"https://api.telegram.org/bot{TELEGRAM_TOKEN}/sendMessage"
 
 requests.post(
     url,
     data={
-        "chat_id": CHAT_ID,
+        "chat_id": TELEGRAM_CHAT_ID,
         "text": message
     }
 )
 
-print("Message sent.")
+print("Stock alert sent.")
