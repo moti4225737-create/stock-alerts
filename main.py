@@ -14,6 +14,8 @@ quote = requests.get(
     f"https://finnhub.io/api/v1/quote?symbol={SYMBOL}&token={FINNHUB_API_KEY}"
 ).json()
 
+print(quote)
+
 price = quote["c"]
 change = quote["d"]
 percent = quote["dp"]
