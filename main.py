@@ -1,27 +1,16 @@
 import os
 import requests
 
+from watchlist import WATCHLIST
+
 # Environment Variables
 TELEGRAM_TOKEN = os.environ["TELEGRAM_TOKEN"]
 TELEGRAM_CHAT_ID = os.environ["TELEGRAM_CHAT_ID"]
 FINNHUB_API_KEY = os.environ["FINNHUB_API_KEY"]
 
-# Watchlist
-SYMBOLS = [
-    "LQDA",
-    "KTOS",
-    "NOC",
-    "OABI",
-    "ONDS",
-    "ACTU",
-    "STNE",
-    "MU",
-    "INTC"
-]
-
 message = "📈 Stock Sentinel\n\n"
 
-for symbol in SYMBOLS:
+for symbol in WATCHLIST:
     try:
         url = (
             f"https://finnhub.io/api/v1/quote"
