@@ -2,50 +2,55 @@ import os
 import requests
 
 from watchlist import WATCHLIST
+from alerts import Alert, format_alert
 
-# Environment Variables
+
+FINNHUB_API_KEY = os.environ["FINNHUB_API_KEY"]
 TELEGRAM_TOKEN = os.environ["TELEGRAM_TOKEN"]
 TELEGRAM_CHAT_ID = os.environ["TELEGRAM_CHAT_ID"]
-FINNHUB_API_KEY = os.environ["FINNHUB_API_KEY"]
 
-message = "📈 Stock Sentinel\n\n"
 
-for symbol in WATCHLIST:
-    try:
-        url = (
-            f"https://finnhub.io/api/v1/quote"
-            f"?symbol={symbol}&token={FINNHUB_API_KEY}"
-        )
+def get_quote(symbol):
+    url = f"https://finnhub.io/api/v1/quote?symbol={symbol}&token={FINNHUB_API_KEY}"
 
-        quote = requests.get(url, timeout=15).json()
+    response = requests.get(url, timeout=20)
+    response.raise_for_status()
 
-        if "c" not in quote:
-            message += f"{symbol}: No data\n"
+    return response.json()
+
+
+def send_telegram(message):
+    url = f"https://api.telegram.org/bot{TELEGRAM_TOKEN}/sendMessage"
+
+    requests.post(
+        url,
+        data={
+            "chat_id": TELEGRAM_CHAT_ID,
+            "text": message,
+        },
+        timeout=20,
+    ).raise_for_status()
+
+
+def main():
+    for symbol in WATCHLIST:
+        quote = get_quote(symbol)
+
+        price = quote.get("c")
+
+        if price in (None, 0):
             continue
 
-        price = quote["c"]
-        change = quote["d"]
-        percent = quote["dp"]
-
-        message += (
-            f"{symbol}\n"
-            f"Price: ${price}\n"
-            f"Change: {change}\n"
-            f"Percent: {percent}%\n\n"
+        alert = Alert(
+            source="Finnhub",
+            symbol=symbol,
+            title="Price Update",
+            severity="INFO",
+            message=f"Current Price: ${price}",
         )
 
-    except Exception as e:
-        message += f"{symbol}: ERROR ({e})\n\n"
+        send_telegram(format_alert(alert))
 
-telegram_url = f"https://api.telegram.org/bot{TELEGRAM_TOKEN}/sendMessage"
 
-requests.post(
-    telegram_url,
-    data={
-        "chat_id": TELEGRAM_CHAT_ID,
-        "text": message
-    },
-    timeout=15
-)
-
-print("Message sent.")
+if __name__ == "__main__":
+    main()
