@@ -1,22 +1,17 @@
 import os
 import requests
 
+from dotenv import load_dotenv
+
 from watchlist import WATCHLIST
 from alerts import Alert, format_alert
+from modules.finnhub_client import get_quote
 
+# Load environment variables from .env
+load_dotenv()
 
-FINNHUB_API_KEY = os.environ["FINNHUB_API_KEY"]
 TELEGRAM_TOKEN = os.environ["TELEGRAM_TOKEN"]
 TELEGRAM_CHAT_ID = os.environ["TELEGRAM_CHAT_ID"]
-
-
-def get_quote(symbol):
-    url = f"https://finnhub.io/api/v1/quote?symbol={symbol}&token={FINNHUB_API_KEY}"
-
-    response = requests.get(url, timeout=20)
-    response.raise_for_status()
-
-    return response.json()
 
 
 def send_telegram(message):
