@@ -20,11 +20,11 @@ class SECProvider(DataProvider):
     )
 
     IMPORTANT_FORMS = {
-        "8-K": 8,
-        "10-Q": 7,
-        "10-K": 8,
-        "6-K": 8,
-        "20-F": 8,
+        "8-K",
+        "10-Q",
+        "10-K",
+        "6-K",
+        "20-F",
     }
 
     def __init__(self, timeout: int = 20, max_events: int = 10):
@@ -102,7 +102,7 @@ class SECProvider(DataProvider):
                 title=f"SEC Filing: {form}",
                 summary=summary,
                 published_at=filing_date,
-                importance=self.IMPORTANT_FORMS[form],
+                importance=1,
                 sentiment="neutral",
                 url=filing_url,
             )
