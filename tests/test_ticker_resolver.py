@@ -253,6 +253,60 @@ def test_clear_cache_forces_new_lookup() -> None:
     assert mock_get_company_profile.call_count == 2
 
 
+def test_prepare_company_search_name_removes_corp() -> None:
+    result = TickerResolver.prepare_company_search_name(
+        "Liquidia Corp"
+    )
+
+    assert result == "Liquidia"
+
+
+def test_prepare_company_search_name_removes_inc_period() -> None:
+    result = TickerResolver.prepare_company_search_name(
+        "Example Biotech Inc."
+    )
+
+    assert result == "Example Biotech"
+
+
+def test_prepare_company_search_name_removes_corporation() -> None:
+    result = TickerResolver.prepare_company_search_name(
+        "Microsoft Corporation"
+    )
+
+    assert result == "Microsoft"
+
+
+def test_prepare_company_search_name_is_case_insensitive() -> None:
+    result = TickerResolver.prepare_company_search_name(
+        "Example Biotech INC."
+    )
+
+    assert result == "Example Biotech"
+
+
+def test_prepare_company_search_name_strips_whitespace() -> None:
+    result = TickerResolver.prepare_company_search_name(
+        "  Liquidia Corp  "
+    )
+
+    assert result == "Liquidia"
+
+
+def test_prepare_company_search_name_keeps_name_without_suffix() -> None:
+    result = TickerResolver.prepare_company_search_name(
+        "Liquidia Technologies"
+    )
+
+    assert result == "Liquidia Technologies"
+
+
+def test_prepare_company_search_name_handles_empty_name() -> None:
+    result = TickerResolver.prepare_company_search_name("   ")
+
+    assert result == ""
+
+
 if __name__ == "__main__":
     test_resolver_returns_company_name()
     test_resolver_normalizes_symbol()
@@ -267,5 +321,12 @@ if __name__ == "__main__":
     test_identity_returns_none_when_name_is_missing()
     test_resolver_returns_none_when_profile_is_empty()
     test_clear_cache_forces_new_lookup()
+    test_prepare_company_search_name_removes_corp()
+    test_prepare_company_search_name_removes_inc_period()
+    test_prepare_company_search_name_removes_corporation()
+    test_prepare_company_search_name_is_case_insensitive()
+    test_prepare_company_search_name_strips_whitespace()
+    test_prepare_company_search_name_keeps_name_without_suffix()
+    test_prepare_company_search_name_handles_empty_name()
 
     print("TickerResolver tests passed.")

@@ -39,7 +39,9 @@ class TickerResolver:
         if profile is None:
             return None
 
-        company_name = self._clean_optional_string(profile.get("name"))
+        company_name = self._clean_optional_string(
+            profile.get("name")
+        )
 
         if company_name is None:
             return None
@@ -64,7 +66,9 @@ class TickerResolver:
         if normalized_symbol is None:
             return None
 
-        cached_identity = self._identity_cache.get(normalized_symbol)
+        cached_identity = self._identity_cache.get(
+            normalized_symbol
+        )
 
         if cached_identity is not None:
             return cached_identity
@@ -74,7 +78,9 @@ class TickerResolver:
         if profile is None:
             return None
 
-        company_name = self._clean_optional_string(profile.get("name"))
+        company_name = self._clean_optional_string(
+            profile.get("name")
+        )
 
         if company_name is None:
             return None
@@ -97,7 +103,9 @@ class TickerResolver:
             ),
         )
 
-        self._company_name_cache[normalized_symbol] = company_name
+        self._company_name_cache[normalized_symbol] = (
+            company_name
+        )
         self._identity_cache[normalized_symbol] = identity
 
         return identity
@@ -110,11 +118,16 @@ class TickerResolver:
         self._company_name_cache.clear()
         self._identity_cache.clear()
 
-    def _get_profile(self, normalized_symbol: str) -> Optional[dict]:
+    def _get_profile(
+        self,
+        normalized_symbol: str,
+    ) -> Optional[dict]:
         """
         Return a Finnhub company profile, using the cache when possible.
         """
-        cached_profile = self._profile_cache.get(normalized_symbol)
+        cached_profile = self._profile_cache.get(
+            normalized_symbol
+        )
 
         if cached_profile is not None:
             return cached_profile
@@ -132,7 +145,49 @@ class TickerResolver:
         return profile
 
     @staticmethod
-    def _normalize_symbol(symbol: str) -> Optional[str]:
+    def prepare_company_search_name(
+        company_name: str,
+    ) -> str:
+        """
+        Prepare a company name for searches against external
+        intelligence providers.
+
+        Common corporate suffixes are removed because many
+        external datasets store operational company names
+        instead of their full legal names.
+        """
+        cleaned_name = company_name.strip()
+
+        suffixes = (
+            " Corporation",
+            " Incorporated",
+            " Corp.",
+            " Corp",
+            " Inc.",
+            " Inc",
+            " Ltd.",
+            " Ltd",
+            " Limited",
+            " PLC",
+            " N.V.",
+            " S.A.",
+        )
+
+        for suffix in suffixes:
+            if cleaned_name.lower().endswith(
+                suffix.lower()
+            ):
+                cleaned_name = cleaned_name[
+                    :-len(suffix)
+                ].strip()
+                break
+
+        return cleaned_name
+
+    @staticmethod
+    def _normalize_symbol(
+        symbol: str,
+    ) -> Optional[str]:
         """
         Normalize a ticker symbol or return None when it is empty.
         """
@@ -144,7 +199,9 @@ class TickerResolver:
         return normalized_symbol
 
     @staticmethod
-    def _clean_optional_string(value: object) -> Optional[str]:
+    def _clean_optional_string(
+        value: object,
+    ) -> Optional[str]:
         """
         Return a stripped string or None for invalid and empty values.
         """

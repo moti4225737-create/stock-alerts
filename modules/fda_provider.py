@@ -57,8 +57,10 @@ class FDAProvider(DataProvider):
         if identity is None:
             return []
 
-        company_name = self._prepare_company_search_name(
-            identity.company_name
+        company_name = (
+            self.ticker_resolver.prepare_company_search_name(
+                identity.company_name
+            )
         )
 
         if not company_name:
@@ -91,40 +93,6 @@ class FDAProvider(DataProvider):
                 events.append(event)
 
         return events
-
-    @staticmethod
-    def _prepare_company_search_name(company_name: str) -> str:
-        """
-        Prepare a company name for use in an openFDA search.
-
-        Common public-company suffixes are removed because recall
-        records may use a shorter operational company name.
-        """
-        cleaned_name = company_name.strip()
-
-        suffixes = (
-            " Corporation",
-            " Incorporated",
-            " Corp.",
-            " Corp",
-            " Inc.",
-            " Inc",
-            " Ltd.",
-            " Ltd",
-            " Limited",
-            " PLC",
-            " N.V.",
-            " S.A.",
-        )
-
-        for suffix in suffixes:
-            if cleaned_name.lower().endswith(suffix.lower()):
-                cleaned_name = cleaned_name[
-                    : -len(suffix)
-                ].strip()
-                break
-
-        return cleaned_name
 
     @staticmethod
     def _build_recall_query(company_name: str) -> str:

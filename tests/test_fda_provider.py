@@ -6,6 +6,7 @@ from models.company_identity import CompanyIdentity
 from models.event import Event
 from modules.data_provider import DataProvider
 from modules.fda_provider import FDAProvider
+from modules.ticker_resolver import TickerResolver
 
 
 def build_provider(
@@ -15,6 +16,14 @@ def build_provider(
 ) -> tuple[FDAProvider, Mock, Mock]:
     ticker_resolver = Mock()
     ticker_resolver.get_company_identity.return_value = identity
+
+    if identity is not None:
+        prepared_name = TickerResolver.prepare_company_search_name(
+            identity.company_name
+        )
+        ticker_resolver.prepare_company_search_name.return_value = (
+            prepared_name
+        )
 
     client = Mock()
     client.search_drug_enforcement.return_value = records or []
@@ -43,6 +52,7 @@ def test_fetch_events_returns_empty_list_for_empty_symbol() -> None:
 
     assert events == []
     ticker_resolver.get_company_identity.assert_not_called()
+    ticker_resolver.prepare_company_search_name.assert_not_called()
     client.search_drug_enforcement.assert_not_called()
 
 
@@ -57,6 +67,7 @@ def test_fetch_events_returns_empty_list_when_identity_is_missing() -> None:
     ticker_resolver.get_company_identity.assert_called_once_with(
         "LQDA"
     )
+    ticker_resolver.prepare_company_search_name.assert_not_called()
     client.search_drug_enforcement.assert_not_called()
 
 
@@ -73,8 +84,12 @@ def test_fetch_events_builds_query_from_company_name() -> None:
     events = provider.fetch_events("  lqda  ")
 
     assert events == []
+
     ticker_resolver.get_company_identity.assert_called_once_with(
         "LQDA"
+    )
+    ticker_resolver.prepare_company_search_name.assert_called_once_with(
+        "Liquidia Corp"
     )
     client.search_drug_enforcement.assert_called_once_with(
         query='recalling_firm:"Liquidia"',
