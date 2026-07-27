@@ -1,3 +1,4 @@
+from datetime import date
 from unittest.mock import Mock
 
 import requests
@@ -8,6 +9,10 @@ from modules.clinical_trials_provider import (
     ClinicalTrialsProvider,
 )
 from modules.data_provider import DataProvider
+
+
+TEST_TODAY = date(2026, 7, 27)
+RECENT_DATE = "2026-07-20"
 
 
 def build_provider(
@@ -30,9 +35,25 @@ def build_provider(
         client=client,
         ticker_resolver=ticker_resolver,
         max_events=max_events,
+        today_provider=lambda: TEST_TODAY,
     )
 
     return provider, ticker_resolver, client
+
+
+def build_recent_status_module(
+    overall_status: str | None = None,
+) -> dict:
+    status_module: dict = {
+        "studyFirstPostDateStruct": {
+            "date": RECENT_DATE,
+        }
+    }
+
+    if overall_status is not None:
+        status_module["overallStatus"] = overall_status
+
+    return status_module
 
 
 def test_provider_inherits_from_data_provider() -> None:
@@ -62,6 +83,7 @@ def test_fetch_events_returns_empty_list_when_identity_is_missing() -> None:
     events = provider.fetch_events("lqda")
 
     assert events == []
+
     ticker_resolver.get_company_identity.assert_called_once_with(
         "LQDA"
     )
@@ -114,6 +136,7 @@ def test_fetch_events_returns_empty_list_for_empty_search_name() -> None:
     events = provider.fetch_events("TEST")
 
     assert events == []
+
     ticker_resolver.prepare_company_search_name.assert_called_once_with(
         "Example Inc."
     )
@@ -139,7 +162,7 @@ def test_fetch_events_converts_study_to_event() -> None:
                 "statusModule": {
                     "overallStatus": "RECRUITING",
                     "studyFirstPostDateStruct": {
-                        "date": "2026-07-20"
+                        "date": RECENT_DATE,
                     },
                 },
                 "conditionsModule": {
@@ -188,7 +211,7 @@ def test_fetch_events_converts_study_to_event() -> None:
         " | Conditions: Pulmonary Hypertension, "
         "Interstitial Lung Disease"
     )
-    assert event.published_at == "2026-07-20"
+    assert event.published_at == RECENT_DATE
     assert event.importance == 2
     assert event.sentiment == "neutral"
     assert event.url == (
@@ -199,44 +222,6 @@ def test_fetch_events_converts_study_to_event() -> None:
         query="Liquidia",
         page_size=10,
     )
-
-
-def test_fetch_events_uses_start_date_when_post_date_missing() -> None:
-    identity = CompanyIdentity(
-        ticker="TEST",
-        company_name="Example Inc.",
-    )
-
-    studies = [
-        {
-            "protocolSection": {
-                "identificationModule": {
-                    "nctId": "NCT07654321",
-                    "briefTitle": "Example Clinical Study",
-                },
-                "statusModule": {
-                    "overallStatus": "ACTIVE_NOT_RECRUITING",
-                    "startDateStruct": {
-                        "date": "2026-06"
-                    },
-                },
-            }
-        }
-    ]
-
-    provider, ticker_resolver, _ = build_provider(
-        identity=identity,
-        studies=studies,
-    )
-
-    ticker_resolver.prepare_company_search_name.return_value = (
-        "Example"
-    )
-
-    events = provider.fetch_events("TEST")
-
-    assert len(events) == 1
-    assert events[0].published_at == "2026-06"
 
 
 def test_fetch_events_skips_studies_without_required_fields() -> None:
@@ -254,14 +239,16 @@ def test_fetch_events_skips_studies_without_required_fields() -> None:
             "protocolSection": {
                 "identificationModule": {
                     "nctId": "NCT00000001",
-                }
+                },
+                "statusModule": build_recent_status_module(),
             }
         },
         {
             "protocolSection": {
                 "identificationModule": {
                     "briefTitle": "Study Without NCT ID",
-                }
+                },
+                "statusModule": build_recent_status_module(),
             }
         },
         {
@@ -270,9 +257,9 @@ def test_fetch_events_skips_studies_without_required_fields() -> None:
                     "nctId": "NCT00000002",
                     "briefTitle": "Valid Example Study",
                 },
-                "statusModule": {
-                    "overallStatus": "COMPLETED",
-                },
+                "statusModule": build_recent_status_module(
+                    overall_status="COMPLETED"
+                ),
             }
         },
     ]
@@ -292,6 +279,7 @@ def test_fetch_events_skips_studies_without_required_fields() -> None:
     assert events[0].title == (
         "Clinical Trial — Valid Example Study"
     )
+    assert events[0].published_at == RECENT_DATE
     assert events[0].url == (
         "https://clinicaltrials.gov/study/NCT00000002"
     )
@@ -309,7 +297,8 @@ def test_fetch_events_builds_summary_without_optional_fields() -> None:
                 "identificationModule": {
                     "nctId": "NCT00000003",
                     "briefTitle": "Minimal Valid Study",
-                }
+                },
+                "statusModule": build_recent_status_module(),
             }
         }
     ]
@@ -327,7 +316,7 @@ def test_fetch_events_builds_summary_without_optional_fields() -> None:
 
     assert len(events) == 1
     assert events[0].summary == "NCT ID: NCT00000003"
-    assert events[0].published_at is None
+    assert events[0].published_at == RECENT_DATE
 
 
 def test_fetch_events_converts_multiple_studies() -> None:
@@ -342,7 +331,8 @@ def test_fetch_events_converts_multiple_studies() -> None:
                 "identificationModule": {
                     "nctId": "NCT00000010",
                     "briefTitle": "First Study",
-                }
+                },
+                "statusModule": build_recent_status_module(),
             }
         },
         {
@@ -350,7 +340,8 @@ def test_fetch_events_converts_multiple_studies() -> None:
                 "identificationModule": {
                     "nctId": "NCT00000020",
                     "briefTitle": "Second Study",
-                }
+                },
+                "statusModule": build_recent_status_module(),
             }
         },
     ]
@@ -434,7 +425,6 @@ if __name__ == "__main__":
     test_fetch_events_uses_prepared_company_name()
     test_fetch_events_returns_empty_list_for_empty_search_name()
     test_fetch_events_converts_study_to_event()
-    test_fetch_events_uses_start_date_when_post_date_missing()
     test_fetch_events_skips_studies_without_required_fields()
     test_fetch_events_builds_summary_without_optional_fields()
     test_fetch_events_converts_multiple_studies()

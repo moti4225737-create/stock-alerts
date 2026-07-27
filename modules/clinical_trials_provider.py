@@ -1,3 +1,5 @@
+from collections.abc import Callable
+from datetime import date, datetime
 from typing import Optional
 
 import requests
@@ -21,23 +23,30 @@ class ClinicalTrialsProvider(DataProvider):
         client: Optional[ClinicalTrialsClient] = None,
         ticker_resolver: Optional[TickerResolver] = None,
         max_events: int = 10,
+        max_age_days: int = 90,
+        today_provider: Optional[Callable[[], date]] = None,
     ) -> None:
         if max_events < 1:
             raise ValueError("max_events must be at least 1")
+
+        if max_age_days < 1:
+            raise ValueError("max_age_days must be at least 1")
 
         self._client = client or ClinicalTrialsClient()
         self._ticker_resolver = (
             ticker_resolver or TickerResolver()
         )
         self._max_events = max_events
+        self._max_age_days = max_age_days
+        self._today_provider = today_provider or date.today
 
     def fetch_events(self, symbol: str) -> list[Event]:
         """
-        Fetch clinical studies associated with a ticker symbol.
+        Fetch recent clinical studies associated with a ticker symbol.
 
         The ticker is resolved into a company identity, the company
-        name is prepared for external search, and valid studies are
-        converted into Event objects.
+        name is prepared for sponsor search, and recent valid studies
+        are converted into Event objects.
         """
         normalized_symbol = symbol.strip().upper()
 
@@ -87,10 +96,10 @@ class ClinicalTrialsProvider(DataProvider):
         study: dict,
     ) -> Optional[Event]:
         """
-        Convert one ClinicalTrials.gov study into an Event.
+        Convert one recent ClinicalTrials.gov study into an Event.
 
-        A study must contain both an NCT identifier and a brief title.
-        Other fields are optional.
+        A study must contain an NCT identifier, a brief title,
+        and a recent publication or update date.
         """
         if not isinstance(study, dict):
             return None
@@ -128,14 +137,19 @@ class ClinicalTrialsProvider(DataProvider):
 
         published_at = self._extract_date(
             status_module.get(
-                "studyFirstPostDateStruct"
+                "lastUpdatePostDateStruct"
             )
         )
 
         if published_at is None:
             published_at = self._extract_date(
-                status_module.get("startDateStruct")
+                status_module.get(
+                    "studyFirstPostDateStruct"
+                )
             )
+
+        if not self._is_recent(published_at):
+            return None
 
         conditions = self._extract_conditions(
             protocol_section.get("conditionsModule")
@@ -172,6 +186,49 @@ class ClinicalTrialsProvider(DataProvider):
             sentiment="neutral",
             url=f"{self.STUDY_BASE_URL}/{nct_id}",
         )
+
+    def _is_recent(
+        self,
+        published_at: Optional[str],
+    ) -> bool:
+        """
+        Return True when the study date is within the freshness window.
+        """
+        if published_at is None:
+            return False
+
+        parsed_date = self._parse_date(published_at)
+
+        if parsed_date is None:
+            return False
+
+        age_days = (
+            self._today_provider() - parsed_date
+        ).days
+
+        return 0 <= age_days <= self._max_age_days
+
+    @staticmethod
+    def _parse_date(value: str) -> Optional[date]:
+        """
+        Parse supported ClinicalTrials.gov date formats.
+        """
+        formats = (
+            "%Y-%m-%d",
+            "%Y-%m",
+            "%Y",
+        )
+
+        for date_format in formats:
+            try:
+                return datetime.strptime(
+                    value,
+                    date_format,
+                ).date()
+            except ValueError:
+                continue
+
+        return None
 
     @staticmethod
     def _extract_date(value: object) -> Optional[str]:

@@ -20,11 +20,11 @@ class ClinicalTrialsClient:
         page_token: str | None = None,
     ) -> list[dict[str, Any]]:
         """
-        Search ClinicalTrials.gov studies.
+        Search ClinicalTrials.gov studies by sponsor-related fields.
 
         Args:
             query:
-                Search expression.
+                Sponsor or collaborator search expression.
 
             page_size:
                 Maximum number of studies to return.
@@ -36,11 +36,13 @@ class ClinicalTrialsClient:
             List of study dictionaries.
         """
 
-        if not query.strip():
+        normalized_query = query.strip()
+
+        if not normalized_query:
             return []
 
         params: dict[str, Any] = {
-            "query.term": query,
+            "query.spons": normalized_query,
             "pageSize": page_size,
             "format": "json",
         }

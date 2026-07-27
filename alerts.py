@@ -1,5 +1,5 @@
 from dataclasses import dataclass
-from datetime import datetime
+from datetime import UTC, datetime
 
 
 @dataclass
@@ -13,7 +13,9 @@ class Alert:
 
     def __post_init__(self):
         if self.timestamp is None:
-            self.timestamp = datetime.utcnow().strftime("%Y-%m-%d %H:%M:%S UTC")
+            self.timestamp = datetime.now(UTC).strftime(
+                "%Y-%m-%d %H:%M:%S UTC"
+            )
 
 
 def format_alert(alert: Alert) -> str:
@@ -22,10 +24,10 @@ def format_alert(alert: Alert) -> str:
     """
 
     return (
-        f"🚨 {alert.title}\n\n"
-        f"📌 Symbol: {alert.symbol}\n"
+        f"📢 {alert.title}\n\n"
+        f"📈 Symbol: {alert.symbol}\n"
         f"📡 Source: {alert.source}\n"
-        f"⚠️ Severity: {alert.severity}\n"
-        f"📝 {alert.message}\n\n"
+        f"⚠️ Severity: {alert.severity}\n\n"
+        f"{alert.message}\n\n"
         f"🕒 {alert.timestamp}"
     )

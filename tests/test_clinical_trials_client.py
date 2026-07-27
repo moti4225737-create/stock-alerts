@@ -5,7 +5,7 @@ import requests
 from modules.clinical_trials_client import ClinicalTrialsClient
 
 
-def test_search_returns_studies() -> None:
+def test_search_returns_sponsor_studies() -> None:
     client = ClinicalTrialsClient(timeout=15)
 
     mock_response = Mock()
@@ -44,7 +44,7 @@ def test_search_returns_studies() -> None:
     mock_get.assert_called_once_with(
         "https://clinicaltrials.gov/api/v2/studies",
         params={
-            "query.term": "Liquidia Technologies",
+            "query.spons": "Liquidia Technologies",
             "pageSize": 5,
             "format": "json",
         },
@@ -77,7 +77,7 @@ def test_search_includes_page_token() -> None:
     mock_get.assert_called_once_with(
         "https://clinicaltrials.gov/api/v2/studies",
         params={
-            "query.term": "Liquidia",
+            "query.spons": "Liquidia",
             "pageSize": 10,
             "format": "json",
             "pageToken": "test-page-token",
@@ -142,7 +142,7 @@ def test_search_propagates_request_error() -> None:
 
 
 if __name__ == "__main__":
-    test_search_returns_studies()
+    test_search_returns_sponsor_studies()
     test_search_includes_page_token()
     test_search_returns_empty_list_for_empty_query()
     test_search_rejects_non_list_studies()
