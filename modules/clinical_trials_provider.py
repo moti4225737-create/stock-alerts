@@ -4,6 +4,15 @@ from typing import Optional
 
 import requests
 
+from models.asset import Asset
+from models.asset_kind import AssetKind
+from models.asset_registry import AssetRegistry
+from models.company_asset_link import CompanyAssetLink
+from models.company_asset_registry import CompanyAssetRegistry
+from models.company_asset_relationship import (
+    CompanyAssetRelationship,
+)
+from models.company_identity import CompanyIdentity
 from models.event import Event
 from modules.clinical_trials_client import ClinicalTrialsClient
 from modules.data_provider import DataProvider
@@ -12,7 +21,8 @@ from modules.ticker_resolver import TickerResolver
 
 class ClinicalTrialsProvider(DataProvider):
     """
-    Convert ClinicalTrials.gov studies into normalized Event objects.
+    Convert ClinicalTrials.gov studies into normalized Event objects
+    and enrich the company-asset knowledge base.
     """
 
     SOURCE_NAME = "ClinicalTrials.gov"
@@ -22,6 +32,10 @@ class ClinicalTrialsProvider(DataProvider):
         self,
         client: Optional[ClinicalTrialsClient] = None,
         ticker_resolver: Optional[TickerResolver] = None,
+        asset_registry: Optional[AssetRegistry] = None,
+        company_asset_registry: Optional[
+            CompanyAssetRegistry
+        ] = None,
         max_events: int = 10,
         max_age_days: int = 90,
         today_provider: Optional[Callable[[], date]] = None,
@@ -36,6 +50,16 @@ class ClinicalTrialsProvider(DataProvider):
         self._ticker_resolver = (
             ticker_resolver or TickerResolver()
         )
+        self._asset_registry = (
+            asset_registry
+            if asset_registry is not None
+            else AssetRegistry()
+        )
+        self._company_asset_registry = (
+            company_asset_registry
+            if company_asset_registry is not None
+            else CompanyAssetRegistry()
+        )
         self._max_events = max_events
         self._max_age_days = max_age_days
         self._today_provider = today_provider or date.today
@@ -46,7 +70,7 @@ class ClinicalTrialsProvider(DataProvider):
 
         The ticker is resolved into a company identity, the company
         name is prepared for sponsor search, and recent valid studies
-        are converted into Event objects.
+        are converted into Event objects and knowledge-base links.
         """
         normalized_symbol = symbol.strip().upper()
 
@@ -87,6 +111,10 @@ class ClinicalTrialsProvider(DataProvider):
 
             if event is not None:
                 events.append(event)
+                self._register_study_assets(
+                    identity=identity,
+                    study=study,
+                )
 
         return events
 
@@ -186,6 +214,136 @@ class ClinicalTrialsProvider(DataProvider):
             sentiment="neutral",
             url=f"{self.STUDY_BASE_URL}/{nct_id}",
         )
+
+    def _register_study_assets(
+        self,
+        identity: CompanyIdentity,
+        study: dict,
+    ) -> None:
+        """
+        Register supported study interventions as company assets.
+        """
+        protocol_section = study.get("protocolSection")
+
+        if not isinstance(protocol_section, dict):
+            return
+
+        interventions_module = protocol_section.get(
+            "armsInterventionsModule"
+        )
+
+        if not isinstance(interventions_module, dict):
+            return
+
+        interventions = interventions_module.get(
+            "interventions"
+        )
+
+        if not isinstance(interventions, list):
+            return
+
+        for intervention in interventions:
+            self._register_intervention(
+                identity=identity,
+                intervention=intervention,
+            )
+
+    def _register_intervention(
+        self,
+        identity: CompanyIdentity,
+        intervention: object,
+    ) -> None:
+        """
+        Register one supported ClinicalTrials intervention.
+        """
+        if not isinstance(intervention, dict):
+            return
+
+        intervention_type = self._clean_string(
+            intervention.get("type")
+        )
+        name = self._clean_string(
+            intervention.get("name")
+        )
+
+        if intervention_type != "DRUG" or name is None:
+            return
+
+        aliases = self._extract_aliases(
+            intervention.get("otherNames"),
+            primary_name=name,
+        )
+
+        asset = self._find_registered_asset(
+            name=name,
+            aliases=aliases,
+        )
+
+        if asset is None:
+            asset = Asset(
+                name=name,
+                kind=AssetKind.DRUG,
+                aliases=aliases,
+            )
+            self._asset_registry.register(asset)
+
+        link = CompanyAssetLink(
+            company=identity,
+            asset=asset,
+            relationship=CompanyAssetRelationship.DEVELOPS,
+        )
+        self._company_asset_registry.register(link)
+
+    def _find_registered_asset(
+        self,
+        name: str,
+        aliases: tuple[str, ...],
+    ) -> Optional[Asset]:
+        """
+        Find an existing canonical asset by name or alias.
+        """
+        for identifier in (name, *aliases):
+            asset = self._asset_registry.find_by_name(
+                identifier
+            )
+
+            if asset is not None:
+                return asset
+
+        return None
+
+    @classmethod
+    def _extract_aliases(
+        cls,
+        value: object,
+        primary_name: str,
+    ) -> tuple[str, ...]:
+        """
+        Extract unique aliases while preserving source order.
+        """
+        if not isinstance(value, list):
+            return ()
+
+        aliases: list[str] = []
+        normalized_identifiers = {
+            primary_name.casefold(),
+        }
+
+        for raw_alias in value:
+            alias = cls._clean_string(raw_alias)
+
+            if alias is None:
+                continue
+
+            normalized_alias = alias.casefold()
+
+            if normalized_alias in normalized_identifiers:
+                continue
+
+            aliases.append(alias)
+            normalized_identifiers.add(normalized_alias)
+
+        return tuple(aliases)
 
     def _is_recent(
         self,
