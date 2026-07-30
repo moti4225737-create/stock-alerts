@@ -6,10 +6,10 @@ from dotenv import load_dotenv
 
 from alerts import Alert, format_alert
 from engines.intelligence_pipeline import IntelligencePipeline
+from engines.runtime_engine import RuntimeEngine
 from models.event import Event
-from modules.clinical_trials_provider import ClinicalTrialsProvider
-from modules.fda_provider import FDAProvider
 from modules.finnhub_client import get_quote
+from modules.provider_manager import ProviderManager
 from modules.ticker_resolver import TickerResolver
 from watchlist import WATCHLIST
 
@@ -96,7 +96,7 @@ def run_live_preview(
 
     For each symbol:
     - fetch the latest Finnhub quote
-    - collect FDA and ClinicalTrials.gov events
+    - collect provider intelligence events
     - send all valid results to Telegram
     """
     for symbol in watchlist:
@@ -143,27 +143,27 @@ def run_live_preview(
 
 def main() -> None:
     """
-    Configure the real providers and start the live preview.
+    Configure Stock Sentinel and execute one runtime cycle.
     """
     ticker_resolver = TickerResolver()
 
-    pipeline = IntelligencePipeline(
-        providers=[
-            FDAProvider(
-                ticker_resolver=ticker_resolver,
-            ),
-            ClinicalTrialsProvider(
-                ticker_resolver=ticker_resolver,
-            ),
-        ]
+    provider_manager = ProviderManager(
+        ticker_resolver=ticker_resolver,
     )
 
-    run_live_preview(
+    pipeline = IntelligencePipeline(
+        providers=provider_manager.build(),
+    )
+
+    runtime = RuntimeEngine(
         watchlist=WATCHLIST,
         pipeline=pipeline,
         quote_fetcher=get_quote,
         telegram_sender=send_telegram,
+        live_preview_runner=run_live_preview,
     )
+
+    runtime.run()
 
 
 if __name__ == "__main__":
