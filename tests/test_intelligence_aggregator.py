@@ -1,3 +1,4 @@
+from models.company_intelligence import CompanyIntelligence
 from models.event import Event
 from models.intelligence_aggregator import IntelligenceAggregator
 
@@ -18,7 +19,7 @@ def _build_event(
     )
 
 
-def test_groups_events_by_symbol():
+def test_aggregates_events_into_company_intelligence():
     aggregator = IntelligenceAggregator()
 
     events = [
@@ -43,12 +44,25 @@ def test_groups_events_by_symbol():
         "NVDA",
     }
 
-    assert len(intelligence["LQDA"]) == 2
-    assert len(intelligence["NVDA"]) == 1
+    assert isinstance(
+        intelligence["LQDA"],
+        CompanyIntelligence,
+    )
 
-    assert intelligence["LQDA"][0].source == "FDA"
+    assert isinstance(
+        intelligence["NVDA"],
+        CompanyIntelligence,
+    )
+
+    assert intelligence["LQDA"].symbol == "LQDA"
+    assert intelligence["NVDA"].symbol == "NVDA"
+
+    assert len(intelligence["LQDA"].events) == 2
+    assert len(intelligence["NVDA"].events) == 1
+
+    assert intelligence["LQDA"].events[0].source == "FDA"
     assert (
-        intelligence["LQDA"][1].source
+        intelligence["LQDA"].events[1].source
         == "ClinicalTrials"
     )
 
@@ -65,4 +79,6 @@ def test_normalizes_symbols_and_skips_empty_symbols():
     intelligence = aggregator.aggregate(events)
 
     assert set(intelligence.keys()) == {"LQDA"}
-    assert len(intelligence["LQDA"]) == 2
+
+    assert intelligence["LQDA"].symbol == "LQDA"
+    assert len(intelligence["LQDA"].events) == 2

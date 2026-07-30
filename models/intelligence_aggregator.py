@@ -1,19 +1,20 @@
 from collections import defaultdict
 
+from models.company_intelligence import CompanyIntelligence
 from models.event import Event
 
 
 class IntelligenceAggregator:
     """
-    Group normalized intelligence events by stock symbol.
+    Aggregate normalized intelligence events by company symbol.
     """
 
     def aggregate(
         self,
         events: list[Event],
-    ) -> dict[str, list[Event]]:
+    ) -> dict[str, CompanyIntelligence]:
         """
-        Return events grouped by their normalized symbol.
+        Return company intelligence grouped by normalized symbol.
         """
         grouped_events: defaultdict[str, list[Event]] = defaultdict(list)
 
@@ -25,4 +26,10 @@ class IntelligenceAggregator:
 
             grouped_events[normalized_symbol].append(event)
 
-        return dict(grouped_events)
+        return {
+            symbol: CompanyIntelligence(
+                symbol=symbol,
+                events=company_events,
+            )
+            for symbol, company_events in grouped_events.items()
+        }
