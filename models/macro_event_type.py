@@ -5,6 +5,8 @@ class MacroEventType(str, Enum):
     INTEREST_RATE_DECISION = "INTEREST_RATE_DECISION"
     CPI = "CPI"
     CORE_CPI = "CORE_CPI"
+    PPI = "PPI"
+    CORE_PPI = "CORE_PPI"
     PCE = "PCE"
     CORE_PCE = "CORE_PCE"
     NONFARM_PAYROLLS = "NONFARM_PAYROLLS"
