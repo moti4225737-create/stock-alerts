@@ -3,6 +3,7 @@ from pathlib import Path
 
 sys.path.append(str(Path(__file__).resolve().parents[1]))
 
+from engines.explanation_engine import ExplanationEngine
 from engines.portfolio_impact_engine import PortfolioImpactEngine
 from engines.signal_ranking_engine import SignalRankingEngine
 from models.event import Event
@@ -23,17 +24,18 @@ def build_preview_briefs(
     ranked_events = ranking_engine.rank(events)
     impacts = impact_engine.analyze(portfolio, ranked_events)
 
+    explanation_engine = ExplanationEngine()
     briefs: list[InvestorBrief] = []
     for index, impact in enumerate(impacts, start=1):
-        briefs.append(
-            InvestorBrief(
-                event=impact.event,
-                ranking_position=index,
-                portfolio_impact=impact,
-                headline=impact.event.title,
-                summary=impact.event.summary,
-            )
+        briefing = InvestorBrief(
+            event=impact.event,
+            ranking_position=index,
+            portfolio_impact=impact,
+            headline=impact.event.title,
+            summary=impact.event.summary,
+            explanation=explanation_engine.explain(impact.event),
         )
+        briefs.append(briefing)
 
     return briefs
 

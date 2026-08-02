@@ -1,6 +1,7 @@
 from dataclasses import dataclass
 
 from models.event import Event
+from models.explanation import Explanation
 from models.portfolio_impact import PortfolioImpact
 
 
@@ -11,3 +12,4 @@ class InvestorBrief:
     portfolio_impact: PortfolioImpact
     headline: str
     summary: str
+    explanation: Explanation
