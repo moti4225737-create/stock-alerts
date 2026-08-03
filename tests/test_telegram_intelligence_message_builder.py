@@ -1,0 +1,52 @@
+from models.event import Event
+from models.explanation import Explanation
+from models.investor_brief import InvestorBrief
+from models.portfolio_holding import PortfolioHolding
+from models.portfolio_impact import PortfolioImpact
+from presentation.telegram_intelligence_message_builder import (
+    TelegramIntelligenceMessageBuilder,
+)
+
+
+def make_brief() -> InvestorBrief:
+    event = Event(
+        symbol="LQDA",
+        source="SEC",
+        title="SEC Filing: 8-K",
+        summary="Liquidia published a material SEC filing.",
+        published_at="2026-08-03T10:00:00+00:00",
+        importance=9,
+        sentiment="neutral",
+        url="https://www.sec.gov/example",
+    )
+
+    holding = PortfolioHolding(
+        symbol="LQDA",
+        quantity=7.99,
+        average_cost=66.79,
+    )
+
+    return InvestorBrief(
+        event=event,
+        ranking_position=1,
+        portfolio_impact=PortfolioImpact(
+            holding=holding,
+            event=event,
+            matches_portfolio=True,
+        ),
+        headline="Material SEC filing",
+        summary=event.summary,
+        explanation=Explanation(
+            why_it_matters="The filing may affect investor expectations.",
+            market_context="Monitor the market response.",
+        ),
+    )
+
+
+def test_builder_transforms_brief_into_telegram_message():
+    message = TelegramIntelligenceMessageBuilder().build(make_brief())
+
+    assert isinstance(message, str)
+    assert "LQDA" in message
+    assert "SEC" in message
+    assert "חשיבות:" in message
