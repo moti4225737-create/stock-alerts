@@ -48,23 +48,24 @@ def make_brief() -> InvestorBrief:
     )
 
 
-def test_orchestrator_builds_investor_intelligence_card():
-    brief = make_brief()
-
-    card = InvestorIntelligenceCardOrchestrator().build(
-        brief=brief,
-        portfolio_impact="LQDA is held in the portfolio.",
-        points_to_watch=("Review the filing.",),
-    )
+def test_orchestrator_builds_complete_investor_intelligence_card():
+    card = InvestorIntelligenceCardOrchestrator().build(make_brief())
 
     assert card.importance_level is ImportanceLevel.CRITICAL
     assert card.event_category is EventCategory.MATERIAL_FILING
     assert card.title == "Material SEC filing"
     assert card.symbol == "LQDA"
+    assert card.portfolio_impact == (
+        "LQDA מוחזקת בתיק ולכן האירוע רלוונטי ישירות."
+    )
+    assert card.points_to_watch == (
+        "לבדוק את תוכן הדיווח.",
+        "לעקוב אחר תגובת השוק.",
+    )
     assert card.source == "SEC"
 
 
-def test_orchestrator_coordinates_injected_dependencies():
+def test_orchestrator_coordinates_all_injected_product_dependencies():
     brief = make_brief()
 
     class StubImportancePolicy:
@@ -76,6 +77,16 @@ def test_orchestrator_coordinates_injected_dependencies():
         def classify(self, event: Event) -> EventCategory:
             assert event is brief.event
             return EventCategory.CORPORATE_DISCLOSURE
+
+    class StubPortfolioImpactNarrativePolicy:
+        def describe(self, impact: PortfolioImpact) -> str:
+            assert impact is brief.portfolio_impact
+            return "Prepared portfolio narrative."
+
+    class StubPointsToWatchPolicy:
+        def build(self, event: Event) -> tuple[str, ...]:
+            assert event is brief.event
+            return ("Prepared attention point.",)
 
     class RecordingAssembler:
         def __init__(self) -> None:
@@ -116,19 +127,19 @@ def test_orchestrator_coordinates_injected_dependencies():
     card = InvestorIntelligenceCardOrchestrator(
         importance_policy=StubImportancePolicy(),
         event_category_policy=StubEventCategoryPolicy(),
+        portfolio_impact_narrative_policy=(
+            StubPortfolioImpactNarrativePolicy()
+        ),
+        points_to_watch_policy=StubPointsToWatchPolicy(),
         assembler=assembler,
-    ).build(
-        brief=brief,
-        portfolio_impact="Direct portfolio relevance.",
-        points_to_watch=("Review the filing.",),
-    )
+    ).build(brief)
 
     assert assembler.received_arguments == {
         "brief": brief,
         "importance_level": ImportanceLevel.HIGH,
         "event_category": EventCategory.CORPORATE_DISCLOSURE,
-        "portfolio_impact": "Direct portfolio relevance.",
-        "points_to_watch": ("Review the filing.",),
+        "portfolio_impact": "Prepared portfolio narrative.",
+        "points_to_watch": ("Prepared attention point.",),
     }
     assert card.importance_level is ImportanceLevel.HIGH
     assert card.event_category is EventCategory.CORPORATE_DISCLOSURE
