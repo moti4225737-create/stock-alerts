@@ -1,32 +1,49 @@
-from models.investor_brief import InvestorBrief
+from models.investor_intelligence_card import (
+    EventCategory,
+    ImportanceLevel,
+    InvestorIntelligenceCard,
+)
 
 
 class TelegramFormatter:
-    def format(self, brief: InvestorBrief) -> str:
-        portfolio_impact = (
-            "המניה נמצאת בתיק שלך."
-            if brief.portfolio_impact.matches_portfolio
-            else "לא נמצאה התאמה ישירה לתיק."
+    _IMPORTANCE_LABELS = {
+        ImportanceLevel.MODERATE: "בינונית",
+        ImportanceLevel.HIGH: "גבוהה",
+        ImportanceLevel.CRITICAL: "קריטית",
+    }
+
+    _EVENT_CATEGORY_LABELS = {
+        EventCategory.MATERIAL_FILING: "דיווח מהותי חדש",
+        EventCategory.CORPORATE_DISCLOSURE: "דיווח תאגידי",
+    }
+
+    def format(self, card: InvestorIntelligenceCard) -> str:
+        importance_label = self._IMPORTANCE_LABELS[card.importance_level]
+        event_category_label = self._EVENT_CATEGORY_LABELS[
+            card.event_category
+        ]
+
+        points_to_watch = "\n".join(
+            f"• {point}" for point in card.points_to_watch
         )
 
-        action_consideration = (
-            "יש לעיין במקור הרשמי ולהעריך האם נדרשת פעולה."
-        )
+        source_lines = [f"מקור: {card.source}"]
+
+        if card.source_url:
+            source_lines.append(card.source_url)
 
         return (
-            f"דחיפות: {brief.event.importance}/10\n\n"
-            f"{brief.event.symbol}\n"
-            f"{brief.headline}\n\n"
+            f"חשיבות: {importance_label}\n"
+            f"סוג אירוע: {event_category_label}\n\n"
+            f"{card.symbol}\n"
+            f"{card.title}\n\n"
             f"מה קרה:\n"
-            f"{brief.summary}\n\n"
+            f"{card.summary}\n\n"
             f"למה זה חשוב:\n"
-            f"{brief.explanation.why_it_matters}\n\n"
+            f"{card.why_it_matters}\n\n"
             f"השפעה על התיק:\n"
-            f"{portfolio_impact}\n\n"
-            f"הקשר שוק:\n"
-            f"{brief.explanation.market_context}\n\n"
-            f"מה לשקול:\n"
-            f"{action_consideration}\n\n"
-            f"מקור: {brief.event.source}\n"
-            f"{brief.event.url}"
+            f"{card.portfolio_impact}\n\n"
+            f"נקודות לתשומת לב:\n"
+            f"{points_to_watch}\n\n"
+            f"{'\n'.join(source_lines)}"
         )

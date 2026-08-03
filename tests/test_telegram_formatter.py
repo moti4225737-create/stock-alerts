@@ -1,98 +1,63 @@
-from models.event import Event
-from models.explanation import Explanation
-from models.investor_brief import InvestorBrief
-from models.portfolio_holding import PortfolioHolding
-from models.portfolio_impact import PortfolioImpact
+from models.investor_intelligence_card import (
+    EventCategory,
+    ImportanceLevel,
+    InvestorIntelligenceCard,
+)
 from presentation.telegram_formatter import TelegramFormatter
 
 
-def test_formatter_returns_human_readable_message():
-    event = Event(
-        symbol="AAPL",
-        source="SEC",
-        title="SEC Filing: 8-K",
-        summary="Apple published a material filing.",
-        published_at="2026-08-02T12:00:00+00:00",
-        importance=9,
-        sentiment="neutral",
-        url="https://www.sec.gov/",
-    )
-
-    holding = PortfolioHolding(
-        symbol="AAPL",
-        quantity=10,
-        average_cost=180.0,
-    )
-
-    impact = PortfolioImpact(
-        holding=holding,
-        event=event,
-        matches_portfolio=True,
-    )
-
-    brief = InvestorBrief(
-        event=event,
-        ranking_position=1,
-        portfolio_impact=impact,
-        headline="Apple filed an 8-K",
-        summary="Material filing detected.",
-        explanation=Explanation(
-            why_it_matters="Important corporate disclosure.",
-            market_context="Could affect investor expectations.",
-        ),
-    )
-
-    message = TelegramFormatter().format(brief)
-
-    assert "AAPL" in message
-    assert "Apple filed an 8-K" in message
-    assert "Important corporate disclosure." in message
-    assert "SEC" in message
-
-
-def test_formatter_contains_required_investor_intelligence_sections():
-    event = Event(
+def make_card(
+    source_url: str | None = "https://www.sec.gov/example",
+) -> InvestorIntelligenceCard:
+    return InvestorIntelligenceCard(
+        importance_level=ImportanceLevel.CRITICAL,
+        event_category=EventCategory.MATERIAL_FILING,
+        title="דיווח מהותי חדש",
         symbol="LQDA",
-        source="SEC",
-        title="SEC Filing: 8-K",
-        summary="Liquidia published a material SEC filing.",
-        published_at="2026-08-02T12:00:00+00:00",
-        importance=9,
-        sentiment="neutral",
-        url="https://www.sec.gov/example",
-    )
-
-    holding = PortfolioHolding(
-        symbol="LQDA",
-        quantity=7.99,
-        average_cost=66.79,
-    )
-
-    impact = PortfolioImpact(
-        holding=holding,
-        event=event,
-        matches_portfolio=True,
-    )
-
-    brief = InvestorBrief(
-        event=event,
-        ranking_position=1,
-        portfolio_impact=impact,
-        headline="דיווח מהותי חדש של LQDA",
-        summary="Liquidia פרסמה דיווח מהותי חדש ל-SEC.",
-        explanation=Explanation(
-            why_it_matters="הדיווח עשוי לכלול מידע מהותי למשקיעים.",
-            market_context="תגובת השוק תלויה בתוכן המלא של הדיווח.",
+        summary="Liquidia פרסמה דיווח 8-K חדש ל-SEC.",
+        why_it_matters=(
+            "הדיווח עשוי לכלול מידע מהותי שישפיע "
+            "על ציפיות המשקיעים."
         ),
+        portfolio_impact=(
+            "LQDA מוחזקת בתיק ולכן האירוע רלוונטי ישירות."
+        ),
+        points_to_watch=(
+            "לבדוק את תוכן הדיווח.",
+            "לעקוב אחר תגובת השוק.",
+        ),
+        source="SEC",
+        source_url=source_url,
+        published_at="2026-08-03T10:00:00+00:00",
     )
 
-    message = TelegramFormatter().format(brief)
 
-    assert "דחיפות" in message
-    assert "מה קרה" in message
-    assert "למה זה חשוב" in message
-    assert "השפעה על התיק" in message
-    assert "מה לשקול" in message
-    assert "מקור" in message
+def test_formatter_renders_investor_intelligence_card():
+    message = TelegramFormatter().format(make_card())
+
+    assert "חשיבות: קריטית" in message
+    assert "סוג אירוע: דיווח מהותי חדש" in message
     assert "LQDA" in message
-    assert event.url in message
+    assert "מה קרה:" in message
+    assert "למה זה חשוב:" in message
+    assert "השפעה על התיק:" in message
+    assert "נקודות לתשומת לב:" in message
+    assert "• לבדוק את תוכן הדיווח." in message
+    assert "• לעקוב אחר תגובת השוק." in message
+    assert "מקור: SEC" in message
+    assert "https://www.sec.gov/example" in message
+
+
+def test_formatter_does_not_expose_internal_score_or_alarm_language():
+    message = TelegramFormatter().format(make_card())
+
+    assert "/10" not in message
+    assert "דחיפות" not in message
+    assert "Action Required" not in message
+
+
+def test_formatter_omits_missing_source_url():
+    message = TelegramFormatter().format(make_card(source_url=None))
+
+    assert "None" not in message
+    assert "מקור: SEC" in message
