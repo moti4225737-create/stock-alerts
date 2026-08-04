@@ -1,9 +1,12 @@
-﻿from datetime import datetime
+from datetime import datetime
 
 from models.investor_intelligence_card import (
     EventCategory,
     ImportanceLevel,
     InvestorIntelligenceCard,
+)
+from presentation.professional_term_explainer import (
+    ProfessionalTermExplainer,
 )
 
 
@@ -18,6 +21,14 @@ class TelegramFormatter:
         EventCategory.MATERIAL_FILING: "דיווח מהותי",
         EventCategory.CORPORATE_DISCLOSURE: "דיווח תאגידי",
     }
+
+    def __init__(
+        self,
+        term_explainer: ProfessionalTermExplainer | None = None,
+    ) -> None:
+        self._term_explainer = (
+            term_explainer or ProfessionalTermExplainer()
+        )
 
     @staticmethod
     def _format_published_at(value: str) -> str:
@@ -38,10 +49,13 @@ class TelegramFormatter:
             return value
 
     def format(self, card: InvestorIntelligenceCard) -> str:
-        importance_label = self._IMPORTANCE_LABELS[card.importance_level]
+        importance_label = self._IMPORTANCE_LABELS[
+            card.importance_level
+        ]
         event_category_label = self._EVENT_CATEGORY_LABELS[
             card.event_category
         ]
+        professional_title = self._term_explainer.explain(card.title)
 
         points = tuple(
             point.strip()
@@ -57,6 +71,7 @@ class TelegramFormatter:
             "",
             importance_label,
             f"📌 אירוע: {event_category_label}",
+            professional_title,
             "",
             "──────────────────",
             "",

@@ -59,8 +59,9 @@ def test_orchestrator_builds_complete_investor_intelligence_card():
         "LQDA מוחזקת בתיק ולכן האירוע רלוונטי ישירות."
     )
     assert card.points_to_watch == (
-        "לבדוק את תוכן הדיווח.",
-        "לעקוב אחר תגובת השוק.",
+        "בדוק את הדיווח המקורי.",
+        "עקוב אחר תגובת השוק.",
+        "חפש חדשות משלימות.",
     )
     assert card.source == "SEC"
 

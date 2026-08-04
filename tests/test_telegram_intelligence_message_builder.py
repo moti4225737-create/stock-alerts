@@ -1,4 +1,4 @@
-﻿from models.event import Event
+from models.event import Event
 from models.explanation import Explanation
 from models.investor_brief import InvestorBrief
 from models.portfolio_holding import PortfolioHolding
@@ -34,7 +34,7 @@ def make_brief() -> InvestorBrief:
             event=event,
             matches_portfolio=True,
         ),
-        headline="Material SEC filing",
+        headline=event.title,
         summary=event.summary,
         explanation=Explanation(
             why_it_matters="The filing may affect investor expectations.",
@@ -50,3 +50,10 @@ def test_builder_transforms_brief_into_telegram_message():
     assert "LQDA" in message
     assert "SEC" in message
     assert "🔴 קריטית" in message
+
+
+def test_builder_explains_professional_term_in_message():
+    message = TelegramIntelligenceMessageBuilder().build(make_brief())
+
+    assert "Form 8-K" in message
+    assert "דיווח מיידי על אירוע מהותי בחברה" in message
