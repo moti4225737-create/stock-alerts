@@ -88,11 +88,18 @@ class RuntimeEngine:
                 portfolio,
                 provider,
             )
-            pending_briefs = [
-                brief
-                for brief in briefs
-                if not self._notification_history.has_delivered(self._get_event_id(brief))
-            ]
+            pending_briefs: list[object] = []
+            seen_event_ids: set[str] = set()
+            for brief in briefs:
+                event_id = self._get_event_id(brief)
+                if self._notification_history.has_delivered(event_id):
+                    continue
+                if event_id and event_id in seen_event_ids:
+                    continue
+                pending_briefs.append(brief)
+                if event_id:
+                    seen_event_ids.add(event_id)
+
             if pending_briefs:
                 messages = self._investor_notification_service.generate_messages(pending_briefs)
                 self._telegram_sender_transport.send_messages(messages)
