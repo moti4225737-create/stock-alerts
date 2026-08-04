@@ -48,3 +48,44 @@ def test_preserves_provider_summary_for_unknown_events():
     )
 
     assert summary == "Management announced a strategic update."
+
+def test_builds_fda_recall_summary():
+    summary = InvestorSummaryPolicy().build(
+        make_event(
+            "FDA Drug Recall — Class II — Liquidia Technologies",
+            source="FDA",
+            summary=(
+                "Example recall reason"
+                " | Product: Example drug product"
+                " | Recall number: D-1234"
+                " | Status: Ongoing"
+            ),
+        )
+    )
+
+    assert summary == (
+        "ה-FDA פרסם הודעת החזרה מהשוק למוצר של החברה."
+    )
+
+
+def test_builds_clinical_trial_summary():
+    summary = InvestorSummaryPolicy().build(
+        make_event(
+            (
+                "Clinical Trial — "
+                "A Study of Yutrepia in Participants "
+                "With Pulmonary Hypertension"
+            ),
+            source="ClinicalTrials.gov",
+            summary=(
+                "This study evaluates the safety and effectiveness "
+                "of Yutrepia."
+                " | NCT ID: NCT01234567"
+                " | Status: RECRUITING"
+            ),
+        )
+    )
+
+    assert summary == (
+        "פורסם עדכון חדש לניסוי הקליני של החברה."
+    )

@@ -15,4 +15,19 @@ class InvestorSummaryPolicy:
         if source == "SEC" and "10-Q" in title:
             return "החברה פרסמה דוח רבעוני חדש ל-SEC."
 
+        if source == "FDA" and "DRUG RECALL" in title:
+            return (
+                "ה-FDA פרסם הודעת החזרה מהשוק "
+                "למוצר של החברה."
+            )
+
+        if (
+            source == "CLINICALTRIALS.GOV"
+            or "CLINICAL TRIAL" in title
+        ):
+            return (
+                "פורסם עדכון חדש לניסוי הקליני "
+                "של החברה."
+            )
+
         return event.summary
