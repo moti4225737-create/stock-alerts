@@ -1,4 +1,4 @@
-# Environment variables
+﻿# Environment variables
 .env
 
 # Python cache
@@ -16,4 +16,6 @@ venv/
 
 # OS files
 .DS_Store
-Thumbs.dbnotification_history.txt
+Thumbs.db
+notification_history.txt
+
