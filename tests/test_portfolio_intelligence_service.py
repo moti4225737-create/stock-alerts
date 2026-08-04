@@ -101,3 +101,49 @@ def test_build_briefs_supports_empty_portfolios():
 
     assert briefs == []
     assert errors == []
+
+
+class FakeInvestorSummaryPolicy:
+    def __init__(self, summary: str) -> None:
+        self._summary = summary
+        self.received_events: list[Event] = []
+
+    def build(self, event: Event) -> str:
+        self.received_events.append(event)
+        return self._summary
+
+
+def test_build_briefs_uses_investor_summary_policy():
+    event = Event(
+        symbol="LQDA",
+        source="SEC",
+        title="SEC Filing: 8-K",
+        summary="Raw provider summary",
+        published_at="2026-08-01T10:00:00+00:00",
+        importance=8,
+        sentiment="neutral",
+    )
+    portfolio = Portfolio(
+        [
+            PortfolioHolding(
+                symbol="LQDA",
+                quantity=7.99,
+                average_cost=66.79,
+            )
+        ]
+    )
+    provider = FakeProvider(events_by_symbol={"LQDA": [event]})
+    summary_policy = FakeInvestorSummaryPolicy(
+        "החברה פרסמה דיווח מהותי חדש ל-SEC."
+    )
+    service = PortfolioIntelligenceService(
+        investor_summary_policy=summary_policy,
+    )
+
+    briefs, errors = service.build_briefs(portfolio, provider)
+
+    assert errors == []
+    assert briefs[0].summary == (
+        "החברה פרסמה דיווח מהותי חדש ל-SEC."
+    )
+    assert summary_policy.received_events == [event]
