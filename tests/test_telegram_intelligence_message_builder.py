@@ -1,4 +1,4 @@
-from models.event import Event
+﻿from models.event import Event
 from models.explanation import Explanation
 from models.investor_brief import InvestorBrief
 from models.portfolio_holding import PortfolioHolding
@@ -49,4 +49,4 @@ def test_builder_transforms_brief_into_telegram_message():
     assert isinstance(message, str)
     assert "LQDA" in message
     assert "SEC" in message
-    assert "חשיבות:" in message
+    assert "🔴 קריטית" in message

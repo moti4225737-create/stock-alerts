@@ -35,16 +35,19 @@ def make_card(
 def test_formatter_renders_investor_intelligence_card():
     message = TelegramFormatter().format(make_card())
 
-    assert "חשיבות: קריטית" in message
-    assert "סוג אירוע: דיווח מהותי חדש" in message
-    assert "LQDA" in message
-    assert "מה קרה:" in message
-    assert "למה זה חשוב:" in message
-    assert "השפעה על התיק:" in message
-    assert "נקודות לתשומת לב:" in message
+    assert "🧬 LQDA" in message
+    assert "🔴 קריטית" in message
+    assert "📌 אירוע: דיווח מהותי" in message
+    assert "📰 מה קרה?" in message
+    assert "💡 למה זה חשוב?" in message
+    assert "📈 ההשפעה על התיק שלך" in message
+    assert "👀 מה כדאי לעקוב?" in message
     assert "• לבדוק את תוכן הדיווח." in message
     assert "• לעקוב אחר תגובת השוק." in message
-    assert "מקור: SEC" in message
+    assert "🕒 פורסם:" in message
+    assert "03/08/2026 10:00 UTC" in message
+    assert "🔗 מקור:" in message
+    assert "SEC" in message
     assert "https://www.sec.gov/example" in message
 
 
@@ -60,4 +63,5 @@ def test_formatter_omits_missing_source_url():
     message = TelegramFormatter().format(make_card(source_url=None))
 
     assert "None" not in message
-    assert "מקור: SEC" in message
+    assert "🔗 מקור:" in message
+    assert "SEC" in message

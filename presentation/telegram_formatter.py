@@ -1,3 +1,5 @@
+﻿from datetime import datetime
+
 from models.investor_intelligence_card import (
     EventCategory,
     ImportanceLevel,
@@ -7,15 +9,33 @@ from models.investor_intelligence_card import (
 
 class TelegramFormatter:
     _IMPORTANCE_LABELS = {
-        ImportanceLevel.MODERATE: "בינונית",
-        ImportanceLevel.HIGH: "גבוהה",
-        ImportanceLevel.CRITICAL: "קריטית",
+        ImportanceLevel.MODERATE: "🟡 בינונית",
+        ImportanceLevel.HIGH: "🟠 גבוהה",
+        ImportanceLevel.CRITICAL: "🔴 קריטית",
     }
 
     _EVENT_CATEGORY_LABELS = {
-        EventCategory.MATERIAL_FILING: "דיווח מהותי חדש",
+        EventCategory.MATERIAL_FILING: "דיווח מהותי",
         EventCategory.CORPORATE_DISCLOSURE: "דיווח תאגידי",
     }
+
+    @staticmethod
+    def _format_published_at(value: str) -> str:
+        if not value:
+            return "לא ידוע"
+
+        try:
+            parsed = datetime.fromisoformat(value.replace("Z", "+00:00"))
+            formatted = parsed.strftime("%d/%m/%Y %H:%M")
+
+            if parsed.tzinfo is not None:
+                offset = parsed.strftime("%z")
+                if offset == "+0000":
+                    return f"{formatted} UTC"
+
+            return formatted
+        except ValueError:
+            return value
 
     def format(self, card: InvestorIntelligenceCard) -> str:
         importance_label = self._IMPORTANCE_LABELS[card.importance_level]
@@ -23,27 +43,54 @@ class TelegramFormatter:
             card.event_category
         ]
 
+        points = tuple(
+            point.strip()
+            for point in card.points_to_watch
+            if point.strip()
+        )
         points_to_watch = "\n".join(
-            f"• {point}" for point in card.points_to_watch
+            f"• {point}" for point in points[:3]
         )
 
-        source_lines = [f"מקור: {card.source}"]
+        sections = [
+            f"🧬 {card.symbol}",
+            "",
+            importance_label,
+            f"📌 אירוע: {event_category_label}",
+            "",
+            "──────────────────",
+            "",
+            "📰 מה קרה?",
+            card.summary.strip(),
+            "",
+            "💡 למה זה חשוב?",
+            card.why_it_matters.strip(),
+            "",
+            "📈 ההשפעה על התיק שלך",
+            card.portfolio_impact.strip(),
+        ]
+
+        if points_to_watch:
+            sections.extend(
+                [
+                    "",
+                    "👀 מה כדאי לעקוב?",
+                    points_to_watch,
+                ]
+            )
+
+        sections.extend(
+            [
+                "",
+                "🕒 פורסם:",
+                self._format_published_at(card.published_at),
+                "",
+                "🔗 מקור:",
+                card.source,
+            ]
+        )
 
         if card.source_url:
-            source_lines.append(card.source_url)
+            sections.append(card.source_url)
 
-        return (
-            f"חשיבות: {importance_label}\n"
-            f"סוג אירוע: {event_category_label}\n\n"
-            f"{card.symbol}\n"
-            f"{card.title}\n\n"
-            f"מה קרה:\n"
-            f"{card.summary}\n\n"
-            f"למה זה חשוב:\n"
-            f"{card.why_it_matters}\n\n"
-            f"השפעה על התיק:\n"
-            f"{card.portfolio_impact}\n\n"
-            f"נקודות לתשומת לב:\n"
-            f"{points_to_watch}\n\n"
-            f"{'\n'.join(source_lines)}"
-        )
+        return "\n".join(sections)
