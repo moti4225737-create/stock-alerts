@@ -9,6 +9,7 @@ from engines.intelligence_pipeline import IntelligencePipeline
 from engines.runtime_engine import RuntimeEngine
 from models.event import Event
 from modules.finnhub_client import get_quote
+from modules.notification_history import NotificationHistory
 from modules.provider_manager import ProviderManager
 from modules.telegram_sender import TelegramSender
 from modules.ticker_resolver import TickerResolver
@@ -164,6 +165,7 @@ def main() -> None:
         live_preview_runner=run_live_preview,
         use_intelligence_notification_flow=True,
         telegram_sender_transport=TelegramSender(telegram_api=send_telegram),
+        notification_history=NotificationHistory("notification_history.txt"),
     )
 
     runtime.run()

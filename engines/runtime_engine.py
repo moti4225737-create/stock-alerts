@@ -1,4 +1,5 @@
 from collections.abc import Callable, Iterable
+from pathlib import Path
 from typing import Any
 
 from application.investor_notification_service import InvestorNotificationService
@@ -6,6 +7,7 @@ from engines.intelligence_pipeline import IntelligencePipeline
 from engines.portfolio_intelligence_service import PortfolioIntelligenceService
 from models.portfolio import Portfolio
 from models.portfolio_holding import PortfolioHolding
+from modules.notification_history import NotificationHistory
 from modules.telegram_sender import TelegramSender
 
 
@@ -37,6 +39,8 @@ class RuntimeEngine:
         investor_notification_service: InvestorNotificationService | None = None,
         telegram_sender_transport: TelegramSender | None = None,
         use_intelligence_notification_flow: bool = False,
+        history_path: Path | None = None,
+        notification_history: NotificationHistory | None = None,
     ) -> None:
         self._watchlist = watchlist
         self._pipeline = pipeline
@@ -53,6 +57,20 @@ class RuntimeEngine:
             telegram_api=telegram_sender,
         )
         self._use_intelligence_notification_flow = use_intelligence_notification_flow
+        self._history_path = history_path
+        self._notification_history = notification_history or NotificationHistory(self._history_path)
+
+    def _get_event_id(self, brief: object) -> str:
+        event = getattr(brief, "event", None)
+        if event is None:
+            return ""
+
+        source = getattr(event, "source", "") or ""
+        symbol = getattr(event, "symbol", "") or ""
+        title = getattr(event, "title", "") or ""
+        published_at = getattr(event, "published_at", "") or ""
+        url = getattr(event, "url", "") or ""
+        return f"{source}|{symbol}|{title}|{published_at}|{url}"
 
     def run(self) -> None:
         """
@@ -70,8 +88,18 @@ class RuntimeEngine:
                 portfolio,
                 provider,
             )
-            messages = self._investor_notification_service.generate_messages(briefs)
-            self._telegram_sender_transport.send_messages(messages)
+            pending_briefs = [
+                brief
+                for brief in briefs
+                if not self._notification_history.has_delivered(self._get_event_id(brief))
+            ]
+            if pending_briefs:
+                messages = self._investor_notification_service.generate_messages(pending_briefs)
+                self._telegram_sender_transport.send_messages(messages)
+                for brief in pending_briefs:
+                    event_id = self._get_event_id(brief)
+                    if event_id:
+                        self._notification_history.record(event_id)
             return
 
         self._live_preview_runner(
