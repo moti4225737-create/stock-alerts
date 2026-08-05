@@ -119,3 +119,47 @@ def test_builds_shelf_registration_summary():
     assert summary == (
         "החברה הגישה ל-SEC תשקיף מדף שעשוי לאפשר גיוס הון עתידי."
     )
+
+
+def test_builds_summary_from_sec_description():
+    summary = InvestorSummaryPolicy().build(
+        make_event(
+            "SEC Filing: 8-K",
+            source="SEC",
+            summary="Entry into a Material Definitive Agreement",
+        )
+    )
+
+    assert summary == (
+        "החברה דיווחה על התקשרות בהסכם מהותי חדש."
+    )
+
+def test_builds_financial_results_summary_from_sec_description():
+    summary = InvestorSummaryPolicy().build(
+        make_event(
+            "SEC Filing: 8-K",
+            source="SEC",
+            summary="Results of Operations and Financial Condition",
+        )
+    )
+
+    assert summary == (
+        "החברה דיווחה על תוצאותיה הכספיות."
+    )
+
+
+def test_builds_leadership_change_summary_from_sec_description():
+    summary = InvestorSummaryPolicy().build(
+        make_event(
+            "SEC Filing: 8-K",
+            source="SEC",
+            summary=(
+                "Departure of Directors or Certain Officers; "
+                "Election of Directors; Appointment of Certain Officers"
+            ),
+        )
+    )
+
+    assert summary == (
+        "החברה דיווחה על שינוי בהנהלה או בדירקטוריון."
+    )

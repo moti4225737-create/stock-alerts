@@ -5,6 +5,40 @@ class InvestorSummaryPolicy:
     def build(self, event: Event) -> str:
         source = event.source.upper()
         title = event.title.upper()
+        raw_summary = event.summary.upper()
+
+        if (
+            source == "SEC"
+            and "8-K" in title
+            and "ENTRY INTO A MATERIAL DEFINITIVE AGREEMENT" in raw_summary
+        ):
+            return (
+                "החברה דיווחה על התקשרות "
+                "בהסכם מהותי חדש."
+            )
+
+        if (
+            source == "SEC"
+            and "8-K" in title
+            and "RESULTS OF OPERATIONS AND FINANCIAL CONDITION"
+            in raw_summary
+        ):
+            return "החברה דיווחה על תוצאותיה הכספיות."
+
+        if (
+            source == "SEC"
+            and "8-K" in title
+            and (
+                "DEPARTURE OF DIRECTORS OR CERTAIN OFFICERS"
+                in raw_summary
+                or "APPOINTMENT OF CERTAIN OFFICERS" in raw_summary
+                or "ELECTION OF DIRECTORS" in raw_summary
+            )
+        ):
+            return (
+                "החברה דיווחה על שינוי "
+                "בהנהלה או בדירקטוריון."
+            )
 
         if source == "SEC" and "8-K" in title:
             return (
