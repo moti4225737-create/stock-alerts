@@ -1,8 +1,11 @@
 from engines.explanation_engine import ExplanationEngine
 from engines.portfolio_intelligence_service import PortfolioIntelligenceService
 from models.event import Event
+from models.explanation import Explanation
+from models.investor_rule_result import InvestorRuleResult
 from models.portfolio import Portfolio
 from models.portfolio_holding import PortfolioHolding
+from product.investor_summary_policy import InvestorSummaryPolicy
 
 
 class FakeProvider:
@@ -57,11 +60,16 @@ def test_build_briefs_ranks_and_filters_events_for_portfolio_symbols():
     assert briefs[0].event == msft_event
     assert briefs[0].ranking_position == 1
     assert briefs[0].portfolio_impact.matches_portfolio is True
-    assert briefs[0].explanation == ExplanationEngine().explain(msft_event)
+    msft_interpretation = InvestorSummaryPolicy().interpret(msft_event)
+    assert briefs[0].summary == msft_interpretation.summary
+    assert briefs[0].explanation == msft_interpretation.explanation
+
     assert briefs[1].event == aapl_event
     assert briefs[1].ranking_position == 2
     assert briefs[1].portfolio_impact.matches_portfolio is True
-    assert briefs[1].explanation == ExplanationEngine().explain(aapl_event)
+    aapl_interpretation = InvestorSummaryPolicy().interpret(aapl_event)
+    assert briefs[1].summary == aapl_interpretation.summary
+    assert briefs[1].explanation == aapl_interpretation.explanation
 
 
 def test_build_briefs_reports_provider_failures_without_stopping_other_symbols():
@@ -146,4 +154,63 @@ def test_build_briefs_uses_investor_summary_policy():
     assert briefs[0].summary == (
         "החברה פרסמה דיווח מהותי חדש ל-SEC."
     )
+    assert summary_policy.received_events == [event]
+
+class StructuredInvestorSummaryPolicy:
+    def __init__(self, result: InvestorRuleResult) -> None:
+        self._result = result
+        self.received_events: list[Event] = []
+
+    def interpret(self, event: Event) -> InvestorRuleResult:
+        self.received_events.append(event)
+        return self._result
+
+
+class FailingExplanationEngine:
+    def explain(self, event: Event) -> Explanation:
+        raise AssertionError(
+            "ExplanationEngine must not be used when a structured "
+            "rule interpretation is available"
+        )
+
+
+def test_build_briefs_uses_structured_rule_interpretation():
+    event = Event(
+        symbol="LQDA",
+        source="SEC",
+        title="SEC Filing: 8-K",
+        summary="Entry into a Material Definitive Agreement",
+        published_at="2026-08-05T10:00:00+00:00",
+        importance=8,
+        sentiment="neutral",
+    )
+    portfolio = Portfolio(
+        [
+            PortfolioHolding(
+                symbol="LQDA",
+                quantity=7.99,
+                average_cost=66.79,
+            )
+        ]
+    )
+    provider = FakeProvider(events_by_symbol={"LQDA": [event]})
+    expected_result = InvestorRuleResult(
+        summary="Structured investor summary",
+        explanation=Explanation(
+            why_it_matters="Structured importance explanation",
+            market_context="Structured market context",
+        ),
+    )
+    summary_policy = StructuredInvestorSummaryPolicy(expected_result)
+
+    service = PortfolioIntelligenceService(
+        investor_summary_policy=summary_policy,
+        explanation_engine=FailingExplanationEngine(),
+    )
+
+    briefs, errors = service.build_briefs(portfolio, provider)
+
+    assert errors == []
+    assert briefs[0].summary == expected_result.summary
+    assert briefs[0].explanation == expected_result.explanation
     assert summary_policy.received_events == [event]

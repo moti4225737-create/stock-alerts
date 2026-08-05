@@ -70,6 +70,7 @@ def test_assembler_builds_product_contract_from_prepared_intelligence():
     assert card.symbol == event.symbol
     assert card.summary == brief.summary
     assert card.why_it_matters == brief.explanation.why_it_matters
+    assert card.market_context == brief.explanation.market_context
     assert card.portfolio_impact.startswith("LQDA is held")
     assert card.points_to_watch == (
         "Review the filing details.",

@@ -81,6 +81,9 @@ class TelegramFormatter:
             "💡 למה זה חשוב?",
             card.why_it_matters.strip(),
             "",
+            "🔎 מה ההקשר להערכת האירוע?",
+            card.market_context.strip(),
+            "",
             "📈 ההשפעה על התיק שלך",
             card.portfolio_impact.strip(),
         ]

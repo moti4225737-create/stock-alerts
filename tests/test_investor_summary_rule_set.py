@@ -1,4 +1,6 @@
 from models.event import Event
+from models.explanation import Explanation
+from models.investor_rule_result import InvestorRuleResult
 from product.investor_summary_rule_set import InvestorSummaryRuleSet
 
 
@@ -96,3 +98,32 @@ def test_returns_event_summary_when_no_rule_matches():
     rule_set = InvestorSummaryRuleSet(rules=(rule,))
 
     assert rule_set.build(event) == "Raw provider summary"
+
+
+class StructuredFakeRule:
+    rule_id = "structured"
+    priority = 100
+
+    def matches(self, event: Event) -> bool:
+        return True
+
+    def build_result(self, event: Event) -> InvestorRuleResult:
+        return InvestorRuleResult(
+            summary="Structured summary",
+            explanation=Explanation(
+                why_it_matters="Structured importance explanation",
+                market_context="Structured market context",
+            ),
+        )
+
+
+def test_interpret_returns_structured_result_from_matching_rule():
+    result = InvestorSummaryRuleSet(
+        rules=(StructuredFakeRule(),)
+    ).interpret(make_event())
+
+    assert result.summary == "Structured summary"
+    assert result.explanation == Explanation(
+        why_it_matters="Structured importance explanation",
+        market_context="Structured market context",
+    )

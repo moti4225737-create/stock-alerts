@@ -24,6 +24,7 @@ class InvestorIntelligenceCardAssembler:
             symbol=event.symbol,
             summary=brief.summary,
             why_it_matters=brief.explanation.why_it_matters,
+            market_context=brief.explanation.market_context,
             portfolio_impact=portfolio_impact,
             points_to_watch=points_to_watch,
             source=event.source,

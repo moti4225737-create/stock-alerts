@@ -57,3 +57,15 @@ def test_builder_explains_professional_term_in_message():
 
     assert "Form 8-K" in message
     assert "דיווח מיידי על אירוע מהותי בחברה" in message
+
+def test_builder_includes_market_context_in_message():
+    message = TelegramIntelligenceMessageBuilder().build(make_brief())
+
+    assert (
+        "\U0001f50e "
+        "\u05de\u05d4 "
+        "\u05d4\u05d4\u05e7\u05e9\u05e8 "
+        "\u05dc\u05d4\u05e2\u05e8\u05db\u05ea "
+        "\u05d4\u05d0\u05d9\u05e8\u05d5\u05e2?"
+    ) in message
+    assert "Monitor the market response." in message

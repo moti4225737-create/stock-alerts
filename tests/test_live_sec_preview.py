@@ -1,5 +1,5 @@
 from apps.live_sec_preview import build_live_briefs, build_portfolio
-from engines.explanation_engine import ExplanationEngine
+from product.investor_summary_policy import InvestorSummaryPolicy
 from models.event import Event
 from models.portfolio import Portfolio
 from models.portfolio_holding import PortfolioHolding
@@ -38,4 +38,6 @@ def test_build_live_briefs_uses_provider_and_explanation_engine():
     assert errors == []
     assert len(briefs) == 1
     assert briefs[0].event == event
-    assert briefs[0].explanation == ExplanationEngine().explain(event)
+    interpretation = InvestorSummaryPolicy().interpret(event)
+    assert briefs[0].summary == interpretation.summary
+    assert briefs[0].explanation == interpretation.explanation

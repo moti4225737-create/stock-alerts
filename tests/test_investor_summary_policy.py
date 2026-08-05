@@ -244,3 +244,110 @@ def test_default_policy_uses_clinical_trial_status_rule():
     assert InvestorSummaryPolicy().build(event) == (
         "הניסוי הקליני נמצא כעת בסטטוס Recruiting."
     )
+
+def test_interpret_builds_structured_material_agreement_result():
+    result = InvestorSummaryPolicy().interpret(
+        make_event(
+            "SEC Filing: 8-K",
+            source="SEC",
+            summary="Entry into a Material Definitive Agreement",
+        )
+    )
+
+    assert result.summary == (
+        "החברה דיווחה על התקשרות בהסכם מהותי חדש."
+    )
+    assert result.explanation.why_it_matters == (
+        "הסכם מהותי עשוי לשנות את התחייבויות החברה, "
+        "מקורות ההכנסה שלה או הסיכונים העסקיים שלה."
+    )
+    assert result.explanation.market_context == (
+        "יש לבחון את הצדדים להסכם, היקפו, תנאיו "
+        "והשפעתו האפשרית על התחזית הפיננסית."
+    )
+
+def test_interpret_supports_sec_quarterly_report():
+    event = make_event(
+        "SEC Filing: 10-Q",
+        source="SEC",
+        summary="Quarterly report",
+    )
+
+    result = InvestorSummaryPolicy().interpret(event)
+
+    assert result.summary == (
+        "\u05d4\u05d7\u05d1\u05e8\u05d4 "
+        "\u05e4\u05e8\u05e1\u05de\u05d4 "
+        "\u05d3\u05d5\u05d7 "
+        "\u05e8\u05d1\u05e2\u05d5\u05e0\u05d9 "
+        "\u05d7\u05d3\u05e9 "
+        "\u05dc-SEC."
+    )
+    assert result.explanation.why_it_matters
+    assert result.explanation.market_context
+
+def test_interpret_supports_sec_annual_report():
+    event = make_event(
+        "SEC Filing: 10-K",
+        source="SEC",
+        summary="Annual report",
+    )
+
+    result = InvestorSummaryPolicy().interpret(event)
+
+    assert result.summary == (
+        "\u05d4\u05d7\u05d1\u05e8\u05d4 "
+        "\u05e4\u05e8\u05e1\u05de\u05d4 "
+        "\u05d0\u05ea "
+        "\u05d4\u05d3\u05d5\u05d7 "
+        "\u05d4\u05e9\u05e0\u05ea\u05d9 "
+        "\u05e9\u05dc\u05d4 "
+        "\u05dc-SEC."
+    )
+    assert result.explanation.why_it_matters
+    assert result.explanation.market_context
+
+def test_interpret_supports_sec_proxy_statement():
+    event = make_event(
+        "SEC Filing: DEF 14A",
+        source="SEC",
+        summary="Proxy statement",
+    )
+
+    result = InvestorSummaryPolicy().interpret(event)
+
+    assert result.summary == (
+        "\u05d4\u05d7\u05d1\u05e8\u05d4 "
+        "\u05e4\u05e8\u05e1\u05de\u05d4 "
+        "\u05de\u05e1\u05de\u05db\u05d9\u05dd "
+        "\u05dc\u05e7\u05e8\u05d0\u05ea "
+        "\u05d0\u05e1\u05d9\u05e4\u05ea "
+        "\u05d1\u05e2\u05dc\u05d9 "
+        "\u05d4\u05de\u05e0\u05d9\u05d5\u05ea."
+    )
+    assert result.explanation.why_it_matters
+    assert result.explanation.market_context
+
+def test_interpret_supports_sec_shelf_registration():
+    event = make_event(
+        "SEC Filing: S-3",
+        source="SEC",
+        summary="Shelf registration",
+    )
+
+    result = InvestorSummaryPolicy().interpret(event)
+
+    assert result.summary == (
+        "\u05d4\u05d7\u05d1\u05e8\u05d4 "
+        "\u05d4\u05d2\u05d9\u05e9\u05d4 "
+        "\u05dc-SEC "
+        "\u05ea\u05e9\u05e7\u05d9\u05e3 "
+        "\u05de\u05d3\u05e3 "
+        "\u05e9\u05e2\u05e9\u05d5\u05d9 "
+        "\u05dc\u05d0\u05e4\u05e9\u05e8 "
+        "\u05d2\u05d9\u05d5\u05e1 "
+        "\u05d4\u05d5\u05df "
+        "\u05e2\u05ea\u05d9\u05d3\u05d9."
+    )
+    assert result.explanation.why_it_matters
+    assert result.explanation.market_context

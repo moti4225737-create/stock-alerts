@@ -20,6 +20,10 @@ def test_investor_intelligence_card_contains_product_contract_fields():
             "The filing may contain information that changes "
             "investor expectations."
         ),
+        market_context=(
+            "The filing should be evaluated against the company's "
+            "financial position and market expectations."
+        ),
         portfolio_impact=(
             "LQDA is held in the portfolio, so the disclosure "
             "is directly relevant."
@@ -39,6 +43,9 @@ def test_investor_intelligence_card_contains_product_contract_fields():
     assert card.symbol == "LQDA"
     assert card.summary == "Liquidia published a new material SEC filing."
     assert card.why_it_matters.startswith("The filing may contain")
+    assert card.market_context.startswith(
+        "The filing should be evaluated"
+    )
     assert card.portfolio_impact.startswith("LQDA is held")
     assert card.points_to_watch == (
         "Review the filing details.",
@@ -57,6 +64,7 @@ def test_investor_intelligence_card_is_immutable():
         symbol="AAPL",
         summary="Apple published a corporate disclosure.",
         why_it_matters="The disclosure may affect investor expectations.",
+        market_context="Monitor the broader corporate context.",
         portfolio_impact="AAPL is held in the portfolio.",
         points_to_watch=("Review the disclosure.",),
         source="SEC",

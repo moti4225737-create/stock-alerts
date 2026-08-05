@@ -58,7 +58,24 @@ class PortfolioIntelligenceService:
         briefs: list[InvestorBrief] = []
         for index, impact in enumerate(impacts, start=1):
             event = impact.event
-            explanation = self._explanation_engine.explain(event)
+            interpret = getattr(
+                self._investor_summary_policy,
+                "interpret",
+                None,
+            )
+
+            if callable(interpret):
+                try:
+                    interpretation = interpret(event)
+                except LookupError:
+                    summary = self._investor_summary_policy.build(event)
+                    explanation = self._explanation_engine.explain(event)
+                else:
+                    summary = interpretation.summary
+                    explanation = interpretation.explanation
+            else:
+                summary = self._investor_summary_policy.build(event)
+                explanation = self._explanation_engine.explain(event)
 
             briefs.append(
                 InvestorBrief(
@@ -66,7 +83,7 @@ class PortfolioIntelligenceService:
                     ranking_position=index,
                     portfolio_impact=impact,
                     headline=event.title,
-                    summary=self._investor_summary_policy.build(event),
+                    summary=summary,
                     explanation=explanation,
                 )
             )

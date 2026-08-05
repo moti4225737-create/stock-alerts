@@ -21,6 +21,7 @@ class InvestorIntelligenceCard:
     symbol: str
     summary: str
     why_it_matters: str
+    market_context: str
     portfolio_impact: str
     points_to_watch: tuple[str, ...]
     source: str

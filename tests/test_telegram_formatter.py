@@ -19,6 +19,20 @@ def make_card(
             "הדיווח עשוי לכלול מידע מהותי שישפיע "
             "על ציפיות המשקיעים."
         ),
+        market_context=(
+            "\u05d9\u05e9 "
+            "\u05dc\u05d1\u05d7\u05d5\u05df "
+            "\u05d0\u05ea "
+            "\u05ea\u05d5\u05db\u05df "
+            "\u05d4\u05d3\u05d9\u05d5\u05d5\u05d7 "
+            "\u05d5\u05d0\u05ea "
+            "\u05d4\u05e9\u05e4\u05e2\u05ea\u05d5 "
+            "\u05d4\u05d0\u05e4\u05e9\u05e8\u05d9\u05ea "
+            "\u05e2\u05dc "
+            "\u05e4\u05e2\u05d9\u05dc\u05d5\u05ea "
+            "\u05d4\u05d7\u05d1\u05e8\u05d4 "
+            "\u05d5\u05d4\u05ea\u05d7\u05d6\u05d9\u05ea."
+        ),
         portfolio_impact=(
             "LQDA מוחזקת בתיק ולכן האירוע רלוונטי ישירות."
         ),
