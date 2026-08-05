@@ -1,5 +1,8 @@
 from models.event import Event
 from product.investor_summary_rule_set import InvestorSummaryRuleSet
+from product.rules.clinical_trials.status_update import (
+    ClinicalTrialStatusSummaryRule,
+)
 from product.rules.fda.drug_recall import FdaDrugRecallSummaryRule
 from product.rules.sec.financial_results import (
     SecFinancialResultsSummaryRule,
@@ -24,6 +27,7 @@ class InvestorSummaryPolicy:
                 SecFinancialResultsSummaryRule(),
                 SecLeadershipChangeSummaryRule(),
                 FdaDrugRecallSummaryRule(),
+                ClinicalTrialStatusSummaryRule(),
                 Sec8KSummaryRule(),
             )
         )
@@ -53,15 +57,6 @@ class InvestorSummaryPolicy:
             return (
                 "החברה הגישה ל-SEC תשקיף מדף "
                 "שעשוי לאפשר גיוס הון עתידי."
-            )
-
-        if (
-            source == "CLINICALTRIALS.GOV"
-            or "CLINICAL TRIAL" in title
-        ):
-            return (
-                "פורסם עדכון חדש לניסוי הקליני "
-                "של החברה."
             )
 
         return event.summary

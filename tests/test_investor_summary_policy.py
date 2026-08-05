@@ -88,7 +88,7 @@ def test_builds_clinical_trial_summary():
     )
 
     assert summary == (
-        "פורסם עדכון חדש לניסוי הקליני של החברה."
+        "הניסוי הקליני נמצא כעת בסטטוס Recruiting."
     )
 
 
@@ -228,4 +228,19 @@ def test_default_policy_uses_fda_recall_rule():
     assert InvestorSummaryPolicy().build(event) == (
         "ה-FDA פרסם הודעת החזרה מהשוק "
         "מסוג Class II למוצר של החברה."
+    )
+
+
+def test_default_policy_uses_clinical_trial_status_rule():
+    event = make_event(
+        "Clinical Trial — Yutrepia Study",
+        source="ClinicalTrials.gov",
+        summary=(
+            "NCT ID: NCT01234567"
+            " | Status: RECRUITING"
+        ),
+    )
+
+    assert InvestorSummaryPolicy().build(event) == (
+        "הניסוי הקליני נמצא כעת בסטטוס Recruiting."
     )
