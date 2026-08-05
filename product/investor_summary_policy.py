@@ -1,5 +1,6 @@
 from models.event import Event
 from product.investor_summary_rule_set import InvestorSummaryRuleSet
+from product.rules.fda.drug_recall import FdaDrugRecallSummaryRule
 from product.rules.sec.financial_results import (
     SecFinancialResultsSummaryRule,
 )
@@ -22,6 +23,7 @@ class InvestorSummaryPolicy:
                 SecMaterialAgreementSummaryRule(),
                 SecFinancialResultsSummaryRule(),
                 SecLeadershipChangeSummaryRule(),
+                FdaDrugRecallSummaryRule(),
                 Sec8KSummaryRule(),
             )
         )
@@ -51,12 +53,6 @@ class InvestorSummaryPolicy:
             return (
                 "החברה הגישה ל-SEC תשקיף מדף "
                 "שעשוי לאפשר גיוס הון עתידי."
-            )
-
-        if source == "FDA" and "DRUG RECALL" in title:
-            return (
-                "ה-FDA פרסם הודעת החזרה מהשוק "
-                "למוצר של החברה."
             )
 
         if (

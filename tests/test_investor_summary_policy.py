@@ -64,7 +64,8 @@ def test_builds_fda_recall_summary():
     )
 
     assert summary == (
-        "ה-FDA פרסם הודעת החזרה מהשוק למוצר של החברה."
+        "ה-FDA פרסם הודעת החזרה מהשוק "
+        "מסוג Class II למוצר של החברה."
     )
 
 
@@ -210,4 +211,21 @@ def test_default_policy_uses_generic_8k_rule_as_fallback():
 
     assert InvestorSummaryPolicy().build(event) == (
         "החברה פרסמה דיווח מיידי על אירוע מהותי ל-SEC."
+    )
+
+def test_default_policy_uses_fda_recall_rule():
+    event = make_event(
+        "FDA Drug Recall — Class II — Liquidia Technologies",
+        source="FDA",
+        summary=(
+            "Example recall reason"
+            " | Product: Example drug product"
+            " | Recall number: D-1234"
+            " | Status: Ongoing"
+        ),
+    )
+
+    assert InvestorSummaryPolicy().build(event) == (
+        "ה-FDA פרסם הודעת החזרה מהשוק "
+        "מסוג Class II למוצר של החברה."
     )
