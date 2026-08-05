@@ -1,50 +1,39 @@
 from models.event import Event
+from product.investor_summary_rule_set import InvestorSummaryRuleSet
+from product.rules.sec.financial_results import (
+    SecFinancialResultsSummaryRule,
+)
+from product.rules.sec.generic_8k import Sec8KSummaryRule
+from product.rules.sec.leadership_change import (
+    SecLeadershipChangeSummaryRule,
+)
+from product.rules.sec.material_agreement import (
+    SecMaterialAgreementSummaryRule,
+)
 
 
 class InvestorSummaryPolicy:
+    def __init__(
+        self,
+        rule_set: InvestorSummaryRuleSet | None = None,
+    ) -> None:
+        self._rule_set = rule_set or InvestorSummaryRuleSet(
+            rules=(
+                SecMaterialAgreementSummaryRule(),
+                SecFinancialResultsSummaryRule(),
+                SecLeadershipChangeSummaryRule(),
+                Sec8KSummaryRule(),
+            )
+        )
+
     def build(self, event: Event) -> str:
+        rule_summary = self._rule_set.build(event)
+
+        if rule_summary != event.summary:
+            return rule_summary
+
         source = event.source.upper()
         title = event.title.upper()
-        raw_summary = event.summary.upper()
-
-        if (
-            source == "SEC"
-            and "8-K" in title
-            and "ENTRY INTO A MATERIAL DEFINITIVE AGREEMENT" in raw_summary
-        ):
-            return (
-                "החברה דיווחה על התקשרות "
-                "בהסכם מהותי חדש."
-            )
-
-        if (
-            source == "SEC"
-            and "8-K" in title
-            and "RESULTS OF OPERATIONS AND FINANCIAL CONDITION"
-            in raw_summary
-        ):
-            return "החברה דיווחה על תוצאותיה הכספיות."
-
-        if (
-            source == "SEC"
-            and "8-K" in title
-            and (
-                "DEPARTURE OF DIRECTORS OR CERTAIN OFFICERS"
-                in raw_summary
-                or "APPOINTMENT OF CERTAIN OFFICERS" in raw_summary
-                or "ELECTION OF DIRECTORS" in raw_summary
-            )
-        ):
-            return (
-                "החברה דיווחה על שינוי "
-                "בהנהלה או בדירקטוריון."
-            )
-
-        if source == "SEC" and "8-K" in title:
-            return (
-                "החברה פרסמה דיווח מיידי "
-                "על אירוע מהותי ל-SEC."
-            )
 
         if source == "SEC" and "10-Q" in title:
             return "החברה פרסמה דוח רבעוני חדש ל-SEC."

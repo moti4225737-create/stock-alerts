@@ -163,3 +163,51 @@ def test_builds_leadership_change_summary_from_sec_description():
     assert summary == (
         "החברה דיווחה על שינוי בהנהלה או בדירקטוריון."
     )
+
+
+class FakeInvestorSummaryRuleSet:
+    def __init__(self, summary: str) -> None:
+        self._summary = summary
+        self.received_events: list[Event] = []
+
+    def build(self, event: Event) -> str:
+        self.received_events.append(event)
+        return self._summary
+
+
+def test_delegates_summary_building_to_rule_set():
+    event = make_event(
+        "SEC Filing: 8-K",
+        source="SEC",
+        summary="Raw provider summary",
+    )
+    rule_set = FakeInvestorSummaryRuleSet(
+        "Rule-set generated summary"
+    )
+    policy = InvestorSummaryPolicy(rule_set=rule_set)
+
+    assert policy.build(event) == "Rule-set generated summary"
+    assert rule_set.received_events == [event]
+
+def test_default_policy_uses_specific_sec_rule_before_generic_8k_rule():
+    event = make_event(
+        "SEC Filing: 8-K",
+        source="SEC",
+        summary="Entry into a Material Definitive Agreement",
+    )
+
+    assert InvestorSummaryPolicy().build(event) == (
+        "החברה דיווחה על התקשרות בהסכם מהותי חדש."
+    )
+
+
+def test_default_policy_uses_generic_8k_rule_as_fallback():
+    event = make_event(
+        "SEC Filing: 8-K",
+        source="SEC",
+        summary="Unrecognized SEC description",
+    )
+
+    assert InvestorSummaryPolicy().build(event) == (
+        "החברה פרסמה דיווח מיידי על אירוע מהותי ל-SEC."
+    )
