@@ -89,3 +89,33 @@ def test_builds_clinical_trial_summary():
     assert summary == (
         "פורסם עדכון חדש לניסוי הקליני של החברה."
     )
+
+
+def test_builds_annual_sec_filing_summary():
+    summary = InvestorSummaryPolicy().build(
+        make_event("SEC Filing: 10-K", source="SEC")
+    )
+
+    assert summary == (
+        "החברה פרסמה את הדוח השנתי שלה ל-SEC."
+    )
+
+
+def test_builds_proxy_statement_summary():
+    summary = InvestorSummaryPolicy().build(
+        make_event("SEC Filing: DEF 14A", source="SEC")
+    )
+
+    assert summary == (
+        "החברה פרסמה מסמכים לקראת אסיפת בעלי המניות."
+    )
+
+
+def test_builds_shelf_registration_summary():
+    summary = InvestorSummaryPolicy().build(
+        make_event("SEC Filing: S-3", source="SEC")
+    )
+
+    assert summary == (
+        "החברה הגישה ל-SEC תשקיף מדף שעשוי לאפשר גיוס הון עתידי."
+    )
