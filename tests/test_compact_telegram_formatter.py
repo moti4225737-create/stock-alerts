@@ -10,10 +10,34 @@ def test_compact_message() -> None:
     card = InvestorIntelligenceCard(
         importance_level=ImportanceLevel.HIGH,
         event_category=EventCategory.CORPORATE_DISCLOSURE,
-        title="\U0001f4ca LQDA \u05e4\u05e8\u05e1\u05de\u05d4 \u05d3\u05d5\u05d7 \u05e8\u05d1\u05e2\u05d5\u05e0\u05d9 \u05d7\u05d3\u05e9",
+        title=(
+            "\U0001f4ca LQDA "
+            "\u05e4\u05e8\u05e1\u05de\u05d4 "
+            "\u05d3\u05d5\u05d7 "
+            "\u05e8\u05d1\u05e2\u05d5\u05e0\u05d9 "
+            "\u05d7\u05d3\u05e9"
+        ),
         symbol="LQDA",
-        summary="\u05d4\u05d7\u05d1\u05e8\u05d4 \u05e4\u05e8\u05e1\u05de\u05d4 \u05d0\u05ea \u05d4\u05d3\u05d5\u05d7 \u05d4\u05e8\u05d1\u05e2\u05d5\u05e0\u05d9 \u05e9\u05dc\u05d4 \u05dc-SEC.",
-        why_it_matters="\u05ea\u05d5\u05e6\u05d0\u05d5\u05ea \u05d4\u05d3\u05d5\u05d7 \u05e2\u05e9\u05d5\u05d9\u05d5\u05ea \u05dc\u05d4\u05e9\u05e4\u05d9\u05e2 \u05e2\u05dc \u05d4\u05e2\u05e8\u05db\u05ea \u05d4\u05e9\u05d5\u05d5\u05d9 \u05d5\u05e6\u05d9\u05e4\u05d9\u05d5\u05ea \u05d4\u05de\u05e9\u05e7\u05d9\u05e2\u05d9\u05dd.",
+        summary=(
+            "\u05d4\u05d7\u05d1\u05e8\u05d4 "
+            "\u05e4\u05e8\u05e1\u05de\u05d4 "
+            "\u05d0\u05ea "
+            "\u05d4\u05d3\u05d5\u05d7 "
+            "\u05d4\u05e8\u05d1\u05e2\u05d5\u05e0\u05d9 "
+            "\u05e9\u05dc\u05d4 "
+            "\u05dc-SEC."
+        ),
+        why_it_matters=(
+            "\u05ea\u05d5\u05e6\u05d0\u05d5\u05ea "
+            "\u05d4\u05d3\u05d5\u05d7 "
+            "\u05e2\u05e9\u05d5\u05d9\u05d5\u05ea "
+            "\u05dc\u05d4\u05e9\u05e4\u05d9\u05e2 "
+            "\u05e2\u05dc "
+            "\u05d4\u05e2\u05e8\u05db\u05ea "
+            "\u05d4\u05e9\u05d5\u05d5\u05d9 "
+            "\u05d5\u05e6\u05d9\u05e4\u05d9\u05d5\u05ea "
+            "\u05d4\u05de\u05e9\u05e7\u05d9\u05e2\u05d9\u05dd."
+        ),
         market_context="SHOULD NOT APPEAR",
         portfolio_impact="SHOULD NOT APPEAR",
         points_to_watch=("SHOULD NOT APPEAR",),
@@ -24,9 +48,11 @@ def test_compact_message() -> None:
 
     message = TelegramFormatter().format(card)
 
-    assert "\U0001f4ca LQDA \u05e4\u05e8\u05e1\u05de\u05d4 \u05d3\u05d5\u05d7 \u05e8\u05d1\u05e2\u05d5\u05e0\u05d9 \u05d7\u05d3\u05e9" in message
-    assert "\U0001f552 \u05e4\u05d5\u05e8\u05e1\u05dd:" in message
+    assert "\U0001f9ec LQDA" in message
+    assert "\U0001f4cb \u05de\u05d4 \u05e7\u05e8\u05d4?" in message
+    assert "\U0001f4a1 \u05d4\u05e2\u05e8\u05db\u05ea \u05d6\u05e7\u05d9\u05e3" in message
+    assert "\U0001f552 \u05e4\u05d5\u05e8\u05e1\u05dd" in message
     assert "05/08/2026 10:00 UTC" in message
-    assert "\U0001f517 \u05de\u05e7\u05d5\u05e8:" in message
+    assert "\U0001f517 \u05de\u05e7\u05d5\u05e8" in message
     assert "https://www.sec.gov/example" in message
     assert "SHOULD NOT APPEAR" not in message

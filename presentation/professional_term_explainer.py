@@ -1,16 +1,34 @@
 class ProfessionalTermExplainer:
     _EXPLANATIONS = {
+        "10-Q": (
+            "\u05d3\u05d5\u05d7 "
+            "\u05e8\u05d1\u05e2\u05d5\u05e0\u05d9 "
+            "\u05d7\u05d3\u05e9",
+            "SEC Form 10-Q",
+        ),
+        "10-K": (
+            "\u05d3\u05d5\u05d7 "
+            "\u05e9\u05e0\u05ea\u05d9 "
+            "\u05d7\u05d3\u05e9",
+            "SEC Form 10-K",
+        ),
         "8-K": (
-            "Form 8-K",
-            "דיווח מיידי על אירוע מהותי בחברה",
+            "\u05d3\u05d9\u05d5\u05d5\u05d7 "
+            "\u05de\u05d4\u05d5\u05ea\u05d9 "
+            "\u05d7\u05d3\u05e9",
+            "SEC Form 8-K",
         ),
         "PDUFA": (
+            "\u05de\u05d5\u05e2\u05d3 "
+            "\u05d4\u05d7\u05dc\u05d8\u05ea FDA",
             "PDUFA",
-            "המועד שבו ה-FDA צפוי לפרסם החלטה בבקשת אישור התרופה",
         ),
         "IND": (
+            "\u05d1\u05e7\u05e9\u05d4 "
+            "\u05dc\u05d4\u05ea\u05d7\u05dc\u05ea "
+            "\u05e0\u05d9\u05e1\u05d5\u05d9 "
+            "\u05e7\u05dc\u05d9\u05e0\u05d9",
             "IND",
-            "בקשה להתחלת ניסוי קליני",
         ),
     }
 
@@ -21,19 +39,20 @@ class ProfessionalTermExplainer:
         if explanation is None:
             return term
 
-        display_name, description = explanation
-        return f"{display_name}\n({description})"
+        business_title, technical_name = explanation
+        return f"{business_title}\n({technical_name})"
 
     def _extract_canonical_code(self, term: str) -> str:
         normalized = term.strip().upper()
 
-        if "8-K" in normalized:
-            return "8-K"
+        for code in (
+            "10-Q",
+            "10-K",
+            "8-K",
+            "PDUFA",
+            "IND",
+        ):
+            if code in normalized:
+                return code
 
-        if "PDUFA" in normalized:
-            return "PDUFA"
-
-        if "IND" in normalized:
-            return "IND"
-
-        return term
+        return normalized

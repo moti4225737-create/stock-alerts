@@ -19,7 +19,6 @@ def make_brief() -> InvestorBrief:
         sentiment="neutral",
         url="https://www.sec.gov/example",
     )
-
     holding = PortfolioHolding(
         symbol="LQDA",
         quantity=7.99,
@@ -45,32 +44,35 @@ def make_brief() -> InvestorBrief:
     )
 
 
-def test_builder_transforms_brief_into_compact_message() -> None:
+def test_builder_transforms_brief_into_notification_v1() -> None:
     message = TelegramIntelligenceMessageBuilder().build(
         make_brief()
     )
 
     assert isinstance(message, str)
-    assert "LQDA" in message
+    assert "\U0001f9ec LQDA" in message
     assert "SEC" in message
     assert "03/08/2026 10:00 UTC" in message
     assert "https://www.sec.gov/example" in message
 
 
-def test_builder_explains_professional_term_in_message() -> None:
+def test_builder_places_business_title_before_technical_code() -> None:
     message = TelegramIntelligenceMessageBuilder().build(
         make_brief()
     )
 
-    assert "Form 8-K" in message
-    assert (
+    business_title = (
         "\u05d3\u05d9\u05d5\u05d5\u05d7 "
-        "\u05de\u05d9\u05d9\u05d3\u05d9 "
-        "\u05e2\u05dc "
-        "\u05d0\u05d9\u05e8\u05d5\u05e2 "
         "\u05de\u05d4\u05d5\u05ea\u05d9 "
-        "\u05d1\u05d7\u05d1\u05e8\u05d4"
-    ) in message
+        "\u05d7\u05d3\u05e9"
+    )
+    technical_code = "(SEC Form 8-K)"
+
+    assert business_title in message
+    assert technical_code in message
+    assert message.index(business_title) < message.index(
+        technical_code
+    )
 
 
 def test_builder_omits_removed_generic_sections() -> None:

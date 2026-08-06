@@ -5,6 +5,9 @@ import requests
 from dotenv import load_dotenv
 
 from alerts import Alert, format_alert
+from application.default_investor_brief_enrichment import (
+    build_default_investor_brief_enrichment_service,
+)
 from engines.intelligence_pipeline import IntelligencePipeline
 from engines.runtime_engine import RuntimeEngine
 from models.event import Event
@@ -163,6 +166,11 @@ def main() -> None:
         quote_fetcher=get_quote,
         telegram_sender=send_telegram,
         live_preview_runner=run_live_preview,
+        investor_brief_enrichment_service=(
+            build_default_investor_brief_enrichment_service(
+                user_agent=os.environ["SEC_USER_AGENT"],
+            )
+        ),
         use_intelligence_notification_flow=True,
         telegram_sender_transport=TelegramSender(telegram_api=send_telegram),
         notification_history=NotificationHistory("notification_history.txt"),

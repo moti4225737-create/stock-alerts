@@ -44,35 +44,29 @@ class TelegramFormatter:
         except ValueError:
             return value
 
-    def _format_title(
-        self,
-        card: InvestorIntelligenceCard,
-    ) -> str:
-        title = self._term_explainer.explain(
-            card.title.strip()
-        )
-
-        if card.symbol.upper() in title.upper():
-            return title
-
-        return f"{card.symbol} \u2014 {title}"
-
     def format(
         self,
         card: InvestorIntelligenceCard,
     ) -> str:
         sections = [
-            self._format_title(card),
+            f"\U0001f9ec {card.symbol.strip()}",
             "",
+            self._term_explainer.explain(
+                card.title.strip()
+            ),
+            "",
+            "\U0001f4cb \u05de\u05d4 \u05e7\u05e8\u05d4?",
             card.summary.strip(),
             "",
-            "\U0001f4a1 \u05dc\u05de\u05d4 \u05d6\u05d4 \u05d7\u05e9\u05d5\u05d1?",
+            "\U0001f4a1 \u05d4\u05e2\u05e8\u05db\u05ea \u05d6\u05e7\u05d9\u05e3",
             card.why_it_matters.strip(),
             "",
-            "\U0001f552 \u05e4\u05d5\u05e8\u05e1\u05dd:",
-            self._format_published_at(card.published_at),
+            "\U0001f552 \u05e4\u05d5\u05e8\u05e1\u05dd",
+            self._format_published_at(
+                card.published_at
+            ),
             "",
-            "\U0001f517 \u05de\u05e7\u05d5\u05e8:",
+            "\U0001f517 \u05de\u05e7\u05d5\u05e8",
             card.source.strip(),
         ]
 
