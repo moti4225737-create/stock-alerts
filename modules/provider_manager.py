@@ -1,6 +1,7 @@
-from modules.clinical_trials_provider import ClinicalTrialsProvider
+﻿from modules.clinical_trials_provider import ClinicalTrialsProvider
 from modules.data_provider import DataProvider
 from modules.fda_provider import FDAProvider
+from modules.sec_provider import SECProvider
 from modules.ticker_resolver import TickerResolver
 
 
@@ -29,4 +30,5 @@ class ProviderManager:
             ClinicalTrialsProvider(
                 ticker_resolver=self._ticker_resolver,
             ),
+            SECProvider(),
         ]
