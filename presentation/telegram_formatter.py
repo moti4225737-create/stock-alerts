@@ -1,27 +1,12 @@
 from datetime import datetime
 
-from models.investor_intelligence_card import (
-    EventCategory,
-    ImportanceLevel,
-    InvestorIntelligenceCard,
-)
+from models.investor_intelligence_card import InvestorIntelligenceCard
 from presentation.professional_term_explainer import (
     ProfessionalTermExplainer,
 )
 
 
 class TelegramFormatter:
-    _IMPORTANCE_LABELS = {
-        ImportanceLevel.MODERATE: "🟡 בינונית",
-        ImportanceLevel.HIGH: "🟠 גבוהה",
-        ImportanceLevel.CRITICAL: "🔴 קריטית",
-    }
-
-    _EVENT_CATEGORY_LABELS = {
-        EventCategory.MATERIAL_FILING: "דיווח מהותי",
-        EventCategory.CORPORATE_DISCLOSURE: "דיווח תאגידי",
-    }
-
     def __init__(
         self,
         term_explainer: ProfessionalTermExplainer | None = None,
@@ -33,80 +18,63 @@ class TelegramFormatter:
     @staticmethod
     def _format_published_at(value: str) -> str:
         if not value:
-            return "לא ידוע"
+            return "\u05dc\u05d0 \u05d9\u05d3\u05d5\u05e2"
 
         try:
-            parsed = datetime.fromisoformat(value.replace("Z", "+00:00"))
+            parsed = datetime.fromisoformat(
+                value.replace("Z", "+00:00")
+            )
+
+            if (
+                parsed.hour == 0
+                and parsed.minute == 0
+                and parsed.second == 0
+            ):
+                return parsed.strftime("%d/%m/%Y")
+
             formatted = parsed.strftime("%d/%m/%Y %H:%M")
 
-            if parsed.tzinfo is not None:
-                offset = parsed.strftime("%z")
-                if offset == "+0000":
-                    return f"{formatted} UTC"
+            if (
+                parsed.tzinfo is not None
+                and parsed.strftime("%z") == "+0000"
+            ):
+                return f"{formatted} UTC"
 
             return formatted
         except ValueError:
             return value
 
-    def format(self, card: InvestorIntelligenceCard) -> str:
-        importance_label = self._IMPORTANCE_LABELS[
-            card.importance_level
-        ]
-        event_category_label = self._EVENT_CATEGORY_LABELS[
-            card.event_category
-        ]
-        professional_title = self._term_explainer.explain(card.title)
-
-        points = tuple(
-            point.strip()
-            for point in card.points_to_watch
-            if point.strip()
-        )
-        points_to_watch = "\n".join(
-            f"• {point}" for point in points[:3]
+    def _format_title(
+        self,
+        card: InvestorIntelligenceCard,
+    ) -> str:
+        title = self._term_explainer.explain(
+            card.title.strip()
         )
 
+        if card.symbol.upper() in title.upper():
+            return title
+
+        return f"{card.symbol} \u2014 {title}"
+
+    def format(
+        self,
+        card: InvestorIntelligenceCard,
+    ) -> str:
         sections = [
-            f"🧬 {card.symbol}",
+            self._format_title(card),
             "",
-            importance_label,
-            f"📌 אירוע: {event_category_label}",
-            professional_title,
-            "",
-            "──────────────────",
-            "",
-            "📰 מה קרה?",
             card.summary.strip(),
             "",
-            "💡 למה זה חשוב?",
+            "\U0001f4a1 \u05dc\u05de\u05d4 \u05d6\u05d4 \u05d7\u05e9\u05d5\u05d1?",
             card.why_it_matters.strip(),
             "",
-            "🔎 מה ההקשר להערכת האירוע?",
-            card.market_context.strip(),
+            "\U0001f552 \u05e4\u05d5\u05e8\u05e1\u05dd:",
+            self._format_published_at(card.published_at),
             "",
-            "📈 ההשפעה על התיק שלך",
-            card.portfolio_impact.strip(),
+            "\U0001f517 \u05de\u05e7\u05d5\u05e8:",
+            card.source.strip(),
         ]
-
-        if points_to_watch:
-            sections.extend(
-                [
-                    "",
-                    "👀 מה כדאי לעקוב?",
-                    points_to_watch,
-                ]
-            )
-
-        sections.extend(
-            [
-                "",
-                "🕒 פורסם:",
-                self._format_published_at(card.published_at),
-                "",
-                "🔗 מקור:",
-                card.source,
-            ]
-        )
 
         if card.source_url:
             sections.append(card.source_url)
