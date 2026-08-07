@@ -210,8 +210,13 @@ def main() -> None:
     providers = provider_manager.build_named()
     policies = build_default_source_acquisition_policies()
 
+    notification_history_path = os.environ.get(
+        "NOTIFICATION_HISTORY_PATH",
+        "notification_history.txt",
+    )
+
     notification_history = NotificationHistory(
-        "notification_history.txt"
+        notification_history_path
     )
 
     telegram_transport = TelegramSender(
