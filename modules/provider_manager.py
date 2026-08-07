@@ -19,16 +19,22 @@ class ProviderManager:
     ) -> None:
         self._ticker_resolver = ticker_resolver
 
+    def build_named(self) -> dict[str, DataProvider]:
+        """
+        Create the default provider collection keyed by source name.
+        """
+        return {
+            "FDA": FDAProvider(
+                ticker_resolver=self._ticker_resolver,
+            ),
+            "ClinicalTrials.gov": ClinicalTrialsProvider(
+                ticker_resolver=self._ticker_resolver,
+            ),
+            "SEC": SECProvider(),
+        }
+
     def build(self) -> list[DataProvider]:
         """
         Create the default provider collection.
         """
-        return [
-            FDAProvider(
-                ticker_resolver=self._ticker_resolver,
-            ),
-            ClinicalTrialsProvider(
-                ticker_resolver=self._ticker_resolver,
-            ),
-            SECProvider(),
-        ]
+        return list(self.build_named().values())

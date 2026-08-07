@@ -24,27 +24,41 @@ def test_provider_manager_builds_default_providers(monkeypatch):
     clinical_trials_provider = providers[1]
     sec_provider = providers[2]
 
-    assert isinstance(
-        fda_provider,
-        FDAProvider,
-    )
-
+    assert isinstance(fda_provider, FDAProvider)
     assert isinstance(
         clinical_trials_provider,
         ClinicalTrialsProvider,
     )
+    assert isinstance(sec_provider, SECProvider)
 
-    assert isinstance(
-        sec_provider,
-        SECProvider,
-    )
-
-    assert (
-        fda_provider.ticker_resolver
-        is ticker_resolver
-    )
-
+    assert fda_provider.ticker_resolver is ticker_resolver
     assert (
         clinical_trials_provider._ticker_resolver
         is ticker_resolver
     )
+
+
+def test_provider_manager_builds_named_providers(monkeypatch):
+    monkeypatch.setenv(
+        "SEC_USER_AGENT",
+        "stock-sentinel-tests test@example.com",
+    )
+    ticker_resolver = TickerResolver()
+
+    manager = ProviderManager(
+        ticker_resolver=ticker_resolver,
+    )
+
+    providers = manager.build_named()
+
+    assert tuple(providers) == (
+        "FDA",
+        "ClinicalTrials.gov",
+        "SEC",
+    )
+    assert isinstance(providers["FDA"], FDAProvider)
+    assert isinstance(
+        providers["ClinicalTrials.gov"],
+        ClinicalTrialsProvider,
+    )
+    assert isinstance(providers["SEC"], SECProvider)

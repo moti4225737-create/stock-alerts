@@ -1,15 +1,24 @@
-import os
+﻿import os
+import time
 from collections.abc import Callable, Iterable
+from datetime import datetime, time as clock_time, timezone
 
 import requests
 from dotenv import load_dotenv
 
 from alerts import Alert, format_alert
+from application.autonomous_acquisition_loop import (
+    AutonomousAcquisitionLoop,
+)
+from application.autonomous_source_acquisition import (
+    build_autonomous_source_acquisition,
+)
 from application.default_investor_brief_enrichment import (
     build_default_investor_brief_enrichment_service,
 )
+from application.source_runtime_factory import SourceRuntimeFactory
 from engines.intelligence_pipeline import IntelligencePipeline
-from engines.runtime_engine import RuntimeEngine
+from engines.source_acquisition_policy import SourceAcquisitionPolicy
 from models.event import Event
 from modules.finnhub_client import get_quote
 from modules.notification_history import NotificationHistory
@@ -97,12 +106,7 @@ def run_live_preview(
     telegram_sender: Callable[[str], None],
 ) -> None:
     """
-    Run the live preview for every symbol in the watchlist.
-
-    For each symbol:
-    - fetch the latest Finnhub quote
-    - collect provider intelligence events
-    - send all valid results to Telegram
+    Run the legacy live preview for every symbol in the watchlist.
     """
     for symbol in watchlist:
         normalized_symbol = symbol.strip().upper()
@@ -146,9 +150,56 @@ def run_live_preview(
             )
 
 
+def build_default_source_acquisition_policies(
+) -> dict[str, SourceAcquisitionPolicy]:
+    """
+    Build the approved v0.5 acquisition policies.
+    """
+    return {
+        "FDA": SourceAcquisitionPolicy(
+            source_name="FDA",
+            interval_seconds=3600,
+        ),
+        "ClinicalTrials.gov": SourceAcquisitionPolicy(
+            source_name="ClinicalTrials.gov",
+            interval_seconds=3600,
+            publication_time=clock_time(hour=9),
+            publication_window_minutes=15,
+            publication_interval_seconds=60,
+            publication_timezone="America/New_York",
+        ),
+        "SEC": SourceAcquisitionPolicy(
+            source_name="SEC",
+            interval_seconds=60,
+        ),
+    }
+
+
+def build_autonomous_loop(
+    providers: dict,
+    policies: dict[str, SourceAcquisitionPolicy],
+    runtime_factory: SourceRuntimeFactory,
+) -> AutonomousAcquisitionLoop:
+    """
+    Build the autonomous source-acquisition execution loop.
+    """
+    coordinator = build_autonomous_source_acquisition(
+        providers=providers,
+        policies=policies,
+        runtime_factory=runtime_factory,
+    )
+
+    return AutonomousAcquisitionLoop(
+        coordinator=coordinator,
+        clock=lambda: datetime.now(timezone.utc),
+        waiter=time.sleep,
+        tick_seconds=1,
+    )
+
+
 def main() -> None:
     """
-    Configure Stock Sentinel and execute one runtime cycle.
+    Configure Stock Sentinel and run autonomous source acquisition.
     """
     ticker_resolver = TickerResolver()
 
@@ -156,27 +207,40 @@ def main() -> None:
         ticker_resolver=ticker_resolver,
     )
 
-    pipeline = IntelligencePipeline(
-        providers=provider_manager.build(),
+    providers = provider_manager.build_named()
+    policies = build_default_source_acquisition_policies()
+
+    notification_history = NotificationHistory(
+        "notification_history.txt"
     )
 
-    runtime = RuntimeEngine(
+    telegram_transport = TelegramSender(
+        telegram_api=send_telegram,
+    )
+
+    enrichment_service = (
+        build_default_investor_brief_enrichment_service(
+            user_agent=os.environ["SEC_USER_AGENT"],
+        )
+    )
+
+    runtime_factory = SourceRuntimeFactory(
         watchlist=WATCHLIST,
-        pipeline=pipeline,
         quote_fetcher=get_quote,
         telegram_sender=send_telegram,
         live_preview_runner=run_live_preview,
-        investor_brief_enrichment_service=(
-            build_default_investor_brief_enrichment_service(
-                user_agent=os.environ["SEC_USER_AGENT"],
-            )
-        ),
-        use_intelligence_notification_flow=True,
-        telegram_sender_transport=TelegramSender(telegram_api=send_telegram),
-        notification_history=NotificationHistory("notification_history.txt"),
+        enrichment_service=enrichment_service,
+        telegram_transport=telegram_transport,
+        notification_history=notification_history,
     )
 
-    runtime.run()
+    autonomous_loop = build_autonomous_loop(
+        providers=providers,
+        policies=policies,
+        runtime_factory=runtime_factory,
+    )
+
+    autonomous_loop.run()
 
 
 if __name__ == "__main__":
