@@ -73,3 +73,8 @@ class AutonomousAcquisitionCoordinator:
             self._failure_counts.pop(source_name, None)
             self._retry_not_before.pop(source_name, None)
             self._last_run[source_name] = now
+
+            print(
+                f"[INFO] Autonomous source "
+                f"{source_name} completed."
+            )
