@@ -31,6 +31,14 @@ class SemanticStoryBenchmarkResult:
         return self.expected is self.actual
 
 
+@dataclass(frozen=True, slots=True)
+class SemanticStoryBenchmarkSummary:
+    total: int
+    passed: int
+    failed: int
+    pass_rate: float
+
+
 class SemanticStoryBenchmarkEvaluator:
     @staticmethod
     def is_correct(
@@ -53,4 +61,34 @@ class SemanticStoryBenchmarkEvaluator:
             actual=actual,
             confidence=confidence,
             reason=reason,
+        )
+
+    def summarize(
+        self,
+        results: tuple[
+            SemanticStoryBenchmarkResult,
+            ...,
+        ],
+    ) -> SemanticStoryBenchmarkSummary:
+        total = len(results)
+
+        passed = sum(
+            1
+            for result in results
+            if result.passed
+        )
+
+        failed = total - passed
+
+        pass_rate = (
+            passed / total
+            if total
+            else 0.0
+        )
+
+        return SemanticStoryBenchmarkSummary(
+            total=total,
+            passed=passed,
+            failed=failed,
+            pass_rate=pass_rate,
         )
