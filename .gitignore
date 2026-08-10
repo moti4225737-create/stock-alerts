@@ -17,5 +17,9 @@ venv/
 # OS files
 .DS_Store
 Thumbs.db
+
+# Runtime state
 notification_history.txt
 
+# Local benchmark artifacts
+benchmark_data/
