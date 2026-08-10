@@ -18,6 +18,19 @@ class SemanticStoryBenchmarkCase:
             raise ValueError("name is required")
 
 
+@dataclass(frozen=True, slots=True)
+class SemanticStoryBenchmarkResult:
+    case_name: str
+    expected: StoryCorrelationDecision
+    actual: StoryCorrelationDecision
+    confidence: float
+    reason: str
+
+    @property
+    def passed(self) -> bool:
+        return self.expected is self.actual
+
+
 class SemanticStoryBenchmarkEvaluator:
     @staticmethod
     def is_correct(
@@ -25,3 +38,19 @@ class SemanticStoryBenchmarkEvaluator:
         actual: StoryCorrelationDecision,
     ) -> bool:
         return expected is actual
+
+    def evaluate(
+        self,
+        case_name: str,
+        expected: StoryCorrelationDecision,
+        actual: StoryCorrelationDecision,
+        confidence: float,
+        reason: str,
+    ) -> SemanticStoryBenchmarkResult:
+        return SemanticStoryBenchmarkResult(
+            case_name=case_name,
+            expected=expected,
+            actual=actual,
+            confidence=confidence,
+            reason=reason,
+        )
