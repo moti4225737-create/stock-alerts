@@ -39,7 +39,7 @@ def make_brief() -> InvestorBrief:
             why_it_matters=(
                 "The filing may affect investor expectations."
             ),
-            market_context="Monitor the market response.",
+            market_context="The filing may change near-term investor expectations.",
         ),
     )
 
@@ -75,12 +75,12 @@ def test_builder_places_business_title_before_technical_code() -> None:
     )
 
 
-def test_builder_omits_removed_generic_sections() -> None:
+def test_builder_renders_supporting_intelligence_from_card() -> None:
     message = TelegramIntelligenceMessageBuilder().build(
         make_brief()
     )
 
-    assert "Monitor the market response." not in message
-    assert "\U0001f50e" not in message
-    assert "\U0001f4c8" not in message
-    assert "\U0001f440" not in message
+    assert "The filing may change near-term investor expectations." in message
+    assert "\U0001f4c8" in message
+    assert "\U0001f3af" in message
+    assert "\U0001f440" in message
