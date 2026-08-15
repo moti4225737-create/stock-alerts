@@ -12,11 +12,14 @@ from product.grounded_investor_brief_enricher import (
 
 
 def test_builds_default_grounded_enrichment_pipeline() -> None:
+    semantic_analyzer = Mock()
+    significance_assessor = Mock()
+
     service = build_default_investor_brief_enrichment_service(
         user_agent="Stock Sentinel test@example.com",
         timeout=15,
-        semantic_analyzer=Mock(),
-        significance_assessor=Mock(),
+        semantic_analyzer=semantic_analyzer,
+        significance_assessor=significance_assessor,
     )
 
     assert isinstance(

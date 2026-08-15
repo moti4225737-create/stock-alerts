@@ -1,10 +1,11 @@
-﻿import os
+import os
 import time
 from collections.abc import Callable, Iterable
 from datetime import datetime, time as clock_time, timezone
 
 import requests
 from dotenv import load_dotenv
+from openai import OpenAI
 
 from alerts import Alert, format_alert
 from application.autonomous_acquisition_loop import (
@@ -25,6 +26,15 @@ from modules.notification_history import NotificationHistory
 from modules.provider_manager import ProviderManager
 from modules.telegram_sender import TelegramSender
 from modules.ticker_resolver import TickerResolver
+from product.openai_semantic_finding_analyzer import (
+    OpenAISemanticFindingAnalyzer,
+)
+from product.semantic_finding_analyzer_adapter import (
+    SemanticFindingAnalyzerAdapter,
+)
+from product.openai_semantic_significance_assessor import (
+    OpenAISemanticSignificanceAssessor,
+)
 from watchlist import WATCHLIST
 
 
@@ -223,9 +233,29 @@ def main() -> None:
         telegram_api=send_telegram,
     )
 
+    openai_client = OpenAI(
+        api_key=os.environ["OPENAI_API_KEY"],
+    )
+
+    semantic_execution_analyzer = OpenAISemanticFindingAnalyzer(
+        client=openai_client,
+        model=os.environ["OPENAI_MODEL"],
+    )
+
+    semantic_analyzer = SemanticFindingAnalyzerAdapter(
+        execution_analyzer=semantic_execution_analyzer,
+    )
+
+    significance_assessor = OpenAISemanticSignificanceAssessor(
+        client=openai_client,
+        model=os.environ["OPENAI_MODEL"],
+    )
+
     enrichment_service = (
         build_default_investor_brief_enrichment_service(
             user_agent=os.environ["SEC_USER_AGENT"],
+            semantic_analyzer=semantic_analyzer,
+            significance_assessor=significance_assessor,
         )
     )
 

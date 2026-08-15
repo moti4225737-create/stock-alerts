@@ -18,7 +18,8 @@ class MaterialityEvaluator(Protocol):
     def evaluate(
         self,
         candidate: SourceFindingCandidate,
-    ) -> SourceFinding:
+        document: SourceDocument,
+    ) -> SourceFinding | None:
         ...
 
 
@@ -45,17 +46,30 @@ class SourceGroundedBriefService:
         self,
         document: SourceDocument,
     ) -> SourceGroundedBrief | None:
-        candidates = self._discovery_service.discover(document)
+        candidates = self._discovery_service.discover(
+            document
+        )
 
         if not candidates:
             return None
 
-        findings = tuple(
-            self._materiality_evaluator.evaluate(candidate)
-            for candidate in candidates
-        )
+        findings: list[SourceFinding] = []
 
-        selected = self._finding_selector.select(findings)
+        for candidate in candidates:
+            finding = self._materiality_evaluator.evaluate(
+                candidate,
+                document,
+            )
+
+            if finding is not None:
+                findings.append(finding)
+
+        if not findings:
+            return None
+
+        selected = self._finding_selector.select(
+            tuple(findings)
+        )
 
         if not selected:
             return None

@@ -38,7 +38,12 @@ class SourceFindingDiscoveryService:
         candidates: list[SourceFindingCandidate] = []
 
         for discoverer in self._discoverers:
-            for candidate in discoverer.discover(document):
+            try:
+                discovered = discoverer.discover(document)
+            except Exception:
+                continue
+
+            for candidate in discovered:
                 if self._evidence_validator.is_valid(
                     document=document,
                     finding=candidate,

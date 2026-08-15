@@ -12,8 +12,8 @@ from product.source_materiality_evaluator import (
 )
 
 
-def test_materiality_evaluator_builds_finding_from_assessed_significance() -> None:
-    statement = "The pivotal milestone was delayed."
+def test_materiality_evaluator_abstains_on_unresolved_assessment() -> None:
+    statement = "The company disclosed a new development."
 
     candidate = SourceFindingCandidate(
         statement=statement,
@@ -34,12 +34,12 @@ def test_materiality_evaluator_builds_finding_from_assessed_significance() -> No
 
     assessor = Mock()
     assessor.assess.return_value = SignificanceAssessment(
-        decision=SignificanceDecision.ASSESSED,
-        significance=9,
-        confidence=0.94,
+        decision=SignificanceDecision.UNRESOLVED,
+        significance=None,
+        confidence=0.91,
         rationale=(
-            "The delay changes the expected timing "
-            "of a pivotal milestone."
+            "The source does not provide enough context "
+            "to assess investor significance reliably."
         ),
     )
 
@@ -47,12 +47,7 @@ def test_materiality_evaluator_builds_finding_from_assessed_significance() -> No
         assessor=assessor,
     )
 
-    finding = evaluator.evaluate(
+    assert evaluator.evaluate(
         candidate,
         document,
-    )
-
-    assert finding is not None
-    assert finding.statement == candidate.statement
-    assert finding.evidence == candidate.evidence
-    assert finding.materiality == 9
+    ) is None

@@ -1,9 +1,18 @@
-﻿from unittest.mock import Mock
+from unittest.mock import Mock
 
 import main
 
 
 def _prepare_main(monkeypatch):
+    monkeypatch.setenv(
+        "OPENAI_API_KEY",
+        "test-openai-key",
+    )
+    monkeypatch.setenv(
+        "OPENAI_MODEL",
+        "test-semantic-model",
+    )
+
     providers = {
         "FDA": Mock(),
         "ClinicalTrials.gov": Mock(),
@@ -91,3 +100,157 @@ def test_main_uses_configured_notification_history_path(
     history_factory.assert_called_once_with(
         "/data/notification_history.txt"
     )
+
+
+def test_main_wires_semantic_grounded_enrichment(
+    monkeypatch,
+) -> None:
+    _prepare_main(monkeypatch)
+
+    monkeypatch.setenv(
+        "OPENAI_API_KEY",
+        "test-openai-key",
+    )
+    monkeypatch.setenv(
+        "OPENAI_MODEL",
+        "test-semantic-model",
+    )
+
+    openai_client = Mock()
+    openai_factory = Mock(
+        return_value=openai_client
+    )
+
+    execution_analyzer = Mock()
+    analyzer_factory = Mock(
+        return_value=execution_analyzer
+    )
+
+    semantic_adapter = Mock()
+    adapter_factory = Mock(
+        return_value=semantic_adapter
+    )
+
+    enrichment_service = Mock()
+    enrichment_factory = Mock(
+        return_value=enrichment_service
+    )
+
+    monkeypatch.setattr(
+        main,
+        "OpenAI",
+        openai_factory,
+        raising=False,
+    )
+    monkeypatch.setattr(
+        main,
+        "OpenAISemanticFindingAnalyzer",
+        analyzer_factory,
+        raising=False,
+    )
+    monkeypatch.setattr(
+        main,
+        "SemanticFindingAnalyzerAdapter",
+        adapter_factory,
+        raising=False,
+    )
+    monkeypatch.setattr(
+        main,
+        "build_default_investor_brief_enrichment_service",
+        enrichment_factory,
+    )
+
+    main.main()
+
+    openai_factory.assert_called_once_with(
+        api_key="test-openai-key",
+    )
+
+    analyzer_factory.assert_called_once_with(
+        client=openai_client,
+        model="test-semantic-model",
+    )
+
+    adapter_factory.assert_called_once_with(
+        execution_analyzer=execution_analyzer,
+    )
+
+    enrichment_factory.assert_called_once()
+
+    kwargs = enrichment_factory.call_args.kwargs
+
+    assert kwargs["semantic_analyzer"] is semantic_adapter
+    assert "significance_assessor" in kwargs
+    assert "materiality_policy" not in kwargs
+
+
+def test_main_wires_semantic_significance_assessor(
+    monkeypatch,
+) -> None:
+    _prepare_main(monkeypatch)
+
+    openai_client = Mock()
+    openai_factory = Mock(
+        return_value=openai_client
+    )
+
+    finding_execution_analyzer = Mock()
+    finding_analyzer_factory = Mock(
+        return_value=finding_execution_analyzer
+    )
+
+    semantic_analyzer = Mock()
+    adapter_factory = Mock(
+        return_value=semantic_analyzer
+    )
+
+    significance_assessor = Mock()
+    significance_assessor_factory = Mock(
+        return_value=significance_assessor
+    )
+
+    enrichment_factory = Mock(
+        return_value=Mock()
+    )
+
+    monkeypatch.setattr(
+        main,
+        "OpenAI",
+        openai_factory,
+    )
+    monkeypatch.setattr(
+        main,
+        "OpenAISemanticFindingAnalyzer",
+        finding_analyzer_factory,
+    )
+    monkeypatch.setattr(
+        main,
+        "SemanticFindingAnalyzerAdapter",
+        adapter_factory,
+    )
+    monkeypatch.setattr(
+        main,
+        "OpenAISemanticSignificanceAssessor",
+        significance_assessor_factory,
+        raising=False,
+    )
+    monkeypatch.setattr(
+        main,
+        "build_default_investor_brief_enrichment_service",
+        enrichment_factory,
+    )
+
+    main.main()
+
+    significance_assessor_factory.assert_called_once_with(
+        client=openai_client,
+        model="test-semantic-model",
+    )
+
+    kwargs = enrichment_factory.call_args.kwargs
+
+    assert (
+        kwargs["significance_assessor"]
+        is significance_assessor
+    )
+    assert "materiality_policy" not in kwargs

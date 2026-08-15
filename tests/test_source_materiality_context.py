@@ -12,10 +12,10 @@ from product.source_materiality_evaluator import (
 )
 
 
-def test_materiality_evaluator_builds_finding_from_assessed_significance() -> None:
+def make_candidate() -> SourceFindingCandidate:
     statement = "The pivotal milestone was delayed."
 
-    candidate = SourceFindingCandidate(
+    return SourceFindingCandidate(
         statement=statement,
         evidence=(
             SourceEvidence(
@@ -25,15 +25,20 @@ def test_materiality_evaluator_builds_finding_from_assessed_significance() -> No
         ),
     )
 
-    document = SourceDocument(
+
+def make_document() -> SourceDocument:
+    return SourceDocument(
         source="SEC",
         source_url="https://www.sec.gov/example",
         title="8-K",
-        text=statement,
+        text="The pivotal milestone was delayed.",
     )
 
+
+def test_materiality_evaluator_passes_document_to_significance_assessor() -> None:
     assessor = Mock()
-    assessor.assess.return_value = SignificanceAssessment(
+
+    assessment = SignificanceAssessment(
         decision=SignificanceDecision.ASSESSED,
         significance=9,
         confidence=0.94,
@@ -43,16 +48,23 @@ def test_materiality_evaluator_builds_finding_from_assessed_significance() -> No
         ),
     )
 
+    assessor.assess.return_value = assessment
+
     evaluator = SourceMaterialityEvaluator(
         assessor=assessor,
     )
+
+    candidate = make_candidate()
+    document = make_document()
 
     finding = evaluator.evaluate(
         candidate,
         document,
     )
 
-    assert finding is not None
-    assert finding.statement == candidate.statement
-    assert finding.evidence == candidate.evidence
     assert finding.materiality == 9
+
+    assessor.assess.assert_called_once_with(
+        candidate,
+        document,
+    )

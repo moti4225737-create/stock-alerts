@@ -1,39 +1,48 @@
-﻿from models.source_finding import SourceFinding
+﻿from typing import Protocol
+
+from models.significance_assessment import (
+    SignificanceAssessment,
+    SignificanceDecision,
+)
+from models.source_document import SourceDocument
+from models.source_finding import SourceFinding
 from models.source_finding_candidate import SourceFindingCandidate
+
+
+class SignificanceAssessor(Protocol):
+    def assess(
+        self,
+        candidate: SourceFindingCandidate,
+        document: SourceDocument,
+    ) -> SignificanceAssessment:
+        ...
 
 
 class SourceMaterialityEvaluator:
     def __init__(
         self,
-        policy: dict[str, int],
-        default_materiality: int = 5,
+        assessor: SignificanceAssessor,
     ) -> None:
-        if not 1 <= default_materiality <= 10:
-            raise ValueError(
-                "default_materiality must be between 1 and 10"
-            )
-
-        self._policy = {
-            key.lower(): value
-            for key, value in policy.items()
-        }
-        self._default_materiality = default_materiality
+        self._assessor = assessor
 
     def evaluate(
         self,
         candidate: SourceFindingCandidate,
-    ) -> SourceFinding:
-        statement = candidate.statement.lower()
+        document: SourceDocument,
+    ) -> SourceFinding | None:
+        assessment = self._assessor.assess(
+            candidate,
+            document,
+        )
 
-        materiality = self._default_materiality
-
-        for keyword, score in self._policy.items():
-            if keyword in statement:
-                materiality = score
-                break
+        if (
+            assessment.decision
+            is SignificanceDecision.UNRESOLVED
+        ):
+            return None
 
         return SourceFinding(
             statement=candidate.statement,
-            materiality=materiality,
+            materiality=assessment.significance,
             evidence=candidate.evidence,
         )
