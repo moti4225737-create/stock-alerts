@@ -1,4 +1,4 @@
-﻿from collections.abc import Callable
+from collections.abc import Callable
 from datetime import datetime, timedelta
 
 from engines.source_acquisition_policy import SourceAcquisitionPolicy
@@ -12,9 +12,14 @@ class AutonomousAcquisitionCoordinator:
         self,
         sources: dict[str, Callable[[], None]],
         policies: dict[str, SourceAcquisitionPolicy],
+        work_evidence_reporter: Callable[..., None] | None = None,
     ) -> None:
         self._sources = sources
         self._policies = policies
+        self._work_evidence_reporter = (
+            work_evidence_reporter
+            or (lambda **_: None)
+        )
         self._last_run: dict[str, datetime] = {}
         self._failure_counts: dict[str, int] = {}
         self._retry_not_before: dict[str, datetime] = {}
@@ -78,3 +83,14 @@ class AutonomousAcquisitionCoordinator:
                 f"[INFO] Autonomous source "
                 f"{source_name} completed."
             )
+
+            try:
+                self._work_evidence_reporter(
+                    source_name=source_name,
+                    completed_at=now,
+                )
+            except Exception as error:
+                print(
+                    f"[WARNING] Work evidence reporting failed "
+                    f"for {source_name}: {error}."
+                )

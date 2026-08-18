@@ -1,4 +1,6 @@
-﻿from application.source_runtime_runner import SourceRuntimeRunner
+from collections.abc import Callable
+
+from application.source_runtime_runner import SourceRuntimeRunner
 from engines.autonomous_acquisition_coordinator import (
     AutonomousAcquisitionCoordinator,
 )
@@ -10,6 +12,7 @@ def build_autonomous_source_acquisition(
     providers: dict[str, DataProvider],
     policies: dict[str, SourceAcquisitionPolicy],
     runtime_factory: object,
+    work_evidence_reporter: Callable[..., None] | None = None,
 ) -> AutonomousAcquisitionCoordinator:
     sources = {
         source_name: SourceRuntimeRunner(
@@ -22,4 +25,5 @@ def build_autonomous_source_acquisition(
     return AutonomousAcquisitionCoordinator(
         sources=sources,
         policies=policies,
+        work_evidence_reporter=work_evidence_reporter,
     )

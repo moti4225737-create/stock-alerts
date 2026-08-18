@@ -22,6 +22,9 @@ from engines.intelligence_pipeline import IntelligencePipeline
 from engines.source_acquisition_policy import SourceAcquisitionPolicy
 from models.event import Event
 from modules.finnhub_client import get_quote
+from modules.healthchecks_work_evidence_reporter import (
+    HealthchecksWorkEvidenceReporter,
+)
 from modules.notification_history import NotificationHistory
 from modules.provider_manager import ProviderManager
 from modules.telegram_sender import TelegramSender
@@ -189,6 +192,7 @@ def build_autonomous_loop(
     providers: dict,
     policies: dict[str, SourceAcquisitionPolicy],
     runtime_factory: SourceRuntimeFactory,
+    work_evidence_reporter: Callable[..., None] | None = None,
 ) -> AutonomousAcquisitionLoop:
     """
     Build the autonomous source-acquisition execution loop.
@@ -197,6 +201,7 @@ def build_autonomous_loop(
         providers=providers,
         policies=policies,
         runtime_factory=runtime_factory,
+        work_evidence_reporter=work_evidence_reporter,
     )
 
     return AutonomousAcquisitionLoop(
@@ -269,10 +274,16 @@ def main() -> None:
         notification_history=notification_history,
     )
 
+    work_evidence_reporter = HealthchecksWorkEvidenceReporter(
+        ping_url=os.environ["LIFEGUARD_PING_URL"],
+        requester=requests.get,
+    )
+
     autonomous_loop = build_autonomous_loop(
         providers=providers,
         policies=policies,
         runtime_factory=runtime_factory,
+        work_evidence_reporter=work_evidence_reporter,
     )
 
     autonomous_loop.run()

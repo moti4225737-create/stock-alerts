@@ -12,6 +12,10 @@ def _prepare_main(monkeypatch):
         "OPENAI_MODEL",
         "test-semantic-model",
     )
+    monkeypatch.setenv(
+        "LIFEGUARD_PING_URL",
+        "https://example.test/lifeguard",
+    )
 
     providers = {
         "FDA": Mock(),
