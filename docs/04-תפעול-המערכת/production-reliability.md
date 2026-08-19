@@ -1,48 +1,80 @@
-# Production Reliability
+﻿# Production Reliability
 
 Production Reliability מגדירה את היכולת של Stock Sentinel להמשיך לספק את פעולתו הצפויה בעולם האמיתי ולזהות כאשר הוא אינו עושה זאת.
 
 ## מצב נוכחי
 
-נדרש לחזק את ה־Production Liveness באמצעות מנגנון בקרה חיצוני שאינו תלוי ב־Sentinel או ב־Scheduler שעליו הוא מפקח.
+External Production Lifeguard ממומש ומאומת.
 
-## External Watchdog / Heartbeat
+Stock Sentinel מפיק Work Evidence לאחר השלמה מוצלחת של עבודת מקור אוטונומית ומדווח אותו למנטר חיצוני בלתי תלוי.
 
-היעד המאושר:
+המנגנון מאפשר לזהות מבחוץ מצב שבו עבודת Production צפויה אינה מספקת את ראיית החיים הנדרשת.
 
-Runtime / Scheduled Cycle
-→ Successful Cycle Completion
-→ Heartbeat
-→ External Watchdog.
+## External Watchdog / Work Evidence
 
-כאשר heartbeat צפוי אינו מתקבל בזמן:
+הזרימה הממומשת:
+
+Successful Source Execution
+→ Work Evidence
+→ Healthchecks
+→ External Liveness Monitoring.
+
+כאשר ראיית העבודה הצפויה אינה מתקבלת במסגרת הזמן שהוגדרה:
 
 External Watchdog
-→ Alert
+→ DOWN Detection
+→ Independent Notification
 → Investigation.
 
-## דרישות
+כאשר העבודה חוזרת ומתקבלת שוב ראיית עבודה תקינה:
 
-- המנטר החיצוני אינו תלוי במסלול הכשל של Sentinel.
-- Success heartbeat נשלח רק לאחר נקודת runtime שמייצגת מחזור אמיתי ומוצלח.
-- Failure signal ייתמך כאשר הדבר מתאים.
-- Credential של המנטר מנוהל כ־Secret ואינו נכתב בקוד או בארכיון.
-- הכשל צריך להיות ניתן לזיהוי גם אם Sentinel עצמו אינו עולה.
+Work Evidence Restored
+→ UP Detection
+→ Recovery Notification.
+
+## חוזה Work Evidence
+
+- Work Evidence נשלח רק לאחר השלמה מוצלחת של עבודת מקור.
+- כשל בהרצת המקור אינו מייצר Success Evidence.
+- המנגנון הנוכחי מבסס זיהוי כשל חיצוני על היעדר Success Evidence צפוי.
+- כשל בדיווח ה־Work Evidence אינו הופך עבודת מקור שהושלמה בהצלחה לכישלון.
+- כשל בדיווח החיצוני נשמר כאזהרה תפעולית כדי לבודד את מסלול האיסוף ממסלול הניטור.
+
+## Runtime ו־Configuration
+
+HealthchecksWorkEvidenceReporter מחובר למסלול ה־autonomous acquisition דרך ה־coordinator.
+
+כתובת הדיווח מוזרקת בזמן Runtime באמצעות משתנה הסביבה:
+
+`LIFEGUARD_PING_URL`
+
+ערך ה־URL הוא Secret ואינו נשמר בקוד או בתיעוד.
+
+## Validation
+
+המימוש אומת באמצעות:
+
+- בדיקות המוכיחות ש־Successful Source Execution מייצר Work Evidence;
+- בדיקה שכשל מקור אינו מייצר Success Evidence;
+- בדיקת Failure Isolation כאשר דיווח ה־Lifeguard נכשל;
+- בדיקות wiring דרך builder, coordinator ו־runtime;
+- בדיקת reporter מול endpoint מוגדר;
+- Controlled Production Death / Recovery test;
+- זיהוי DOWN אמיתי לאחר היעדר Work Evidence;
+- קבלת התראות עצמאיות;
+- החזרת Production;
+- זיהוי UP וקבלת Recovery notifications.
 
 ## סטטוס
 
-Required — Not Yet Implemented.
+Implemented — Production Integrated — End-to-End Validated.
 
-## סדר מימוש
+External Production Lifeguard אינו חסם פתוח להמשך מסלול ה־Alpha.
 
-יכולת זו היא משימת ה־R&D הראשונה לאחר סיום ספרינט הארכיון ולפני Feature חדש.
+## Traceability
 
-המימוש ייפתח לפי:
+המימוש והבדיקות עוגנו ב־commit:
 
-Impact Map
-→ Proposal
-→ Owner Approval
-→ RED
-→ Implementation
-→ Validation
-→ Documentation Checkpoint.
+`c864cd9 — Add external lifeguard work evidence`
+
+ה־Chronicle של שלב Production Reliability ישלים במסגרת Documentation Checkpoint את התיעוד ההיסטורי של ההחלטות, ה־Validation וה־Exit State.

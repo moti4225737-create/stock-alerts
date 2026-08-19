@@ -1,4 +1,4 @@
-# 04 — תפעול המערכת
+﻿# 04 — תפעול המערכת
 
 ענף זה מתאר כיצד Stock Sentinel החי מופעל, מנוטר ונשמר במצב תפעולי תקין.
 
@@ -12,7 +12,14 @@
 - התאוששות ושחזור.
 - Production Reliability.
 
-פער Production Reliability מאושר:
-נדרש External Watchdog / Heartbeat עצמאי שיזהה מצב שבו Sentinel או מנגנון התזמון שלו מפסיקים לבצע ריצות בלי יכולת להתריע מתוך המערכת עצמה.
+## Production Reliability — מצב נוכחי
 
-היישום של יכולת זו הוא משימת ה־R&D הראשונה לאחר סיום ספרינט הארכיון ולפני Feature חדש.
+External Production Lifeguard ממומש, מחובר ל־Production runtime ומאומת End-to-End.
+
+השלמה מוצלחת של עבודת מקור אוטונומית מייצרת Work Evidence למנטר חיצוני בלתי תלוי. היעדר Work Evidence צפוי מאפשר זיהוי DOWN מחוץ למסלול הכשל של Sentinel, וחזרת Work Evidence מאפשרת זיהוי Recovery / UP.
+
+יכולת זו אינה עוד פער Production Reliability פתוח ואינה משימת ה־R&D הבאה.
+
+ה־Current Truth המפורט של היכולת נשמר ב־:
+
+`production-reliability.md`

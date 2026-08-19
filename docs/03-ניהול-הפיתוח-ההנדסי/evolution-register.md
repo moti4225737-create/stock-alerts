@@ -1,4 +1,4 @@
-# Evolution Register — מרשם התפתחות ובשלות המוצר
+﻿# Evolution Register — מרשם התפתחות ובשלות המוצר
 
 ה־Evolution Register שומר יכולות שמספקות את צורכי המוצר כיום אך דורשות שדרוג כאשר Trigger מוגדר מתקיים.
 
@@ -12,23 +12,6 @@
 - סטטוס.
 
 ## פריטים מאושרים
-
-### External Watchdog / Heartbeat
-
-מצב נוכחי:
-Sentinel יכול לפעול ב־Production אך עדיין חסר מנגנון חיצוני עצמאי שמזהה היעדר ריצה מתוכננת כאשר Sentinel או Scheduler אינם יכולים לדווח על הכשל בעצמם.
-
-מצב יעד:
-External Watchdog / Heartbeat בלתי תלוי ב־Sentinel, שמזהה היעדר Liveness ומתריע מחוץ למסלול הכשל.
-
-Trigger:
-סיום ספרינט הארכיון הנוכחי.
-
-יעד:
-משימת ה־R&D הראשונה לאחר סיום ספרינט הארכיון ולפני Feature חדש.
-
-Validation:
-יש להוכיח שהיעדר heartbeat או ריצה צפויה מזוהה ומייצר התרעה עצמאית.
 
 ### Hard Regulatory Gate — Recommendation / Execution
 
