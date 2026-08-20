@@ -1,12 +1,12 @@
-name: Stock Sentinel CI
+﻿name: Stock Sentinel CI
 
 on:
   push:
     branches:
-      - v0.5
+      - main
   pull_request:
     branches:
-      - v0.5
+      - main
   workflow_dispatch:
 
 jobs:

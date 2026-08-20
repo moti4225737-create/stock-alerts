@@ -1,4 +1,4 @@
-from pathlib import Path
+﻿from pathlib import Path
 
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -12,13 +12,21 @@ def _workflow_text() -> str:
     return WORKFLOW_PATH.read_text(encoding="utf-8")
 
 
-def test_ci_runs_automatically_for_v05_pushes_and_pull_requests() -> None:
+def test_ci_runs_automatically_for_main_pushes_and_pull_requests() -> None:
     workflow = _workflow_text()
 
-    assert "push:" in workflow
-    assert "pull_request:" in workflow
-    assert "v0.5" in workflow
+    push_contract = """push:
+    branches:
+      - main"""
+
+    pull_request_contract = """pull_request:
+    branches:
+      - main"""
+
+    assert push_contract in workflow
+    assert pull_request_contract in workflow
     assert "workflow_dispatch:" in workflow
+    assert "v0.5" not in workflow
 
 
 def test_ci_uses_production_python_version() -> None:
@@ -48,5 +56,19 @@ def test_ci_provides_non_secret_telegram_import_configuration() -> None:
 
     assert "TELEGRAM_TOKEN: ci-test-token" in workflow
     assert "TELEGRAM_CHAT_ID: ci-test-chat-id" in workflow
-    assert "${{ secrets.TELEGRAM_TOKEN }}" not in workflow
-    assert "${{ secrets.TELEGRAM_CHAT_ID }}" not in workflow
+    assert '${{ secrets.TELEGRAM_TOKEN }}' not in workflow
+    assert '${{ secrets.TELEGRAM_CHAT_ID }}' not in workflow
+
+def test_ci_does_not_require_production_runtime_secrets() -> None:
+    workflow = _workflow_text()
+
+    forbidden_secret_references = (
+        '${{ secrets.OPENAI_API_KEY }}',
+        '${{ secrets.OPENAI_MODEL }}',
+        '${{ secrets.SEC_USER_AGENT }}',
+        '${{ secrets.LIFEGUARD_PING_URL }}',
+        '${{ secrets.FINNHUB_API_KEY }}',
+    )
+
+    for secret_reference in forbidden_secret_references:
+        assert secret_reference not in workflow
