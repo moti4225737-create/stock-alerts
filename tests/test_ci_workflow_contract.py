@@ -1,4 +1,4 @@
-﻿from pathlib import Path
+from pathlib import Path
 
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -41,3 +41,12 @@ def test_ci_runs_full_pytest_regression() -> None:
     workflow = _workflow_text()
 
     assert "python -m pytest" in workflow
+
+
+def test_ci_provides_non_secret_telegram_import_configuration() -> None:
+    workflow = _workflow_text()
+
+    assert "TELEGRAM_TOKEN: ci-test-token" in workflow
+    assert "TELEGRAM_CHAT_ID: ci-test-chat-id" in workflow
+    assert "${{ secrets.TELEGRAM_TOKEN }}" not in workflow
+    assert "${{ secrets.TELEGRAM_CHAT_ID }}" not in workflow
