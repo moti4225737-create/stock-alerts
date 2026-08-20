@@ -72,3 +72,9 @@ def test_ci_does_not_require_production_runtime_secrets() -> None:
 
     for secret_reference in forbidden_secret_references:
         assert secret_reference not in workflow
+
+def test_ci_provides_non_secret_sec_user_agent_configuration() -> None:
+    workflow = _workflow_text()
+
+    assert "SEC_USER_AGENT: stock-sentinel-ci-test" in workflow
+    assert '${{ secrets.SEC_USER_AGENT }}' not in workflow

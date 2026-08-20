@@ -16,6 +16,7 @@ jobs:
     env:
       TELEGRAM_TOKEN: ci-test-token
       TELEGRAM_CHAT_ID: ci-test-chat-id
+      SEC_USER_AGENT: stock-sentinel-ci-test
 
     steps:
       - name: Checkout repository
