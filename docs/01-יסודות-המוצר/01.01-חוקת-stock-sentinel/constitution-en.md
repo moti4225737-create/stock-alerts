@@ -64,3 +64,17 @@ New or improved technologies, models, tools, providers, and implementation metho
 Architecture and implementation may change as the product matures.
 
 Such evolution must remain faithful to the constitutional purpose, faithful representation of information, and foundation of information reliability defined above.
+
+---
+
+## V — Single Authoritative Change and Delivery Governance
+
+Every material change to Stock Sentinel must be governed by one authoritative end-to-end change, verification, delivery, and closure protocol.
+
+No individual test, quality check, documentation checkpoint, deployment check, maturity gate, or other subordinate control may independently declare a material change complete.
+
+The authoritative protocol must incorporate every control that is materially required to establish that a change is correctly decided, implemented, verified, delivered, documented, and closed.
+
+When experience reveals a new control requirement or an escape path, the governing protocol itself must be strengthened so that the same class of gap cannot pass future closure unnoticed.
+
+The detailed implementation of this constitutional principle belongs to the engineering governance layer and may evolve without changing the constitutional principle itself.

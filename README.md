@@ -18,7 +18,7 @@ Main documentation branches:
 
 1. `01-יסודות-המוצר` — product foundations and Constitution.
 2. `02-ספר-המוצר` — product definition, requirements and architecture.
-3. `03-ניהול-הפיתוח-ההנדסי` — engineering governance and development process.
+3. `03-ניהול-הפיתוח-ההנדסי` — engineering governance and the authoritative end-to-end change/delivery protocol.
 4. `04-תפעול-המערכת` — runtime, operations and production reliability.
 5. `05-אבטחת-איכות-אימות-ותיקוף` — QA, verification and validation.
 6. `06-ניהול-הידע-ורציפות-התיעוד` — documentation governance, Chronicle, traceability and access governance.
@@ -31,17 +31,26 @@ Engineering tools and contributors should also read:
 
 `AGENTS.md` is an operational entry point only. It is not a second Constitution or an independent source of product truth.
 
-## Current Development Principle
+## Authoritative Change and Delivery Protocol
 
-Development follows controlled, test-driven evolution:
+Every material change is governed end-to-end by:
 
-RED
-→ GREEN
-→ REFACTOR
+`docs/03-ניהול-הפיתוח-ההנדסי/פרוטוקול-השינוי-האימות-המסירה-והסגירה-הסמכותי.md`
+
+The protocol incorporates, as applicable:
+
+Decision / Impact Map
+→ RED / GREEN / REFACTOR
 → focused validation
 → full regression
 → review
-→ approved commit/push
-→ Documentation Checkpoint.
+→ branch / repository verification
+→ commit / push
+→ CI
+→ promotion / deployment
+→ exact deployed-commit verification
+→ runtime / health validation
+→ Documentation Checkpoint
+→ final clean closure.
 
-The repository and documentation should end each formal sprint or stage in one clean, current, traceable state.
+Individual quality gates, checkpoints, deployment checks, or maturity controls are subordinate controls and do not independently close a material change.

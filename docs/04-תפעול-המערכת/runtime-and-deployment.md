@@ -1,6 +1,6 @@
-﻿# Runtime ו־Deployment
+# Runtime ו־Deployment
 
-מסמך זה מתאר את העקרונות התפעוליים של הרצת Stock Sentinel בסביבה חיה.
+מסמך זה מתאר את המצב והעקרונות התפעוליים של הרצת Stock Sentinel בסביבה חיה.
 
 ## Runtime
 
@@ -29,38 +29,124 @@
 
 ## Configuration
 
-כתובת ה־External Lifeguard מוזרקת בזמן Runtime באמצעות משתנה הסביבה:
+כתובת ה־External Lifeguard מוזרקת בזמן Runtime באמצעות:
 
 `LIFEGUARD_PING_URL`
 
 הערך עצמו הוא Secret ואינו נשמר בקוד, ב־Git או בתיעוד.
 
-חסרון של משתנה הסביבה הנדרש מונע בנייה תקינה של ה־Production runtime.
+חסרון של configuration נדרש מונע בנייה תקינה של Production runtime כאשר הרכיב תלוי בו.
 
-## Deployment
+## Persistent State
 
-פריסה ל־Production מתבצעת רק לאחר:
+`NotificationHistory` משתמש ב־Production בנתיב:
 
-- בדיקות ממוקדות;
-- Full Regression;
-- Review של השינוי;
-- אישור Commit / Push בהתאם לנוהל;
-- בדיקת Configuration ו־Secrets ללא חשיפת ערכיהם.
+`/data/notification_history.txt`
+
+באמצעות:
+
+`NOTIFICATION_HISTORY_PATH`
+
+הנתיב נמצא על Railway persistent volume.
+
+Persistence חייבת להיבדק לאחר Deployment כאשר שינוי עשוי להשפיע על state continuity.
+
+## Authoritative Branch
+
+קו הקוד הסמכותי הנוכחי הוא:
+
+`main`
+
+`main` הוא ה־default branch ב־GitHub ומשמש מקור הקוד של Railway Production.
+
+Branch migration אינו נחשב סגור עד שגם local authoritative branch, upstream, remote SHA ו־repository cleanliness מיושרים.
+
+## CI
+
+GitHub Actions מפעיל Stock Sentinel CI על:
+
+- push ל־`main`;
+- pull request ל־`main`;
+- workflow dispatch.
+
+CI משתמש ב־Python `3.13.14`.
+
+Configuration בדיקה לא־סודי משמש במקום Production secrets כאשר הבדיקות דורשות import/runtime configuration.
+
+## Railway Production
+
+Railway הוא סביבת ה־Production הפעילה.
+
+Source repository:
+
+`moti4225737-create/stock-alerts`
+
+Production branch:
+
+`main`
+
+Auto Deploy:
+
+Enabled.
+
+Wait for CI:
+
+Enabled.
+
+ההתנהגות אומתה בפועל:
+
+Push to main
+→ Railway Waiting for CI
+→ GitHub Actions PASS
+→ Railway Deployment.
+
+## Exact Deployment Verification
+
+Deployment successful אינו מספיק.
+
+בכל Validation רלוונטי יש להוכיח שה־Production הפעיל מבוסס על ה־commit המאושר.
+
+בבדיקת האכיפה שבוצעה ב־2026-08-21 אומת מתוך Production:
+
+`RAILWAY_GIT_COMMIT_SHA=6078e390b84be79cf18f5bb093ee915077f4d514`
+
+`RAILWAY_GIT_BRANCH=main`
+
+`RAILWAY_SERVICE_NAME=stock-alerts`
+
+`RAILWAY_ENVIRONMENT_NAME=production`
+
+## Runtime Validation Evidence
+
+לאחר Deployment של `6078e39` אומתו בפועל:
+
+- Python `3.13.14`;
+- PID 1 מריץ `python main.py`;
+- wiring של `SEC_USER_AGENT`;
+- wiring של `NOTIFICATION_HISTORY_PATH`;
+- כל משתני ה־runtime הנדרשים היו PRESENT ללא חשיפת ערכי secrets;
+- `NOTIFICATION_HISTORY_PATH=/data/notification_history.txt`;
+- persistent history נשמר עם 107 רשומות;
+- hash של קובץ ההיסטוריה נשמר לאורך ה־deployment.
 
 ## Least Privilege
 
+Railway GitHub App מוגבל ל־repository:
+
+`moti4225737-create/stock-alerts`
+
+גישה ל־All repositories אינה מאושרת.
+
 מערכות Deployment, CI/CD ושירותי Runtime מקבלים רק את ההרשאות הדרושות להם.
 
-גישה למאגר, Environment או Secret אינה נגזרת מעצם היות השירות חלק מ־Stock Sentinel.
+## Governing Protocol
 
-## Current Production Direction
+Deployment ו־Runtime Validation הם בקרות פנימיות של:
 
-Railway משמשת סביבת פריסה רלוונטית במסלול הנוכחי.
+`../03-ניהול-הפיתוח-ההנדסי/פרוטוקול-השינוי-האימות-המסירה-והסגירה-הסמכותי.md`
 
-External Production Lifeguard מחובר ל־Production runtime באמצעות Work Evidence ו־`LIFEGUARD_PING_URL`.
+מסמך זה מתאר את האמת התפעולית של התחום ואינו Closure Authority עצמאי.
 
-לפני המשך הרחבת Production יש לוודא שהגישה ל־repository, ל־Environment ולשירותים נשארת מוגבלת לפי Least Privilege.
-
-פרטי התנהגות ה־Lifeguard, ה־Monitoring וה־Validation מתועדים בבית הסמכותי:
+פרטי ה־Lifeguard וה־Monitoring מתועדים ב־:
 
 `production-reliability.md`

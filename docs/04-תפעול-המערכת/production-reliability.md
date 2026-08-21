@@ -1,4 +1,4 @@
-﻿# Production Reliability
+# Production Reliability
 
 Production Reliability מגדירה את היכולת של Stock Sentinel להמשיך לספק את פעולתו הצפויה בעולם האמיתי ולזהות כאשר הוא אינו עושה זאת.
 
@@ -63,7 +63,8 @@ HealthchecksWorkEvidenceReporter מחובר למסלול ה־autonomous acquisit
 - זיהוי DOWN אמיתי לאחר היעדר Work Evidence;
 - קבלת התראות עצמאיות;
 - החזרת Production;
-- זיהוי UP וקבלת Recovery notifications.
+- זיהוי UP וקבלת Recovery notifications;
+- Work Evidence טרי לאחר Production deployment במסלול `main`.
 
 ## סטטוס
 
@@ -73,8 +74,16 @@ External Production Lifeguard אינו חסם פתוח להמשך מסלול ה�
 
 ## Traceability
 
-המימוש והבדיקות עוגנו ב־commit:
+המימוש והבדיקות הראשוניים עוגנו ב־commit:
 
 `c864cd9 — Add external lifeguard work evidence`
 
-ה־Chronicle של שלב Production Reliability ישלים במסגרת Documentation Checkpoint את התיעוד ההיסטורי של ההחלטות, ה־Validation וה־Exit State.
+ההיסטוריה, ההחלטות, ה־Validation וה־Exit State של שלב Production Reliability מתועדים ב־Chronicle:
+
+`../06-ניהול-הידע-ורציפות-התיעוד/chronicle/ספרינטים/2026-08-18-production-reliability.md`
+
+יישור Branch / CI / Deployment והאימות החוזר של Work Evidence מתועדים ב־:
+
+`../06-ניהול-הידע-ורציפות-התיעוד/chronicle/ספרינטים/2026-08-21-branch-ci-deployment-governance-alignment.md`
+
+Production Reliability היא בקרה תפעולית בתוך הפרוטוקול הסמכותי ואינה Closure Authority עצמאית.
