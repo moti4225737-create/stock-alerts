@@ -82,18 +82,102 @@ Degraded / Fallback Outcome ו־Failure Visibility נכללו בתוך Product O
 - Product Outcome Validation ממוקם לפני Final Closure.
 - Post-Closure Contradiction & Revalidation ממוקם לאחר Closure כ־integrity / revalidation control.
 - `git diff --check` עבר ללא שגיאת whitespace.
+- staged diff review עבר.
 - Documentation Impact Map בוצע.
 - Current Truth עודכן.
 - Chronicle היסטורי קודם לא שוכתב.
 
+## Repository / CI / Deployment Evidence
+
+Governance content commit:
+
+`38c918c1b10978a1e310cec7b6ca0c499b6ff2bd`
+
+אומת:
+
+- local authoritative branch = `main`;
+- upstream = `origin/main`;
+- local HEAD ו־`origin/main` היו זהים;
+- working tree היה clean לאחר ה־commit;
+- GitHub Actions `Stock Sentinel CI #17` רץ על `main`;
+- ה־CI רץ עבור commit `38c918c`;
+- CI conclusion = success;
+- Railway ביצע deployment אוטומטי מה־commit;
+- deployment status = ACTIVE / successful;
+- Production source = GitHub `main`.
+
+## Exact Deployed Commit Verification
+
+מתוך Production container אומת:
+
+`RAILWAY_GIT_COMMIT_SHA=38c918c1b10978a1e310cec7b6ca0c499b6ff2bd`
+
+לכן הוכח שה־Production runtime שנבדק מבוסס על אותו commit שאושר ב־repository וב־CI.
+
+## Runtime / Health Evidence
+
+לאחר ה־deployment:
+
+- ה־Production container עלה בהצלחה.
+- persistent volume חובר.
+- runtime ביצע autonomous source work בפועל.
+- נצפו השלמות עבודה עבור FDA.
+- נצפתה השלמת עבודה עבור ClinicalTrials.gov.
+- נצפו השלמות עבודה עבור SEC.
+- השירות נשאר Online.
+- Healthchecks `Stock Sentinel - Production Life` היה ירוק.
+- Last Ping היה טרי לאחר ה־deployment.
+- כך הוכח Runtime work → Work Evidence → External Lifeguard לאחר ה־commit שנפרס.
+
+## Product Outcome Applicability
+
+השינוי הנוכחי משנה Governance ותיעוד ואינו משנה Capability או output תפעולי של Sentinel למשתמש או למערכת downstream.
+
+לכן `End-to-End Product Outcome Validation` של תוצר מוצרי מסומן עבור שינוי זה:
+
+`N/A — not applicable to a governance/documentation-only behavior change`.
+
+הסיווג אינו פוטר מ־CI, Deployment, Exact SHA, Runtime ו־Health validation כאשר בפועל נוצר Production deployment; בקרות אלה בוצעו והוכחו.
+
+ה־Product Outcome Validation החדש יחול בפועל על שינויי מוצר עתידיים שבהם קיימת תוצאה נדרשת בנקודת יעד, החל מתיקון „תמצית ידיעת המקור”.
+
+## Documentation Checkpoint
+
+אומת:
+
+- Documentation Impact Map בוצע.
+- הפרוטוקול הסמכותי עודכן בביתו הטבעי.
+- Current Truth עודכן.
+- Chronicle זה מתעד Objective, Entry State, Material Findings, Decision / Rationale, Validation, operational evidence ו־follow-up.
+- Chronicle ההיסטורי של יצירת הפרוטוקול לא שוכתב.
+- Traceability נשמרת באמצעות Git history, CI evidence, Railway deployment metadata ו־Production runtime evidence.
+
+## Final Traceability Rule
+
+רשומת Chronicle זו עצמה דורשת commit נוסף לאחר כתיבתה.
+
+כדי למנוע self-referential closure loop, ה־SHA של commit התיעוד הסוגר אינו נכתב בדיעבד לתוך אותו commit עצמו.
+
+ה־Final Repository Closure של השינוי נקבע רק לאחר שאותו commit סופי עובר:
+
+local / remote SHA parity
+→ CI PASS
+→ deployment verification כאשר Railway deploys אותו
+→ exact deployed SHA כאשר רלוונטי
+→ repository cleanliness.
+
+ראיות אלה נשמרות במקורות הסמכות הטבעיים שלהן — Git, GitHub Actions ו־Railway — ומשלימות את ה־Traceability של Chronicle זה ללא יצירת commit נוסף רק כדי לתעד את SHA של עצמו.
+
 ## Current Status
 
-השינוי נמצא בתהליך Closure של הפרוטוקול עצמו.
+כל בקרות התוכן, ה־Self-Application, Documentation Checkpoint והראיות התפעוליות עבור commit ה־Governance הראשי עברו.
 
-ה־Documentation Checkpoint הוכן, אך אין להכריז על השינוי `COMPLETE` לפני השלמת יתר בקרות ה־Self-Application הרלוונטיות, לרבות repository review, commit, push, CI ויישור הראיות הנדרש.
+נשאר להשלים Final Repository Closure עבור commit התיעוד הסוגר של Chronicle זה.
+
+עד השלמתו אין להכריז על השינוי `COMPLETE`.
 
 ## Follow-up
 
-לאחר Closure של שינוי ה־Governance, משימת המימוש הראשונה היא תיקון והוכחה End-to-End של „תמצית ידיעת המקור”.
+לאחר Final Repository Closure של שינוי ה־Governance, משימת המימוש הראשונה היא תיקון והוכחה End-to-End של „תמצית ידיעת המקור”.
 
 ה־Product Outcome Validation החדש יחול על אותה משימה בפועל ולא רק כתיעוד Governance.
