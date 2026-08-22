@@ -36,6 +36,14 @@ Wait for CI מופעל ואכיפתו אומתה בפועל.
 
 Quality Gates, Documentation Checkpoints, Maturity Gates ובקרות אחרות הם מנגנונים פנימיים או תחומיים ואינם Closure Authorities עצמאיים.
 
+הפרוטוקול הסמכותי מתפתח באופן מצטבר באמצעות עדכון, חיזוק, דיוק והתאמה של הבקרות הפנימיות שלו. אין ליצור לצדו Closure Authority מקביל.
+
+לפני Closure של שינוי שמבטיח Capability, התנהגות או תוצאה בנקודת יעד ממשית, נדרשת End-to-End Product Outcome Validation המוכיחה את התוצאה הנדרשת בנקודת היעד שלה ולא רק את תקינות הרכיבים או ה־wiring.
+
+כאשר קיימים Degraded / Fallback paths מהותיים, ה־Product Outcome Validation חייב להבחין בין Success, Degraded / Fallback ו־Failure visibility כך שמסלול מופחת לא יוצג כהצלחת ה־Capability המלא ללא הגדרה ואישור מפורשים.
+
+כאשר ראיה חדשה לאחר Closure סותרת באופן מהותי `PASS`, `COMPLETE` או `CLOSED`, מופעל Post-Closure Contradiction & Revalidation בתוך אותו פרוטוקול. הקביעה והראיות המקוריות נשמרות, והממצא מסווג לפי הראיות כ־`False Closure`, ‏`Regression after valid Closure` או `Insufficient Historical Evidence`.
+
 ### Product and Architecture Truth
 
 ענפים 01–05 מתעדים את הזהות, דרישות המוצר, הארכיטקטורה, ההנדסה, התפעול והאימות המאושרים.
