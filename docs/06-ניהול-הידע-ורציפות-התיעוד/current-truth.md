@@ -85,3 +85,40 @@ Commit הבדיקה ששימש להוכחת Wait-for-CI וה־Production alignme
 אין לעדכן מסמך רק כדי לגרום למימוש להיראות תואם לתכנון ישן.
 
 כאשר המציאות השתנתה באופן מאושר, התיעוד מתעדכן בהתאם.
+## Gate Evidence Automation — 2026-08-23
+
+מנגנון Gate Evidence ממומש ומאומת עבור מסלול הסגירה הסמכותי.
+
+ה־Gate אוסף ומצליב ראיות עבור:
+
+- authoritative Git SHA;
+- GitHub Actions CI על `main` ועל אותו SHA;
+- Railway Production runtime identity;
+- Railway deployment status;
+- post-deployment Healthchecks evidence;
+- source diagnostics במצב שבו ראיה אינה ניתנת לאימות.
+
+עקרון האכיפה הוא fail-closed:
+
+חוסר ראיה, ראיה שאינה תואמת ל־SHA הסמכותי, runtime identity שגוי, deployment שאינו מאומת או health שאינו ניתן לקישור לפריסה הרלוונטית אינם מאפשרים PASS.
+
+המימוש עוגן ב־commit:
+
+`05aecca429e2dbad7f2e65240d0675dc3b86d7e3 — Add automated gate evidence verification`
+
+אומת בפועל:
+
+- local `main` = `origin/main` = `05aecca429e2dbad7f2e65240d0675dc3b86d7e3`;
+- GitHub Actions run `32622602473` — `Stock Sentinel CI` — completed / success;
+- Railway Production runtime SHA = `05aecca429e2dbad7f2e65240d0675dc3b86d7e3`;
+- Railway branch = `main`;
+- Railway service = `stock-alerts`;
+- Railway environment = `production`;
+- Railway deployment ID = `0a05ad62-1d98-423b-9168-71ecbf519258`;
+- Healthchecks Production Life = `up`;
+- Healthchecks last ping = `2026-08-23T06:21:48+00:00`;
+- final full regression = `531 passed`;
+- legacy migration branch הוכח כ־ancestor של `main` ונמחק;
+- repository clean לאחר היישור.
+
+Gate Evidence הוא מנגנון פנימי של הפרוטוקול הסמכותי ואינו Closure Authority נפרד.

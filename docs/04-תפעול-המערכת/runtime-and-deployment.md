@@ -150,3 +150,27 @@ Deployment ו־Runtime Validation הם בקרות פנימיות של:
 פרטי ה־Lifeguard וה־Monitoring מתועדים ב־:
 
 `production-reliability.md`
+## Automated Gate Evidence
+
+מסלול האימות כולל שכבת Evidence אוטומטית המחברת בין ה־commit הסמכותי לבין ה־Production הפעיל.
+
+השרשרת המחייבת היא:
+
+Authoritative SHA
+→ GitHub CI for exact SHA
+→ Railway deployment for exact SHA
+→ Production runtime identity
+→ post-deployment Health Evidence
+→ Gate verification.
+
+המערכת אינה מסתפקת ב־Deployment successful או ב־Health status כללי.
+
+PASS מחייב התאמה בין ה־SHA הסמכותי לבין CI ו־Production, runtime identity תקין, deployment מאומת ו־Health evidence שניתן לקשר לפריסה הרלוונטית.
+
+מצב חסר, לא ידוע או בלתי ניתן לאימות נשאר `NOT_VERIFIED` ואינו הופך ל־PASS.
+
+Source diagnostics נשמרים לצורכי חקירה ואינם משמשים תחליף לראיה המחייבת.
+
+Validation מ־2026-08-23 בוצע מול commit:
+
+`05aecca429e2dbad7f2e65240d0675dc3b86d7e3`
