@@ -28,6 +28,9 @@ class PortfolioTruthReconciler:
     def portfolio(self) -> Portfolio:
         return Portfolio(self._portfolio.holdings)
 
+    def restore(self, portfolio: Portfolio) -> None:
+        self._portfolio = Portfolio(portfolio.holdings)
+
     def apply(self, result: PortfolioAcquisitionResult) -> None:
         candidate = result.candidate
         if candidate is None or not candidate.is_eligible_for_acceptance:

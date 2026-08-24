@@ -2,6 +2,7 @@ from datetime import datetime, timezone
 from decimal import Decimal
 from importlib import import_module
 
+from models.portfolio import Portfolio
 from models.portfolio_holding import PortfolioHolding
 
 
@@ -192,3 +193,51 @@ def test_retrieved_portfolio_cannot_mutate_authoritative_truth() -> None:
     external_portfolio.holdings.append(_holding("MSFT", "2"))
 
     assert reconciler.portfolio.holdings == [original]
+
+
+def test_portfolio_can_be_restored_without_candidate() -> None:
+    reconciler = _reconciler()
+    restored = Portfolio([_holding("AAPL", "7.99")])
+
+    reconciler.restore(restored)
+
+    assert reconciler.portfolio.holdings == [_holding("AAPL", "7.99")]
+
+
+def test_empty_portfolio_can_be_restored() -> None:
+    reconciler = _reconciler()
+
+    reconciler.restore(Portfolio([]))
+
+    assert reconciler.portfolio.holdings == []
+
+
+def test_restore_defensively_copies_supplied_portfolio() -> None:
+    reconciler = _reconciler()
+    supplied = Portfolio([_holding("AAPL", "10")])
+    reconciler.restore(supplied)
+
+    supplied.holdings.clear()
+    supplied.holdings.append(_holding("MSFT", "2"))
+
+    assert reconciler.portfolio.holdings == [_holding("AAPL", "10")]
+
+
+def test_retrieved_restored_portfolio_is_defensively_isolated() -> None:
+    reconciler = _reconciler()
+    reconciler.restore(Portfolio([_holding("AAPL", "10")]))
+
+    external = reconciler.portfolio
+    external.holdings.clear()
+    external.holdings.append(_holding("MSFT", "2"))
+
+    assert reconciler.portfolio.holdings == [_holding("AAPL", "10")]
+
+
+def test_complete_acquisition_can_replace_restored_truth() -> None:
+    reconciler = _reconciler()
+    reconciler.restore(Portfolio([_holding("AAPL", "10")]))
+
+    reconciler.apply(_success(_candidate((_holding("MSFT", "3"),))))
+
+    assert reconciler.portfolio.holdings == [_holding("MSFT", "3")]
