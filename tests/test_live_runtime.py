@@ -2,6 +2,8 @@
 
 from engines.runtime_engine import RuntimeEngine
 from models.event import Event
+from models.portfolio import Portfolio
+from models.portfolio_holding import PortfolioHolding
 from modules.telegram_sender import TelegramSender
 
 
@@ -29,12 +31,9 @@ def test_live_runtime_uses_injected_telegram_transport_without_real_network_call
     telegram_sender_transport = TelegramSender(telegram_api=telegram_api)
 
     runtime = RuntimeEngine(
-        watchlist=["LQDA"],
+        portfolio=Portfolio([PortfolioHolding(symbol="LQDA", quantity=1)]),
         pipeline=FakePipeline([event]),
-        quote_fetcher=Mock(),
         telegram_sender=Mock(),
-        live_preview_runner=Mock(),
-        use_intelligence_notification_flow=True,
         telegram_sender_transport=telegram_sender_transport,
     )
 

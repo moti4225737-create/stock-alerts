@@ -2,6 +2,8 @@ from unittest.mock import Mock
 
 from engines.runtime_engine import RuntimeEngine
 from models.event import Event
+from models.portfolio import Portfolio
+from models.portfolio_holding import PortfolioHolding
 
 
 class FakePipeline:
@@ -30,12 +32,9 @@ def test_runtime_with_no_intelligence_messages_sends_nothing() -> None:
     pipeline = FakePipeline({})
 
     runtime = RuntimeEngine(
-        watchlist=["LQDA"],
+        portfolio=Portfolio([PortfolioHolding(symbol="LQDA", quantity=1)]),
         pipeline=pipeline,
-        quote_fetcher=Mock(),
         telegram_sender=telegram_sender,
-        live_preview_runner=Mock(),
-        use_intelligence_notification_flow=True,
     )
 
     runtime.run()
@@ -48,12 +47,9 @@ def test_runtime_with_one_brief_sends_one_telegram_message() -> None:
     pipeline = FakePipeline({"LQDA": [make_event("LQDA", "SEC Filing")]})
 
     runtime = RuntimeEngine(
-        watchlist=["LQDA"],
+        portfolio=Portfolio([PortfolioHolding(symbol="LQDA", quantity=1)]),
         pipeline=pipeline,
-        quote_fetcher=Mock(),
         telegram_sender=telegram_sender,
-        live_preview_runner=Mock(),
-        use_intelligence_notification_flow=True,
     )
 
     runtime.run()
@@ -73,12 +69,14 @@ def test_runtime_with_multiple_briefs_delivers_in_order() -> None:
     )
 
     runtime = RuntimeEngine(
-        watchlist=["AAPL", "MSFT"],
+        portfolio=Portfolio(
+            [
+                PortfolioHolding(symbol="AAPL", quantity=1),
+                PortfolioHolding(symbol="MSFT", quantity=1),
+            ]
+        ),
         pipeline=pipeline,
-        quote_fetcher=Mock(),
         telegram_sender=telegram_sender,
-        live_preview_runner=Mock(),
-        use_intelligence_notification_flow=True,
     )
 
     runtime.run()
@@ -86,25 +84,3 @@ def test_runtime_with_multiple_briefs_delivers_in_order() -> None:
     assert telegram_sender.call_count == 2
     assert "AAPL" in telegram_sender.call_args_list[0].args[0]
     assert "MSFT" in telegram_sender.call_args_list[1].args[0]
-
-
-def test_runtime_engine_delegates_to_existing_send_telegram_callable() -> None:
-    telegram_sender = Mock()
-    live_preview_runner = Mock()
-
-    runtime = RuntimeEngine(
-        watchlist=["LQDA"],
-        pipeline=Mock(),
-        quote_fetcher=Mock(),
-        telegram_sender=telegram_sender,
-        live_preview_runner=live_preview_runner,
-    )
-
-    runtime.run()
-
-    live_preview_runner.assert_called_once_with(
-        watchlist=["LQDA"],
-        pipeline=runtime._pipeline,
-        quote_fetcher=runtime._quote_fetcher,
-        telegram_sender=telegram_sender,
-    )

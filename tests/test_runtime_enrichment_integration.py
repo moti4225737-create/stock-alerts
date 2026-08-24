@@ -5,6 +5,7 @@ from engines.runtime_engine import RuntimeEngine
 from models.event import Event
 from models.explanation import Explanation
 from models.investor_brief import InvestorBrief
+from models.portfolio import Portfolio
 from models.portfolio_holding import PortfolioHolding
 from models.portfolio_impact import PortfolioImpact
 from modules.notification_history import NotificationHistory
@@ -108,12 +109,9 @@ def test_runtime_enriches_only_pending_briefs_before_delivery(
     telegram_sender = Mock()
 
     runtime = RuntimeEngine(
-        watchlist=["LQDA"],
+        portfolio=Portfolio([PortfolioHolding(symbol="LQDA", quantity=1)]),
         pipeline=Mock(),
-        quote_fetcher=Mock(),
         telegram_sender=telegram_sender,
-        live_preview_runner=Mock(),
-        use_intelligence_notification_flow=True,
         portfolio_intelligence_service=(
             FakePortfolioIntelligenceService(
                 [delivered, pending]

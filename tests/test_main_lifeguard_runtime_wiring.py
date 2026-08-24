@@ -1,6 +1,7 @@
 from unittest.mock import Mock
 
 import main
+from models.portfolio import Portfolio
 
 
 def test_main_builds_lifeguard_reporter_from_environment(
@@ -55,6 +56,28 @@ def test_main_builds_lifeguard_reporter_from_environment(
         main,
         "HealthchecksWorkEvidenceReporter",
         reporter_factory,
+        raising=False,
+    )
+    portfolio_service = Mock()
+    portfolio_service.restore.return_value = False
+    portfolio_service.refresh.return_value = True
+    portfolio_service.portfolio = Portfolio([])
+    monkeypatch.setattr(
+        main,
+        "JsonFilePortfolioSource",
+        Mock(return_value=Mock()),
+        raising=False,
+    )
+    monkeypatch.setattr(
+        main,
+        "FilePortfolioTruthStore",
+        Mock(return_value=Mock()),
+        raising=False,
+    )
+    monkeypatch.setattr(
+        main,
+        "PortfolioTruthService",
+        Mock(return_value=portfolio_service),
         raising=False,
     )
 

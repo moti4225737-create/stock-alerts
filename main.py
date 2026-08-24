@@ -17,14 +17,16 @@ from application.autonomous_source_acquisition import (
 from application.default_investor_brief_enrichment import (
     build_default_investor_brief_enrichment_service,
 )
+from application.portfolio_truth_service import PortfolioTruthService
 from application.source_runtime_factory import SourceRuntimeFactory
 from engines.intelligence_pipeline import IntelligencePipeline
 from engines.source_acquisition_policy import SourceAcquisitionPolicy
 from models.event import Event
-from modules.finnhub_client import get_quote
+from modules.file_portfolio_truth_store import FilePortfolioTruthStore
 from modules.healthchecks_work_evidence_reporter import (
     HealthchecksWorkEvidenceReporter,
 )
+from modules.json_file_portfolio_source import JsonFilePortfolioSource
 from modules.notification_history import NotificationHistory
 from modules.provider_manager import ProviderManager
 from modules.telegram_sender import TelegramSender
@@ -38,7 +40,6 @@ from product.semantic_finding_analyzer_adapter import (
 from product.openai_semantic_significance_assessor import (
     OpenAISemanticSignificanceAssessor,
 )
-from watchlist import WATCHLIST
 
 
 load_dotenv()
@@ -264,11 +265,32 @@ def main() -> None:
         )
     )
 
+    portfolio_source = JsonFilePortfolioSource(
+        os.environ.get(
+            "PORTFOLIO_SOURCE_PATH",
+            "portfolio_source.json",
+        )
+    )
+    portfolio_store = FilePortfolioTruthStore(
+        os.environ.get(
+            "PORTFOLIO_STATE_PATH",
+            "portfolio_state.json",
+        )
+    )
+    portfolio_service = PortfolioTruthService(
+        portfolio_source,
+        portfolio_store,
+        lambda: datetime.now(timezone.utc),
+    )
+    portfolio_service.restore()
+    portfolio_service.refresh()
+
+    if portfolio_service.portfolio is None:
+        raise RuntimeError("Portfolio Truth is unavailable")
+
     runtime_factory = SourceRuntimeFactory(
-        watchlist=WATCHLIST,
-        quote_fetcher=get_quote,
+        portfolio_provider=lambda: portfolio_service.portfolio,
         telegram_sender=send_telegram,
-        live_preview_runner=run_live_preview,
         enrichment_service=enrichment_service,
         telegram_transport=telegram_transport,
         notification_history=notification_history,

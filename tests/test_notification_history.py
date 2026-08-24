@@ -5,6 +5,7 @@ from engines.runtime_engine import RuntimeEngine
 from models.event import Event
 from models.explanation import Explanation
 from models.investor_brief import InvestorBrief
+from models.portfolio import Portfolio
 from models.portfolio_holding import PortfolioHolding
 from models.portfolio_impact import PortfolioImpact
 from modules.notification_history import NotificationHistory
@@ -75,12 +76,9 @@ def test_duplicate_briefs_in_same_run_only_send_once(tmp_path: Path) -> None:
     telegram_sender = Mock()
 
     runtime = RuntimeEngine(
-        watchlist=["LQDA"],
+        portfolio=Portfolio([PortfolioHolding(symbol="LQDA", quantity=1)]),
         pipeline=FakePipeline({"LQDA": []}),
-        quote_fetcher=Mock(),
         telegram_sender=telegram_sender,
-        live_preview_runner=Mock(),
-        use_intelligence_notification_flow=True,
         portfolio_intelligence_service=FakePortfolioIntelligenceService([duplicate_brief, duplicate_brief]),
         investor_notification_service=notification_service,
         notification_history=history,
@@ -102,12 +100,9 @@ def test_distinct_briefs_in_same_run_preserve_order_and_send_twice(tmp_path: Pat
     second_brief = make_brief(make_event("LQDA", "Second"))
 
     runtime = RuntimeEngine(
-        watchlist=["LQDA"],
+        portfolio=Portfolio([PortfolioHolding(symbol="LQDA", quantity=1)]),
         pipeline=FakePipeline({"LQDA": []}),
-        quote_fetcher=Mock(),
         telegram_sender=telegram_sender,
-        live_preview_runner=Mock(),
-        use_intelligence_notification_flow=True,
         portfolio_intelligence_service=FakePortfolioIntelligenceService([first_brief, second_brief]),
         investor_notification_service=notification_service,
         notification_history=history,
@@ -123,24 +118,18 @@ def test_first_runtime_instance_sends_new_event_and_second_instance_skips_it(tmp
     history_path = tmp_path / "history.txt"
     history = NotificationHistory(history_path)
     first_runtime = RuntimeEngine(
-        watchlist=["LQDA"],
+        portfolio=Portfolio([PortfolioHolding(symbol="LQDA", quantity=1)]),
         pipeline=FakePipeline({"LQDA": [make_event("LQDA", "First")]}),
-        quote_fetcher=Mock(),
         telegram_sender=Mock(),
-        live_preview_runner=Mock(),
-        use_intelligence_notification_flow=True,
         notification_history=history,
     )
 
     first_runtime.run()
 
     second_runtime = RuntimeEngine(
-        watchlist=["LQDA"],
+        portfolio=Portfolio([PortfolioHolding(symbol="LQDA", quantity=1)]),
         pipeline=FakePipeline({"LQDA": [make_event("LQDA", "First")]}),
-        quote_fetcher=Mock(),
         telegram_sender=Mock(),
-        live_preview_runner=Mock(),
-        use_intelligence_notification_flow=True,
         notification_history=NotificationHistory(history_path),
     )
 
@@ -154,24 +143,18 @@ def test_later_new_event_is_the_only_event_sent(tmp_path: Path) -> None:
     history_path = tmp_path / "history.txt"
     history = NotificationHistory(history_path)
     first_runtime = RuntimeEngine(
-        watchlist=["LQDA"],
+        portfolio=Portfolio([PortfolioHolding(symbol="LQDA", quantity=1)]),
         pipeline=FakePipeline({"LQDA": [make_event("LQDA", "First")]}),
-        quote_fetcher=Mock(),
         telegram_sender=Mock(),
-        live_preview_runner=Mock(),
-        use_intelligence_notification_flow=True,
         notification_history=history,
     )
 
     first_runtime.run()
 
     second_runtime = RuntimeEngine(
-        watchlist=["LQDA"],
+        portfolio=Portfolio([PortfolioHolding(symbol="LQDA", quantity=1)]),
         pipeline=FakePipeline({"LQDA": [make_event("LQDA", "First"), make_event("LQDA", "Second")]}),
-        quote_fetcher=Mock(),
         telegram_sender=Mock(),
-        live_preview_runner=Mock(),
-        use_intelligence_notification_flow=True,
         notification_history=NotificationHistory(history_path),
     )
 
