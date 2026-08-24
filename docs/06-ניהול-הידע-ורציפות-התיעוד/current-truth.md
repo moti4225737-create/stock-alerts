@@ -48,6 +48,12 @@ Quality Gates, Documentation Checkpoints, Maturity Gates ובקרות אחרות
 
 ענפים 01–05 מתעדים את הזהות, דרישות המוצר, הארכיטקטורה, ההנדסה, התפעול והאימות המאושרים.
 
+Stock Sentinel מוגדר כ־Personal Autonomous Investment Intelligence System המשלב Autonomous Intelligence Engine עם User Control Surface לתחזוקת המצב האישי הסמכותי של המשתמש.
+
+ה־Railway Production runtime הנוכחי הוא Headless Autonomous Worker המממש את מנוע המודיעין. Telegram הוא כיום Delivery Surface.
+
+User Control Surface הוא Product Capability נדרש עבור Portfolio lifecycle, ‏Watchlist lifecycle, ‏Preferences ו־user-owned corrections, אך טרם מומש במלואו. לא נבחרה טכנולוגיית UI, ולא נפתח Sprint למימושה.
+
 ### Documentation Truth
 
 ענף 06 מגדיר כיצד המידע נשמר, מתעדכן, נגיש וניתן לעקיבה.
@@ -122,3 +128,46 @@ Commit הבדיקה ששימש להוכחת Wait-for-CI וה־Production alignme
 - repository clean לאחר היישור.
 
 Gate Evidence הוא מנגנון פנימי של הפרוטוקול הסמכותי ואינו Closure Authority נפרד.
+
+ערכי Railway service/environment ברשומת האימות ההיסטורית לעיל נאספו בבדיקת ה־Production שבוצעה באותו שלב. הם אינם כשלעצמם הקפאת ה־runtime-side contract של משטח Live Runtime Identity העתידי.
+
+## Live Runtime Identity Contract — 2026-08-24
+
+חוזה Live Production Runtime Identity אושר ברמת Product / Architecture וטרם מומש.
+
+המנגנון העתידי המאושר הוא Minimal Read-Only HTTPS Challenge-Response מתוך ה־Production process הפעיל.
+
+ה־public payload המחייב מוגבל ל־:
+
+- `schema_version`;
+- full `git_commit_sha`;
+- `service`;
+- `environment`;
+- `observed_at`;
+- caller challenge המוחזר במדויק;
+- `process_instance_nonce` אקראי, non-secret ויציב רק למשך חיי process יחיד.
+
+שתי תצפיות טריות עם challenges שונים נדרשות סביב קריאת שאר הראיות החיצוניות. שתיהן חייבות להגיע מה־pinned canonical Production HTTPS host, להתאים זו לזו ול־Railway-originated GitHub `deployment_status` exact SHA, ולעמוד ב־freshness / skew contract המאושר.
+
+ה־Railway-originated GitHub deployment evidence שאומת בפועל משתמש ב־source-specific environment representation:
+
+- `deployment.environment == "authentic-mercy / production"`;
+- `deployment_status.environment == "authentic-mercy / production"`.
+
+ה־runtime identity response העתידי יקבל `environment` ישירות מ־`RAILWAY_ENVIRONMENT_NAME` ו־`service` ישירות מ־`RAILWAY_SERVICE_NAME` של ה־Production process המבצע.
+
+`production` הוא ה־runtime environment הצפוי כעת ו־`stock-alerts` הוא ה־runtime service הצפוי כעת. הם `NOT VERIFIED` כערכי Live Runtime Identity contract אמפיריים עד לתצפית הראשונה מן המשטח האמיתי. לאחר קבלתה, הערכים שנצפו חייבים לעבור Validation ולהיות מוקפאים ב־runtime-side contract לפני ש־PASS יכול להתאפשר.
+
+אין לדרוש literal equality בין GitHub `deployment.environment` לבין runtime `RAILWAY_ENVIRONMENT_NAME`, ואין להשתמש ב־normalization שרירותי, substring matching, fuzzy matching או inferred equivalence. כל צד נבדק מול החוזה הספציפי למקורו; exact full SHA equality היא מפתח ה־correlation הבלתי משתנה בין Deployment-side ל־Runtime-side evidence.
+
+Healthchecks נשאר מקור עצמאי ונפרד ל־fresh work / liveness evidence.
+
+נכון לעכשיו:
+
+- לא מומש או נחשף public runtime identity endpoint;
+- לא שונו Railway networking או domain settings;
+- לא שונה GitHub workflow לצורך היכולת;
+- לא נוצרו Credentials או Secrets חדשים;
+- החוזה מניח Production replica פעיל יחיד.
+
+מעבר ל־multi-replica Production חייב לפתוח מחדש את החוזה לפני הפיכתו לסטנדרט.
