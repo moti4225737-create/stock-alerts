@@ -5,6 +5,7 @@ from datetime import datetime
 from pathlib import Path
 
 from application.opening_picture_observation_guard import (
+    DeliveryAcknowledgement,
     RetainedLiveObservation,
 )
 from models.holding_protection_epoch import HoldingProtectionEpoch
@@ -143,6 +144,36 @@ class FileOpeningPictureStore:
                 }
                 for retained in state.retained_live_observations
             ],
+            "delivery_acknowledgements": [
+                {
+                    "retained_observation": {
+                        "observation_id": (
+                            acknowledgement
+                            .retained_observation
+                            .observation_id
+                        ),
+                        "event_time": (
+                            acknowledgement
+                            .retained_observation
+                            .event_time
+                            .isoformat()
+                        ),
+                        "first_seen_at": (
+                            acknowledgement
+                            .retained_observation
+                            .first_seen_at
+                            .isoformat()
+                        ),
+                        "observation": (
+                            acknowledgement.retained_observation.observation
+                        ),
+                    },
+                    "acknowledged_at": (
+                        acknowledgement.acknowledged_at.isoformat()
+                    ),
+                }
+                for acknowledgement in state.delivery_acknowledgements
+            ],
         }
 
     @classmethod
@@ -178,6 +209,9 @@ class FileOpeningPictureStore:
         retained_payload = payload["retained_live_observations"]
         if not isinstance(retained_payload, list):
             raise ValueError("retained_live_observations must be an array")
+        acknowledgement_payload = payload["delivery_acknowledgements"]
+        if not isinstance(acknowledgement_payload, list):
+            raise ValueError("delivery_acknowledgements must be an array")
 
         return OpeningPictureState(
             contract_version=cls.CONTRACT_VERSION,
@@ -197,6 +231,10 @@ class FileOpeningPictureStore:
             retained_live_observations=tuple(
                 cls._deserialize_retained_observation(retained)
                 for retained in retained_payload
+            ),
+            delivery_acknowledgements=tuple(
+                cls._deserialize_delivery_acknowledgement(acknowledgement)
+                for acknowledgement in acknowledgement_payload
             ),
         )
 
@@ -242,6 +280,24 @@ class FileOpeningPictureStore:
             event_time=event_time,
             first_seen_at=first_seen_at,
             observation=payload["observation"],
+        )
+
+    @classmethod
+    def _deserialize_delivery_acknowledgement(
+        cls,
+        payload: object,
+    ) -> DeliveryAcknowledgement:
+        if not isinstance(payload, dict):
+            raise ValueError("delivery acknowledgement must be an object")
+
+        acknowledged_at = cls._parse_datetime(payload["acknowledged_at"])
+        cls._require_aware_datetime("acknowledged_at", acknowledged_at)
+
+        return DeliveryAcknowledgement(
+            retained_observation=cls._deserialize_retained_observation(
+                payload["retained_observation"]
+            ),
+            acknowledged_at=acknowledged_at,
         )
 
     @staticmethod

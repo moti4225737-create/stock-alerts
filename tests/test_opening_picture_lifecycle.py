@@ -113,9 +113,10 @@ def test_all_required_satisfying_results_transition_once_to_ready(
     assert repeated.became_ready is False
 
 
-def test_live_observation_is_silent_during_learning_and_released_once_at_ready(
+def test_becoming_ready_keeps_observation_pending_and_delivery_eligible(
 ) -> None:
     lifecycle = new_lifecycle()
+    assert lifecycle.is_ready is False
 
     observation_result = lifecycle.observe(
         observation_id="new-filing",
@@ -123,6 +124,9 @@ def test_live_observation_is_silent_during_learning_and_released_once_at_ready(
         first_seen_at=FIRST_SEEN_AT,
         observation={"source": "SEC", "title": "New filing"},
     )
+    retained_observation = observation_result.retained_live_observation
+    assert retained_observation is not None
+
     first_update = lifecycle.record_member_result(
         "identity",
         OpeningPictureMemberResultStatus.ESTABLISHED,
@@ -131,19 +135,207 @@ def test_live_observation_is_silent_during_learning_and_released_once_at_ready(
         "opening_context",
         OpeningPictureMemberResultStatus.ESTABLISHED,
     )
-    repeated_update = lifecycle.record_member_result(
-        "opening_context",
-        OpeningPictureMemberResultStatus.ESTABLISHED,
-    )
 
     assert observation_result.classification is (
         OpeningPictureObservationClassification.PENDING_LIVE
     )
     assert first_update.released_observations == ()
-    assert ready_update.released_observations == (
-        {"source": "SEC", "title": "New filing"},
+    assert ready_update.became_ready is True
+    assert ready_update.released_observations == ()
+    assert lifecycle.state.retained_live_observations == (
+        retained_observation,
     )
-    assert repeated_update.released_observations == ()
+    assert lifecycle.delivery_eligible_pending_observations() == (
+        retained_observation,
+    )
+
+    second_delivery_read = (
+        lifecycle.delivery_eligible_pending_observations()
+    )
+
+    assert second_delivery_read == (retained_observation,)
+    assert lifecycle.state.retained_live_observations == (
+        retained_observation,
+    )
+
+
+def test_acknowledgement_moves_only_one_pending_observation_to_control_evidence(
+) -> None:
+    lifecycle = new_lifecycle()
+    assert lifecycle.is_ready is False
+
+    first_result = lifecycle.observe(
+        observation_id="first-filing",
+        event_time=LIVE_EVENT_TIME,
+        first_seen_at=FIRST_SEEN_AT,
+        observation={"source": "SEC", "title": "First filing"},
+    )
+    second_result = lifecycle.observe(
+        observation_id="second-filing",
+        event_time=datetime(
+            2026,
+            8,
+            25,
+            10,
+            4,
+            tzinfo=timezone.utc,
+        ),
+        first_seen_at=datetime(
+            2026,
+            8,
+            25,
+            10,
+            5,
+            tzinfo=timezone.utc,
+        ),
+        observation={"source": "SEC", "title": "Second filing"},
+    )
+    first_retained = first_result.retained_live_observation
+    second_retained = second_result.retained_live_observation
+    assert first_retained is not None
+    assert second_retained is not None
+
+    lifecycle.record_member_result(
+        "identity",
+        OpeningPictureMemberResultStatus.ESTABLISHED,
+    )
+    lifecycle.record_member_result(
+        "opening_context",
+        OpeningPictureMemberResultStatus.ESTABLISHED,
+    )
+
+    assert lifecycle.is_ready is True
+    assert lifecycle.delivery_eligible_pending_observations() == (
+        first_retained,
+        second_retained,
+    )
+
+    acknowledged_at = datetime(
+        2026,
+        8,
+        25,
+        10,
+        10,
+        tzinfo=timezone.utc,
+    )
+    acknowledged = lifecycle.acknowledge_delivery(
+        observation_id=first_retained.observation_id,
+        acknowledged_at=acknowledged_at,
+    )
+
+    assert acknowledged is True
+    assert lifecycle.state.retained_live_observations == (second_retained,)
+    assert lifecycle.delivery_eligible_pending_observations() == (
+        second_retained,
+    )
+    assert len(lifecycle.state.delivery_acknowledgements) == 1
+    acknowledgement = lifecycle.state.delivery_acknowledgements[0]
+    assert acknowledgement.retained_observation == first_retained
+    assert acknowledgement.acknowledged_at == acknowledged_at
+
+    repeated = lifecycle.acknowledge_delivery(
+        observation_id=first_retained.observation_id,
+        acknowledged_at=datetime(
+            2026,
+            8,
+            25,
+            10,
+            11,
+            tzinfo=timezone.utc,
+        ),
+    )
+
+    assert repeated is False
+    assert lifecycle.state.delivery_acknowledgements == (acknowledgement,)
+    assert acknowledgement.acknowledged_at == acknowledged_at
+    assert lifecycle.state.retained_live_observations == (second_retained,)
+    assert lifecycle.delivery_eligible_pending_observations() == (
+        second_retained,
+    )
+
+
+def test_control_snapshot_reports_lifecycle_state_without_mutation() -> None:
+    lifecycle = new_lifecycle()
+    assert lifecycle.is_ready is False
+
+    first_result = lifecycle.observe(
+        observation_id="first-filing",
+        event_time=LIVE_EVENT_TIME,
+        first_seen_at=FIRST_SEEN_AT,
+        observation={"source": "SEC", "title": "First filing"},
+    )
+    remaining_first_seen_at = datetime(
+        2026,
+        8,
+        25,
+        10,
+        5,
+        tzinfo=timezone.utc,
+    )
+    second_result = lifecycle.observe(
+        observation_id="second-filing",
+        event_time=datetime(
+            2026,
+            8,
+            25,
+            10,
+            4,
+            tzinfo=timezone.utc,
+        ),
+        first_seen_at=remaining_first_seen_at,
+        observation={"source": "SEC", "title": "Second filing"},
+    )
+    first_retained = first_result.retained_live_observation
+    second_retained = second_result.retained_live_observation
+    assert first_retained is not None
+    assert second_retained is not None
+
+    lifecycle.record_member_result(
+        "identity",
+        OpeningPictureMemberResultStatus.ESTABLISHED,
+    )
+    lifecycle.record_member_result(
+        "opening_context",
+        OpeningPictureMemberResultStatus.ESTABLISHED,
+    )
+    assert lifecycle.is_ready is True
+
+    acknowledged_at = datetime(
+        2026,
+        8,
+        25,
+        10,
+        10,
+        tzinfo=timezone.utc,
+    )
+    assert lifecycle.acknowledge_delivery(
+        observation_id=first_retained.observation_id,
+        acknowledged_at=acknowledged_at,
+    ) is True
+    state_before_query = lifecycle.state
+
+    first_snapshot = lifecycle.control_snapshot()
+
+    assert first_snapshot.canonical_instrument_id == CANONICAL_ID
+    assert first_snapshot.time_zero == TIME_ZERO
+    assert first_snapshot.contract_version == 1
+    assert first_snapshot.is_ready is True
+    assert first_snapshot.pending_count == 1
+    assert (
+        first_snapshot.oldest_pending_first_seen_at
+        == remaining_first_seen_at
+    )
+    assert first_snapshot.acknowledgement_count == 1
+    assert first_snapshot.last_acknowledged_at == acknowledged_at
+
+    second_snapshot = lifecycle.control_snapshot()
+
+    assert second_snapshot == first_snapshot
+    assert lifecycle.state == state_before_query
+    assert lifecycle.is_ready is True
+    assert lifecycle.delivery_eligible_pending_observations() == (
+        second_retained,
+    )
 
 
 def test_historical_learning_material_is_never_released_as_live_work() -> None:

@@ -16,6 +16,56 @@ class RetainedLiveObservation:
     first_seen_at: datetime
     observation: Any
 
+    def __post_init__(self) -> None:
+        if not isinstance(self.observation_id, str):
+            raise TypeError("observation_id must be a string")
+        normalized_observation_id = self.observation_id.strip()
+        if not normalized_observation_id:
+            raise ValueError("observation_id must not be empty")
+        if (
+            not isinstance(self.event_time, datetime)
+            or self.event_time.tzinfo is None
+            or self.event_time.utcoffset() is None
+        ):
+            raise ValueError("event_time must be timezone-aware")
+        if (
+            not isinstance(self.first_seen_at, datetime)
+            or self.first_seen_at.tzinfo is None
+            or self.first_seen_at.utcoffset() is None
+        ):
+            raise ValueError("first_seen_at must be timezone-aware")
+
+        object.__setattr__(
+            self,
+            "observation_id",
+            normalized_observation_id,
+        )
+
+
+@dataclass(frozen=True, slots=True)
+class DeliveryAcknowledgement:
+    retained_observation: RetainedLiveObservation
+    acknowledged_at: datetime
+
+    def __post_init__(self) -> None:
+        if not isinstance(
+            self.retained_observation,
+            RetainedLiveObservation,
+        ):
+            raise TypeError(
+                "retained_observation must be a RetainedLiveObservation"
+            )
+        if (
+            not isinstance(self.acknowledged_at, datetime)
+            or self.acknowledged_at.tzinfo is None
+            or self.acknowledged_at.utcoffset() is None
+        ):
+            raise ValueError("acknowledged_at must be timezone-aware")
+        if self.acknowledged_at < self.retained_observation.first_seen_at:
+            raise ValueError(
+                "acknowledged_at must not precede first_seen_at"
+            )
+
 
 @dataclass(frozen=True, slots=True)
 class OpeningPictureObservationResult:
@@ -88,6 +138,19 @@ class OpeningPictureObservationGuard:
             ),
             retained_live_observation=retained,
         )
+
+    def remove_pending(
+        self,
+        *,
+        observation_id: str,
+    ) -> RetainedLiveObservation | None:
+        if not isinstance(observation_id, str):
+            raise TypeError("observation_id must be a string")
+        normalized_observation_id = observation_id.strip()
+        if not normalized_observation_id:
+            raise ValueError("observation_id must not be empty")
+
+        return self._pending.pop(normalized_observation_id, None)
 
     def release_pending(
         self,

@@ -3,6 +3,7 @@ from types import MappingProxyType
 from typing import Iterable, Mapping
 
 from application.opening_picture_observation_guard import (
+    DeliveryAcknowledgement,
     RetainedLiveObservation,
 )
 from models.holding_protection_epoch import HoldingProtectionEpoch
@@ -28,6 +29,7 @@ class OpeningPictureState:
         OpeningPictureMemberResultStatus,
     ]
     retained_live_observations: tuple[RetainedLiveObservation, ...]
+    delivery_acknowledgements: tuple[DeliveryAcknowledgement, ...] = ()
 
     def __post_init__(self) -> None:
         if isinstance(self.contract_version, bool) or not isinstance(
@@ -76,6 +78,35 @@ class OpeningPictureState:
                 "RetainedLiveObservation"
             )
 
+        acknowledgements = tuple(self.delivery_acknowledgements)
+        if not all(
+            isinstance(acknowledgement, DeliveryAcknowledgement)
+            for acknowledgement in acknowledgements
+        ):
+            raise TypeError(
+                "delivery_acknowledgements must contain "
+                "DeliveryAcknowledgement"
+            )
+
+        pending_ids = [
+            observation.observation_id
+            for observation in retained
+        ]
+        if len(pending_ids) != len(set(pending_ids)):
+            raise ValueError("duplicate pending observation_id")
+
+        acknowledged_ids = [
+            acknowledgement.retained_observation.observation_id
+            for acknowledgement in acknowledgements
+        ]
+        if len(acknowledged_ids) != len(set(acknowledged_ids)):
+            raise ValueError("duplicate acknowledged observation_id")
+
+        if set(pending_ids) & set(acknowledged_ids):
+            raise ValueError(
+                "observation_id cannot be both pending and acknowledged"
+            )
+
         object.__setattr__(
             self,
             "required_member_results",
@@ -90,6 +121,11 @@ class OpeningPictureState:
             self,
             "retained_live_observations",
             retained,
+        )
+        object.__setattr__(
+            self,
+            "delivery_acknowledgements",
+            acknowledgements,
         )
         object.__setattr__(
             self,

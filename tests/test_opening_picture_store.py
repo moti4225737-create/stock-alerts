@@ -3,6 +3,7 @@ from datetime import datetime, timezone
 
 import pytest
 
+from application.opening_picture_lifecycle import OpeningPictureLifecycle
 from application.opening_picture_observation_guard import (
     OpeningPictureObservationGuard,
     RetainedLiveObservation,
@@ -136,6 +137,51 @@ def test_previously_ready_opening_picture_restores_as_ready(tmp_path) -> None:
 
     assert restored is not None
     assert restored.is_ready is True
+
+
+def test_acknowledgement_and_control_evidence_survive_restart(
+    tmp_path,
+) -> None:
+    path = tmp_path / "opening_picture.json"
+    original_observation = retained_observation()
+    lifecycle = OpeningPictureLifecycle.restore(
+        state=ready_state(),
+        required_member_ids=REQUIRED_MEMBER_IDS,
+    )
+
+    assert lifecycle.delivery_eligible_pending_observations() == (
+        original_observation,
+    )
+
+    acknowledged_at = datetime(
+        2026,
+        8,
+        25,
+        10,
+        10,
+        tzinfo=timezone.utc,
+    )
+    acknowledged = lifecycle.acknowledge_delivery(
+        observation_id=original_observation.observation_id,
+        acknowledged_at=acknowledged_at,
+    )
+    assert acknowledged is True
+
+    FileOpeningPictureStore(path).save(lifecycle.state)
+
+    restored_state = FileOpeningPictureStore(path).load(CANONICAL_ID)
+    assert restored_state is not None
+    restored_lifecycle = OpeningPictureLifecycle.restore(
+        state=restored_state,
+        required_member_ids=REQUIRED_MEMBER_IDS,
+    )
+
+    assert restored_lifecycle.state.retained_live_observations == ()
+    assert restored_lifecycle.delivery_eligible_pending_observations() == ()
+    assert len(restored_lifecycle.state.delivery_acknowledgements) == 1
+    acknowledgement = restored_lifecycle.state.delivery_acknowledgements[0]
+    assert acknowledgement.retained_observation == original_observation
+    assert acknowledgement.acknowledged_at == acknowledged_at
 
 
 def test_missing_state_is_distinct_from_partial_state(tmp_path) -> None:

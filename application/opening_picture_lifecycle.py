@@ -4,6 +4,7 @@ from datetime import datetime
 from typing import Any
 
 from application.opening_picture_observation_guard import (
+    DeliveryAcknowledgement,
     OpeningPictureObservationGuard,
     OpeningPictureObservationResult,
     RetainedLiveObservation,
@@ -19,6 +20,18 @@ from models.opening_picture_state import OpeningPictureState
 class OpeningPictureLifecycleUpdate:
     became_ready: bool
     released_observations: tuple[Any, ...] = ()
+
+
+@dataclass(frozen=True, slots=True)
+class OpeningPictureControlSnapshot:
+    canonical_instrument_id: str
+    time_zero: datetime
+    contract_version: int
+    is_ready: bool
+    pending_count: int
+    oldest_pending_first_seen_at: datetime | None
+    acknowledgement_count: int
+    last_acknowledged_at: datetime | None
 
 
 class OpeningPictureLifecycle:
@@ -37,6 +50,7 @@ class OpeningPictureLifecycle:
             required_member_results=state.required_member_results,
             optional_member_results=state.optional_member_results,
             retained_live_observations=state.retained_live_observations,
+            delivery_acknowledgements=state.delivery_acknowledgements,
             required_member_ids=self._required_member_ids,
         )
         self._observation_guard = OpeningPictureObservationGuard(
@@ -97,6 +111,71 @@ class OpeningPictureLifecycle:
 
         return self._state.retained_live_observations
 
+    def control_snapshot(self) -> OpeningPictureControlSnapshot:
+        return OpeningPictureControlSnapshot(
+            canonical_instrument_id=(
+                self._state.protection_epoch.canonical_instrument_id
+            ),
+            time_zero=self._state.protection_epoch.time_zero,
+            contract_version=self._state.contract_version,
+            is_ready=self._is_ready,
+            pending_count=len(self._state.retained_live_observations),
+            oldest_pending_first_seen_at=min(
+                (
+                    retained.first_seen_at
+                    for retained in self._state.retained_live_observations
+                ),
+                default=None,
+            ),
+            acknowledgement_count=len(
+                self._state.delivery_acknowledgements
+            ),
+            last_acknowledged_at=max(
+                (
+                    acknowledgement.acknowledged_at
+                    for acknowledgement in (
+                        self._state.delivery_acknowledgements
+                    )
+                ),
+                default=None,
+            ),
+        )
+
+    def acknowledge_delivery(
+        self,
+        *,
+        observation_id: str,
+        acknowledged_at: datetime,
+    ) -> bool:
+        if not self._is_ready:
+            raise RuntimeError(
+                "delivery acknowledgement requires a READY lifecycle"
+            )
+        self._validate_aware_datetime("acknowledged_at", acknowledged_at)
+
+        retained = self._observation_guard.remove_pending(
+            observation_id=observation_id,
+        )
+        if retained is None:
+            return False
+
+        acknowledgement = DeliveryAcknowledgement(
+            retained_observation=retained,
+            acknowledged_at=acknowledged_at,
+        )
+        self._state = self._with_state(
+            retained_live_observations=tuple(
+                pending
+                for pending in self._state.retained_live_observations
+                if pending.observation_id != retained.observation_id
+            ),
+            delivery_acknowledgements=(
+                *self._state.delivery_acknowledgements,
+                acknowledgement,
+            ),
+        )
+        return True
+
     def record_member_result(
         self,
         member_id: str,
@@ -121,14 +200,6 @@ class OpeningPictureLifecycle:
         became_ready = not self._is_ready and updated_is_ready
 
         released_observations: tuple[Any, ...] = ()
-        if became_ready:
-            released_observations = self._observation_guard.release_pending(
-                is_ready=True
-            )
-            updated_state = self._with_state(
-                state=updated_state,
-                retained_live_observations=(),
-            )
 
         self._state = updated_state
         self._is_ready = updated_is_ready
@@ -190,6 +261,9 @@ class OpeningPictureLifecycle:
         retained_live_observations: (
             tuple[RetainedLiveObservation, ...] | None
         ) = None,
+        delivery_acknowledgements: (
+            tuple[DeliveryAcknowledgement, ...] | None
+        ) = None,
     ) -> OpeningPictureState:
         current = state or self._state
         return OpeningPictureState(
@@ -206,8 +280,25 @@ class OpeningPictureLifecycle:
                 if retained_live_observations is None
                 else retained_live_observations
             ),
+            delivery_acknowledgements=(
+                current.delivery_acknowledgements
+                if delivery_acknowledgements is None
+                else delivery_acknowledgements
+            ),
             required_member_ids=current.required_member_ids,
         )
+
+    @staticmethod
+    def _validate_aware_datetime(
+        field_name: str,
+        value: datetime,
+    ) -> None:
+        if (
+            not isinstance(value, datetime)
+            or value.tzinfo is None
+            or value.utcoffset() is None
+        ):
+            raise ValueError(f"{field_name} must be timezone-aware")
 
     @staticmethod
     def _validated_member_ids(
