@@ -171,3 +171,23 @@ Healthchecks נשאר מקור עצמאי ונפרד ל־fresh work / liveness e
 - החוזה מניח Production replica פעיל יחיד.
 
 מעבר ל־multi-replica Production חייב לפתוח מחדש את החוזה לפני הפיכתו לסטנדרט.
+
+## Opening Picture — Interrupted / Preserved — 2026-08-28
+
+מימוש Opening Picture נמצא במצב `INTERRUPTED / PRESERVED` ואינו מושלם.
+
+נקודת השימור החריגה היא:
+
+`fa95156a0b6c8633bf5cc0a9e14057cafaeb24d1 — Preserve interrupted Opening Picture work for architecture review`
+
+נקודה זו משמרת את מצב המימוש והראיות לצורך בחינה מחודשת. היא אינה מאשרת את הארכיטקטורה, אינה סוגרת את הספרינט ואינה מחליפה או יוצרת Gate מקביל. פרוטוקול השינוי, האימות, המסירה והסגירה הסמכותי הקיים נשאר ה־Closure Authority היחיד.
+
+Production והמסירה החיצונית אינם נחשבים מוחזרים או מאומתים מכוח נקודת שימור זו.
+
+הפערים הידועים של Opening Picture נשארים פתוחים, ובכללם זיהוי LEARNING ללא התקדמות משמעותית מעולם, שילוב runtime, ‏persistence אוטומטי לאחר שינויי lifecycle ועקביות crash בין delivery ל־ACK.
+
+לא מאושר להמשיך במימוש Opening Picture לפני המעבר האופקי השני על מפת 28 הנקודות של Sentinel ולפני Impact Map הנדסי עוקב שיאושר בהתאם לפרוטוקול הסמכותי.
+
+ההקשר ההיסטורי, הראיות והפערים הפתוחים מתועדים ב־:
+
+`chronicle/ספרינטים/2026-08-28-opening-picture-interrupted-preservation.md`
