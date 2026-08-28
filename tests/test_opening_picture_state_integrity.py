@@ -39,6 +39,7 @@ def opening_picture_state(
     *,
     pending: tuple[RetainedLiveObservation, ...] = (),
     acknowledgements: tuple[DeliveryAcknowledgement, ...] = (),
+    progress_at: datetime | None = None,
 ) -> OpeningPictureState:
     return OpeningPictureState(
         contract_version=1,
@@ -55,6 +56,7 @@ def opening_picture_state(
         optional_member_results={},
         retained_live_observations=pending,
         delivery_acknowledgements=acknowledgements,
+        last_meaningful_learning_progress_at=progress_at,
     )
 
 
@@ -178,3 +180,15 @@ def test_acknowledgement_allows_timestamp_equal_to_first_seen_at() -> None:
     )
 
     assert acknowledgement.acknowledged_at == retained.first_seen_at
+
+
+def test_learning_progress_timestamp_must_be_timezone_aware() -> None:
+    with pytest.raises(
+        ValueError,
+        match=(
+            "^last_meaningful_learning_progress_at must be timezone-aware$"
+        ),
+    ):
+        opening_picture_state(
+            progress_at=datetime(2026, 8, 25, 10, 4),
+        )

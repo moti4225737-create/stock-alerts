@@ -1,6 +1,6 @@
 from collections.abc import Callable, Iterable
 from dataclasses import dataclass
-from datetime import datetime
+from datetime import datetime, timedelta
 from typing import Any
 
 from application.opening_picture_observation_guard import (
@@ -14,12 +14,24 @@ from models.opening_picture_member_result import (
     OpeningPictureMemberResultStatus,
 )
 from models.opening_picture_state import OpeningPictureState
+from product.opening_picture_readiness_policy import (
+    OpeningPictureReadinessPolicy,
+)
 
 
 @dataclass(frozen=True, slots=True)
 class OpeningPictureLifecycleUpdate:
     became_ready: bool
-    released_observations: tuple[Any, ...] = ()
+
+
+@dataclass(frozen=True, slots=True)
+class OpeningPictureControlException:
+    canonical_instrument_id: str
+    reason: str
+    evaluated_at: datetime
+    evidence_at: datetime
+    allowed_duration: timedelta
+    elapsed_duration: timedelta
 
 
 @dataclass(frozen=True, slots=True)
@@ -32,6 +44,57 @@ class OpeningPictureControlSnapshot:
     oldest_pending_first_seen_at: datetime | None
     acknowledgement_count: int
     last_acknowledged_at: datetime | None
+    last_meaningful_learning_progress_at: datetime | None
+
+    def evaluate_no_progress(
+        self,
+        *,
+        evaluated_at: datetime,
+        allowed_no_progress: timedelta,
+    ) -> OpeningPictureControlException | None:
+        progress_at = self.last_meaningful_learning_progress_at
+        if self.is_ready or progress_at is None:
+            return None
+
+        elapsed_no_progress = evaluated_at - progress_at
+        if elapsed_no_progress <= allowed_no_progress:
+            return None
+
+        return OpeningPictureControlException(
+            canonical_instrument_id=self.canonical_instrument_id,
+            reason="learning_no_progress",
+            evaluated_at=evaluated_at,
+            evidence_at=progress_at,
+            allowed_duration=allowed_no_progress,
+            elapsed_duration=elapsed_no_progress,
+        )
+
+    def evaluate_pending_delivery(
+        self,
+        *,
+        evaluated_at: datetime,
+        allowed_pending: timedelta,
+    ) -> OpeningPictureControlException | None:
+        oldest_pending_at = self.oldest_pending_first_seen_at
+        if (
+            not self.is_ready
+            or self.pending_count == 0
+            or oldest_pending_at is None
+        ):
+            return None
+
+        elapsed_pending = evaluated_at - oldest_pending_at
+        if elapsed_pending <= allowed_pending:
+            return None
+
+        return OpeningPictureControlException(
+            canonical_instrument_id=self.canonical_instrument_id,
+            reason="ready_pending_overdue",
+            evaluated_at=evaluated_at,
+            evidence_at=oldest_pending_at,
+            allowed_duration=allowed_pending,
+            elapsed_duration=elapsed_pending,
+        )
 
 
 class OpeningPictureLifecycle:
@@ -40,7 +103,9 @@ class OpeningPictureLifecycle:
         *,
         state: OpeningPictureState,
         required_member_ids: Iterable[str],
+        clock: Callable[[], datetime],
     ) -> None:
+        self._clock = clock
         self._required_member_ids = self._validated_member_ids(
             required_member_ids
         )
@@ -51,11 +116,13 @@ class OpeningPictureLifecycle:
             optional_member_results=state.optional_member_results,
             retained_live_observations=state.retained_live_observations,
             delivery_acknowledgements=state.delivery_acknowledgements,
+            last_meaningful_learning_progress_at=(
+                state.last_meaningful_learning_progress_at
+            ),
             required_member_ids=self._required_member_ids,
         )
         self._observation_guard = OpeningPictureObservationGuard(
             time_zero=self._state.protection_epoch.time_zero,
-            restored_pending=self._state.retained_live_observations,
         )
         self._is_ready = self._derive_readiness(self._state)
 
@@ -81,6 +148,7 @@ class OpeningPictureLifecycle:
                 required_member_ids=required_member_ids,
             ),
             required_member_ids=required_member_ids,
+            clock=clock,
         )
 
     @classmethod
@@ -89,10 +157,12 @@ class OpeningPictureLifecycle:
         *,
         state: OpeningPictureState,
         required_member_ids: Iterable[str],
+        clock: Callable[[], datetime],
     ) -> "OpeningPictureLifecycle":
         return cls(
             state=state,
             required_member_ids=required_member_ids,
+            clock=clock,
         )
 
     @property
@@ -139,6 +209,9 @@ class OpeningPictureLifecycle:
                 ),
                 default=None,
             ),
+            last_meaningful_learning_progress_at=(
+                self._state.last_meaningful_learning_progress_at
+            ),
         )
 
     def acknowledge_delivery(
@@ -153,8 +226,19 @@ class OpeningPictureLifecycle:
             )
         self._validate_aware_datetime("acknowledged_at", acknowledged_at)
 
-        retained = self._observation_guard.remove_pending(
-            observation_id=observation_id,
+        if not isinstance(observation_id, str):
+            raise TypeError("observation_id must be a string")
+        normalized_observation_id = observation_id.strip()
+        if not normalized_observation_id:
+            raise ValueError("observation_id must not be empty")
+
+        retained = next(
+            (
+                pending
+                for pending in self._state.retained_live_observations
+                if pending.observation_id == normalized_observation_id
+            ),
+            None,
         )
         if retained is None:
             return False
@@ -191,22 +275,31 @@ class OpeningPictureLifecycle:
                 "status must be an OpeningPictureMemberResultStatus"
             )
 
+        previous_status = self._state.required_member_results.get(
+            normalized_member_id
+        )
+        made_meaningful_progress = (
+            not self._status_satisfies_readiness(previous_status)
+            and self._status_satisfies_readiness(status)
+        )
         required_results = dict(self._state.required_member_results)
         required_results[normalized_member_id] = status
         updated_state = self._with_state(
             required_member_results=required_results,
+            last_meaningful_learning_progress_at=(
+                self._clock()
+                if made_meaningful_progress
+                else self._state.last_meaningful_learning_progress_at
+            ),
         )
         updated_is_ready = self._derive_readiness(updated_state)
         became_ready = not self._is_ready and updated_is_ready
-
-        released_observations: tuple[Any, ...] = ()
 
         self._state = updated_state
         self._is_ready = updated_is_ready
 
         return OpeningPictureLifecycleUpdate(
             became_ready=became_ready,
-            released_observations=released_observations,
         )
 
     def observe(
@@ -229,10 +322,21 @@ class OpeningPictureLifecycle:
             observation=observation,
         )
         retained = result.retained_live_observation
-        if retained is not None and all(
-            existing.observation_id != retained.observation_id
-            for existing in self._state.retained_live_observations
-        ):
+        if retained is not None:
+            existing = next(
+                (
+                    pending
+                    for pending in self._state.retained_live_observations
+                    if pending.observation_id == retained.observation_id
+                ),
+                None,
+            )
+            if existing is not None:
+                return OpeningPictureObservationResult(
+                    classification=result.classification,
+                    retained_live_observation=existing,
+                )
+
             self._state = self._with_state(
                 retained_live_observations=(
                     *self._state.retained_live_observations,
@@ -264,6 +368,7 @@ class OpeningPictureLifecycle:
         delivery_acknowledgements: (
             tuple[DeliveryAcknowledgement, ...] | None
         ) = None,
+        last_meaningful_learning_progress_at: datetime | None = None,
     ) -> OpeningPictureState:
         current = state or self._state
         return OpeningPictureState(
@@ -285,7 +390,20 @@ class OpeningPictureLifecycle:
                 if delivery_acknowledgements is None
                 else delivery_acknowledgements
             ),
+            last_meaningful_learning_progress_at=(
+                current.last_meaningful_learning_progress_at
+                if last_meaningful_learning_progress_at is None
+                else last_meaningful_learning_progress_at
+            ),
             required_member_ids=current.required_member_ids,
+        )
+
+    @staticmethod
+    def _status_satisfies_readiness(
+        status: OpeningPictureMemberResultStatus | None,
+    ) -> bool:
+        return status is not None and OpeningPictureReadinessPolicy().is_ready(
+            required_statuses=(status,),
         )
 
     @staticmethod

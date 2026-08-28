@@ -1,4 +1,5 @@
-from datetime import datetime, timezone
+from dataclasses import fields, is_dataclass
+from datetime import datetime, timedelta, timezone
 
 import pytest
 
@@ -19,6 +20,7 @@ TIME_ZERO = datetime(2026, 8, 25, 10, 0, tzinfo=timezone.utc)
 HISTORICAL_TIME = datetime(2017, 1, 3, 12, 0, tzinfo=timezone.utc)
 LIVE_EVENT_TIME = datetime(2026, 8, 25, 10, 2, tzinfo=timezone.utc)
 FIRST_SEEN_AT = datetime(2026, 8, 25, 10, 3, tzinfo=timezone.utc)
+PROGRESS_AT = datetime(2026, 8, 25, 10, 4, tzinfo=timezone.utc)
 REQUIRED_MEMBERS = ("identity", "opening_context")
 
 
@@ -54,6 +56,148 @@ def test_new_holding_begins_learning_with_stable_time_zero() -> None:
     assert lifecycle.state.protection_epoch.time_zero == TIME_ZERO
 
 
+def test_control_exposes_when_meaningful_learning_progress_occurred() -> None:
+    clock_values = iter((TIME_ZERO, PROGRESS_AT))
+    lifecycle = OpeningPictureLifecycle.start(
+        canonical_instrument_id=CANONICAL_ID,
+        required_member_ids=REQUIRED_MEMBERS,
+        clock=lambda: next(clock_values),
+    )
+
+    lifecycle.record_member_result(
+        "identity",
+        OpeningPictureMemberResultStatus.ESTABLISHED,
+    )
+
+    assert lifecycle.is_ready is False
+    snapshot = lifecycle.control_snapshot()
+    datetime_evidence = {
+        getattr(snapshot, field.name)
+        for field in fields(snapshot)
+        if isinstance(getattr(snapshot, field.name), datetime)
+    }
+    assert PROGRESS_AT in datetime_evidence
+
+    snapshot_after_progress = snapshot
+    lifecycle.record_member_result(
+        "identity",
+        OpeningPictureMemberResultStatus.ESTABLISHED,
+    )
+
+    assert lifecycle.control_snapshot() == snapshot_after_progress
+
+
+def test_control_reports_learning_no_progress_beyond_supplied_duration() -> None:
+    allowed_no_progress = timedelta(minutes=5)
+    evaluated_at = PROGRESS_AT + timedelta(minutes=10)
+    clock_values = iter((TIME_ZERO, PROGRESS_AT))
+    lifecycle = OpeningPictureLifecycle.start(
+        canonical_instrument_id=CANONICAL_ID,
+        required_member_ids=REQUIRED_MEMBERS,
+        clock=lambda: next(clock_values),
+    )
+    lifecycle.record_member_result(
+        "identity",
+        OpeningPictureMemberResultStatus.ESTABLISHED,
+    )
+    state_before_control = lifecycle.state
+
+    snapshot = lifecycle.control_snapshot()
+    evaluate_no_progress = getattr(
+        snapshot,
+        "evaluate_no_progress",
+        None,
+    )
+
+    assert callable(evaluate_no_progress), (
+        "Opening Picture control lacks read-only no-progress evaluation"
+    )
+    control_exception = evaluate_no_progress(
+        evaluated_at=evaluated_at,
+        allowed_no_progress=allowed_no_progress,
+    )
+    assert control_exception is not None
+    assert is_dataclass(control_exception)
+    evidence = {
+        getattr(control_exception, field.name)
+        for field in fields(control_exception)
+    }
+    assert CANONICAL_ID in evidence
+    assert PROGRESS_AT in evidence
+    assert evaluated_at in evidence
+    assert allowed_no_progress in evidence
+    assert evaluated_at - PROGRESS_AT in evidence
+    assert any(
+        isinstance(value, str)
+        and "no-progress" in value.lower().replace("_", "-")
+        for value in evidence
+    )
+    assert lifecycle.state == state_before_control
+    assert lifecycle.is_ready is False
+
+
+def test_control_reports_ready_pending_work_beyond_supplied_duration() -> None:
+    allowed_pending = timedelta(minutes=5)
+    evaluated_at = FIRST_SEEN_AT + timedelta(minutes=10)
+    lifecycle = new_lifecycle()
+    observation_result = lifecycle.observe(
+        observation_id="new-filing",
+        event_time=LIVE_EVENT_TIME,
+        first_seen_at=FIRST_SEEN_AT,
+        observation={"source": "SEC", "title": "New filing"},
+    )
+    retained = observation_result.retained_live_observation
+    assert retained is not None
+    lifecycle.record_member_result(
+        "identity",
+        OpeningPictureMemberResultStatus.ESTABLISHED,
+    )
+    lifecycle.record_member_result(
+        "opening_context",
+        OpeningPictureMemberResultStatus.ESTABLISHED,
+    )
+    assert lifecycle.is_ready is True
+    state_before_control = lifecycle.state
+    pending_before_control = lifecycle.delivery_eligible_pending_observations()
+
+    snapshot = lifecycle.control_snapshot()
+    evaluate_pending_delivery = getattr(
+        snapshot,
+        "evaluate_pending_delivery",
+        None,
+    )
+
+    assert callable(evaluate_pending_delivery), (
+        "Opening Picture control lacks read-only READY pending-age evaluation"
+    )
+    control_exception = evaluate_pending_delivery(
+        evaluated_at=evaluated_at,
+        allowed_pending=allowed_pending,
+    )
+    assert control_exception is not None
+    assert is_dataclass(control_exception)
+    evidence = {
+        getattr(control_exception, field.name)
+        for field in fields(control_exception)
+    }
+    assert CANONICAL_ID in evidence
+    assert FIRST_SEEN_AT in evidence
+    assert evaluated_at in evidence
+    assert allowed_pending in evidence
+    assert evaluated_at - FIRST_SEEN_AT in evidence
+    assert any(
+        isinstance(value, str)
+        and "pending" in value.lower()
+        and "overdue" in value.lower()
+        for value in evidence
+    )
+    assert lifecycle.state == state_before_control
+    assert lifecycle.delivery_eligible_pending_observations() == (
+        pending_before_control
+    )
+    assert lifecycle.state.delivery_acknowledgements == ()
+
+
 @pytest.mark.parametrize(
     "blocking_status",
     (
@@ -78,7 +222,6 @@ def test_unresolved_required_result_keeps_lifecycle_learning(
 
     assert lifecycle.is_ready is False
     assert update.became_ready is False
-    assert update.released_observations == ()
 
 
 @pytest.mark.parametrize(
@@ -127,7 +270,7 @@ def test_becoming_ready_keeps_observation_pending_and_delivery_eligible(
     retained_observation = observation_result.retained_live_observation
     assert retained_observation is not None
 
-    first_update = lifecycle.record_member_result(
+    lifecycle.record_member_result(
         "identity",
         OpeningPictureMemberResultStatus.ESTABLISHED,
     )
@@ -139,9 +282,7 @@ def test_becoming_ready_keeps_observation_pending_and_delivery_eligible(
     assert observation_result.classification is (
         OpeningPictureObservationClassification.PENDING_LIVE
     )
-    assert first_update.released_observations == ()
     assert ready_update.became_ready is True
-    assert ready_update.released_observations == ()
     assert lifecycle.state.retained_live_observations == (
         retained_observation,
     )
@@ -351,7 +492,7 @@ def test_historical_learning_material_is_never_released_as_live_work() -> None:
         "identity",
         OpeningPictureMemberResultStatus.ESTABLISHED,
     )
-    ready_update = lifecycle.record_member_result(
+    lifecycle.record_member_result(
         "opening_context",
         OpeningPictureMemberResultStatus.ESTABLISHED,
     )
@@ -359,7 +500,6 @@ def test_historical_learning_material_is_never_released_as_live_work() -> None:
     assert historical_result.classification is (
         OpeningPictureObservationClassification.HISTORICAL
     )
-    assert ready_update.released_observations == ()
 
 
 def test_restored_partial_state_resumes_learning_with_original_time_zero() -> None:
@@ -377,6 +517,7 @@ def test_restored_partial_state_resumes_learning_with_original_time_zero() -> No
     lifecycle = OpeningPictureLifecycle.restore(
         state=restored_state,
         required_member_ids=REQUIRED_MEMBERS,
+        clock=lambda: TIME_ZERO,
     )
 
     assert lifecycle.is_ready is False
@@ -404,6 +545,7 @@ def test_restored_ready_state_remains_ready_without_a_new_transition() -> None:
     lifecycle = OpeningPictureLifecycle.restore(
         state=restored_state,
         required_member_ids=REQUIRED_MEMBERS,
+        clock=lambda: TIME_ZERO,
     )
     reevaluation = lifecycle.record_member_result(
         "opening_context",
@@ -413,7 +555,6 @@ def test_restored_ready_state_remains_ready_without_a_new_transition() -> None:
     assert lifecycle.is_ready is True
     assert lifecycle.state.protection_epoch.time_zero == TIME_ZERO
     assert reevaluation.became_ready is False
-    assert reevaluation.released_observations == ()
 
 
 def test_restored_ready_state_exposes_pending_for_delivery_without_clearing(
@@ -436,6 +577,7 @@ def test_restored_ready_state_exposes_pending_for_delivery_without_clearing(
     lifecycle = OpeningPictureLifecycle.restore(
         state=restored_state,
         required_member_ids=REQUIRED_MEMBERS,
+        clock=lambda: TIME_ZERO,
     )
 
     assert lifecycle.is_ready is True

@@ -1,4 +1,5 @@
 from dataclasses import dataclass
+from datetime import datetime
 from types import MappingProxyType
 from typing import Iterable, Mapping
 
@@ -30,6 +31,7 @@ class OpeningPictureState:
     ]
     retained_live_observations: tuple[RetainedLiveObservation, ...]
     delivery_acknowledgements: tuple[DeliveryAcknowledgement, ...] = ()
+    last_meaningful_learning_progress_at: datetime | None = None
 
     def __post_init__(self) -> None:
         if isinstance(self.contract_version, bool) or not isinstance(
@@ -86,6 +88,24 @@ class OpeningPictureState:
             raise TypeError(
                 "delivery_acknowledgements must contain "
                 "DeliveryAcknowledgement"
+            )
+
+        progress_at = self.last_meaningful_learning_progress_at
+        if progress_at is not None and (
+            not isinstance(progress_at, datetime)
+            or progress_at.tzinfo is None
+            or progress_at.utcoffset() is None
+        ):
+            raise ValueError(
+                "last_meaningful_learning_progress_at must be timezone-aware"
+            )
+        if (
+            progress_at is not None
+            and progress_at < self.protection_epoch.time_zero
+        ):
+            raise ValueError(
+                "last_meaningful_learning_progress_at must not precede "
+                "time_zero"
             )
 
         pending_ids = [

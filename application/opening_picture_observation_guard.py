@@ -78,22 +78,9 @@ class OpeningPictureObservationGuard:
         self,
         *,
         time_zero: datetime,
-        restored_pending: tuple[RetainedLiveObservation, ...] = (),
     ) -> None:
         self._validate_aware_datetime("time_zero", time_zero)
         self._time_zero = time_zero
-        self._pending: dict[str, RetainedLiveObservation] = {}
-
-        for retained in restored_pending:
-            if not isinstance(retained, RetainedLiveObservation):
-                raise TypeError(
-                    "restored_pending must contain RetainedLiveObservation"
-                )
-
-            if retained.observation_id in self._pending:
-                raise ValueError("duplicate restored observation_id")
-
-            self._pending[retained.observation_id] = retained
 
     def observe(
         self,
@@ -122,15 +109,12 @@ class OpeningPictureObservationGuard:
                 "event_time equal to time_zero has no approved classification"
             )
 
-        retained = self._pending.get(normalized_observation_id)
-        if retained is None:
-            retained = RetainedLiveObservation(
-                observation_id=normalized_observation_id,
-                event_time=event_time,
-                first_seen_at=first_seen_at,
-                observation=observation,
-            )
-            self._pending[normalized_observation_id] = retained
+        retained = RetainedLiveObservation(
+            observation_id=normalized_observation_id,
+            event_time=event_time,
+            first_seen_at=first_seen_at,
+            observation=observation,
+        )
 
         return OpeningPictureObservationResult(
             classification=(
@@ -138,35 +122,6 @@ class OpeningPictureObservationGuard:
             ),
             retained_live_observation=retained,
         )
-
-    def remove_pending(
-        self,
-        *,
-        observation_id: str,
-    ) -> RetainedLiveObservation | None:
-        if not isinstance(observation_id, str):
-            raise TypeError("observation_id must be a string")
-        normalized_observation_id = observation_id.strip()
-        if not normalized_observation_id:
-            raise ValueError("observation_id must not be empty")
-
-        return self._pending.pop(normalized_observation_id, None)
-
-    def release_pending(
-        self,
-        *,
-        is_ready: bool,
-    ) -> tuple[Any, ...]:
-        if not is_ready:
-            return ()
-
-        observations = tuple(
-            retained.observation
-            for retained in self._pending.values()
-        )
-        self._pending.clear()
-
-        return observations
 
     @staticmethod
     def _validate_aware_datetime(

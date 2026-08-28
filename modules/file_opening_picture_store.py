@@ -135,6 +135,11 @@ class FileOpeningPictureStore:
                     state.optional_member_results.items()
                 )
             },
+            "last_meaningful_learning_progress_at": (
+                state.last_meaningful_learning_progress_at.isoformat()
+                if state.last_meaningful_learning_progress_at is not None
+                else None
+            ),
             "retained_live_observations": [
                 {
                     "observation_id": retained.observation_id,
@@ -228,6 +233,11 @@ class FileOpeningPictureStore:
             optional_member_results=cls._deserialize_member_results(
                 payload["optional_member_results"]
             ),
+            last_meaningful_learning_progress_at=(
+                cls._parse_optional_datetime(
+                    payload.get("last_meaningful_learning_progress_at")
+                )
+            ),
             retained_live_observations=tuple(
                 cls._deserialize_retained_observation(retained)
                 for retained in retained_payload
@@ -305,6 +315,20 @@ class FileOpeningPictureStore:
         if not isinstance(value, str):
             raise ValueError("timestamp must be an ISO-8601 string")
         return datetime.fromisoformat(value)
+
+    @classmethod
+    def _parse_optional_datetime(
+        cls,
+        value: object,
+    ) -> datetime | None:
+        if value is None:
+            return None
+        parsed = cls._parse_datetime(value)
+        cls._require_aware_datetime(
+            "last_meaningful_learning_progress_at",
+            parsed,
+        )
+        return parsed
 
     @staticmethod
     def _require_aware_datetime(field_name: str, value: datetime) -> None:
