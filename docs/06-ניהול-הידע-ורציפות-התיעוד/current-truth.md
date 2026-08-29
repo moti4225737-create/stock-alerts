@@ -22,11 +22,53 @@ Current Truth הוא המצב המאומת והתקף של Stock Sentinel בנק
 
 `main`
 
-Local `main`, ‏`origin/main` ו־GitHub default branch מיושרים.
+היישור ההיסטורי של Local `main`, ‏`origin/main` ו־GitHub default branch
+אומת במסלולי ה־Production alignment המתועדים להלן. אין ברשומה זו
+אימות מחודש של parity לאחר שינויי התיעוד של 2026-08-28.
 
-Railway Production מחובר ל־`main`.
+Railway Production היה מחובר ל־`main`, ו־push תיעוד בלבד ב־2026-08-28
+הוביל דרך CI לפריסה פעילה ולהפעלת runtime אוטונומי. בעקבות האירוע
+ה־deployment הוסר ידנית. המצב התפעולי הנוכחי שנצפה לאחר ההסרה הוא:
 
-Wait for CI מופעל ואכיפתו אומתה בפועל.
+- Railway Production הוא `OFF` במכוון;
+- השירות offline;
+- אין deployment פעיל;
+- ה־deployment שהפעיל את האירוע מסומן removed.
+
+Production אינו מאושר להפעלה מחדש עד להשלמת הבקרות המתקנות של
+האירוע ולאימותן המפורש.
+
+ה־Telegram Bot Token שנחשף בוטל ב־BotFather ונוצר token חלופי.
+`TELEGRAM_TOKEN` החלופי נשמר ב־Railway, עודכן ב־`.env` המקומי
+וב־GitHub repository secret; אין Telegram secret נוסף ב־GitHub
+Environment secrets. אימות מקומי אישר שהמשתנה קיים ואינו ריק בלי
+לחשוף את ערכו. Railway נשאר ללא deployment פעיל לאחר שינוי המשתנה,
+והשינוי ממתין להחלה ב־deployment/runtime עתידי מאושר.
+
+בדיקת tracked code אישרה ש־`main.py` צורך `TELEGRAM_TOKEN` מן
+ה־environment, ‏CI משתמש במכוון ב־`ci-test-token`, והבדיקות דורשות
+ש־CI לא יצרוך `secrets.TELEGRAM_TOKEN`; לא נמצא consumer tracked נוסף.
+
+`Telegram credential rotation / containment = COMPLETE`.
+
+`Telegram runtime / Production validation = PENDING FUTURE APPROVED PRODUCTION RESTART`.
+
+Telegram delivery והשימוש ב־token החלופי ב־Production לא אומתו.
+Production נשאר `OFF` במכוון וההפעלה מחדש אינה מאושרת.
+
+Wait for CI ואכיפתו אומתו היסטורית. אימות זה אינו הופך push ל־`main`
+לפעולה inert ואינו סותר את מצב Production הכבוי הנוכחי.
+
+ב־`.git/hooks/pre-push` ממומשת ומאומתת כעת בקרת Defense in Depth
+מקומית עבור push ל־`main`. היא דורשת אישור מפורש שנבדקו השלכות
+Production/deployment, שירותים חיצוניים, עלות API והתראות לפני
+המשך ה־push. ה־hook מקומי ובכוונה אינו tracked; הוא בקרת אכיפה
+פנימית ואינו Gate חדש או Closure Authority.
+
+בקרה זו אינה פותרת כשלעצמה את Railway auto-deploy, הגנת עלות API,
+Telegram runtime / Production validation או סיבת השורש של alert storm,
+ואינה מאשרת הפעלת Production מחדש. Production נשאר `OFF` וההפעלה
+מחדש אינה מאושרת.
 
 ### Engineering Governance Truth
 
@@ -66,7 +108,7 @@ Documentation Checkpoint הוא בקרה פנימית מחייבת בפרוטו�
 
 ## Production Alignment — 2026-08-21
 
-במסלול היישור האחרון אומתו:
+במסלול היישור שבוצע ב־2026-08-21 אומתו היסטורית:
 
 - GitHub `main` כקו הסמכותי.
 - CI על `main`.
@@ -182,11 +224,36 @@ Healthchecks נשאר מקור עצמאי ונפרד ל־fresh work / liveness e
 
 נקודה זו משמרת את מצב המימוש והראיות לצורך בחינה מחודשת. היא אינה מאשרת את הארכיטקטורה, אינה סוגרת את הספרינט ואינה מחליפה או יוצרת Gate מקביל. פרוטוקול השינוי, האימות, המסירה והסגירה הסמכותי הקיים נשאר ה־Closure Authority היחיד.
 
+תחנת השימור / ההתאוששות החריגה וה־operational containment המתועד
+שלה נסגרו ברמת Documentation Checkpoint לפני Git anchoring. סגירת
+תחנה זו אינה מכריזה על ספרינט Opening Picture כ־`COMPLETE`, אינה
+מאשרת הפעלת Production מחדש ואינה סוגרת את עבודת סיבת השורש של
+האירוע.
+
 Production והמסירה החיצונית אינם נחשבים מוחזרים או מאומתים מכוח נקודת שימור זו.
+
+לאחר אירוע 2026-08-28, Railway Production הוא `OFF` במכוון וללא
+deployment פעיל. אין אישור להפעלה מחדש לפני השלמת הבקרות המתקנות
+והאימות הנדרש. Telegram credential rotation / containment הושלם;
+Telegram runtime / Production validation נשאר pending להפעלה עתידית
+מאושרת.
+
+Forward Consequence Check נוסף לפרוטוקול ה־End-to-End הסמכותי היחיד.
+ה־local main pre-push confirmation hook הוא `IMPLEMENTED / VERIFIED`
+כ־Defense in Depth. שתי הבקרות הן פנימיות לפרוטוקול ואינן Gate או
+Closure Authority חדש.
+
+סיבת השורש של alert storm / ריבוי בקשות OpenAI היא `NOT SOLVED`
+ונשארת follow-up. אין חידוש של מימוש Opening Picture בתחנה זו.
 
 הפערים הידועים של Opening Picture נשארים פתוחים, ובכללם זיהוי LEARNING ללא התקדמות משמעותית מעולם, שילוב runtime, ‏persistence אוטומטי לאחר שינויי lifecycle ועקביות crash בין delivery ל־ACK.
 
-לא מאושר להמשיך במימוש Opening Picture לפני המעבר האופקי השני על מפת 28 הנקודות של Sentinel ולפני Impact Map הנדסי עוקב שיאושר בהתאם לפרוטוקול הסמכותי.
+רצף המוצר הבא לאחר סגירת התחנה החריגה נשאר:
+
+second horizontal review of all 28 product sections
+→ Alpha decision freeze
+→ approved implementation Impact Map
+→ only then implementation.
 
 ההקשר ההיסטורי, הראיות והפערים הפתוחים מתועדים ב־:
 
