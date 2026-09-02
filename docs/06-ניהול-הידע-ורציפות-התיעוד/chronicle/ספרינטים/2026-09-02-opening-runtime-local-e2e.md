@@ -1,4 +1,12 @@
-# Chronicle — Opening Runtime Integration and Controlled Local E2E
+# Chronicle — R&D 001 — Opening Runtime Local E2E
+
+## R&D Registration
+
+- R&D ID: `R&D 001`.
+- Status: `IMPLEMENTATION COMPLETE — CLOSURE IN PROGRESS`.
+- Predecessor: none registered under the permanent R&D numbering convention.
+- Successor: `R&D 002 — Alpha Portfolio Initial Integration`.
+- Successor status: `NEXT — NOT OPEN`.
 
 ## Objective
 
@@ -93,6 +101,8 @@ Accepted Portfolio Truth
 - Portfolio Truth נשאר מקור החברות היחיד וצרכני ה־runtime downstream לא
   שונו.
 - Production נשאר `OFF`; restart, deployment וחיבור חיצוני אינם מאושרים.
+- continuous Sentinel handoff הוכח מקומית בלבד, לא ב־live operation.
+- flood prevention לא הוכח בפעולה אמיתית.
 
 ## Known Limitations / Unproven External Behavior
 
@@ -120,10 +130,12 @@ case, בלי redesign אוטומטי של הארכיטקטורה.
 ### Repository state and change scope
 
 - branch: `main`;
-- base HEAD בעת ה־audit: `8e7164f29b62e2006e19abf8edb0e968e0684266`;
+- local HEAD: `dc9d8914cda1a31f877cd25c4ff2fe953c16f88a`;
 - upstream: `origin/main`;
-- מימוש, בדיקות ותיעוד נמצאים ב־working tree מקומי ולא עברו stage, commit,
-  push או CI.
+- commit מקומי: `dc9d8914cda1a31f877cd25c4ff2fe953c16f88a — feat: integrate
+  per-holding opening lifecycle into runtime`;
+- ה־implementation snapshot עוגן ב־commit המקומי; push ו־CI עבור commit זה
+  לא בוצעו.
 - היקף הייצור כולל את Portfolio Truth lifecycle, מודלי/יישומי Opening,
   Perplexity ו־SEC boundaries, per-holding store ו־composition ב־`main.py`.
 - היקף הבדיקות כולל חוזי Opening/SEC/Perplexity, restart/persistence,
@@ -143,6 +155,8 @@ case, בלי redesign אוטומטי של הארכיטקטורה.
 
 - לא נשמרו secrets בתיעוד או בקוד המועמד;
 - Railway Production `OFF`;
+- מצב `OFF` הוא ה־Current Truth המתועד; מצב Railway control plane החיצוני
+  הנוכחי, Auto Deploy ו־Wait for CI הם `NOT VERIFIED` כעת;
 - external reconnect, runtime start, CI, deployment ו־Production validation
   לא בוצעו ולא אושרו;
 - אין להסיק מ־Local E2E על התנהגות provider אמיתי.
@@ -157,14 +171,30 @@ artifacts. אין להשתמש ב־`git add .`. stage/commit/push/CI דורשי�
 
 ### Exact next action recommended
 
-בConversation הבא: לבצע read-only Impact Map עבור onboarding של holding
-אמיתי ראשון כ־canary, כולל prerequisites של configuration והרשאות חיצוניות,
-failure containment ונקודת ההוכחה, בלי להפעיל Production או שירות חיצוני.
-רק לאחר החלטת Product Owner מפורשת יש לבצע חיבור אמיתי bounded.
+ב־`R&D 002 — Alpha Portfolio Initial Integration`: לבצע תחילה read-only
+Impact Map עבור onboarding של holding אמיתי ראשון כ־canary, כולל prerequisites
+של configuration והרשאות חיצוניות, failure containment ונקודת ההוכחה, בלי
+להפעיל Production או שירות חיצוני. רק לאחר החלטת Product Owner מפורשת יש
+לבצע חיבור אמיתי bounded.
+
+R&D 002 מקבל בעלות מפורשת על:
+
+- controlled initial real portfolio onboarding;
+- bounded canary activation;
+- real Perplexity/SEC Opening proof;
+- live proof של Opening → continuous Sentinel operation;
+- real-world validation של flood prevention;
+- holding/company-specific onboarding problems;
+- bounded corrections שהופכים ל־regression cases;
+- per-holding source configuration/coverage;
+- subsequent approved Alpha integration work.
+
+אף אחד מפריטים אלה אינו נחשב מושלם או מוכח על־ידי R&D 001.
 
 ## Follow-ups
 
-- לעגן את השינוי ב־Repository History רק לאחר diff review ואישור Git מפורש.
-- לבצע CI רק לאחר commit/push מאושרים.
-- לפתוח את Alpha Portfolio Initial Integration לפי ה־handoff לעיל.
+- להשלים את Closure של R&D 001 רק לפי הפרוטוקול הסמכותי היחיד; Handoff זה
+  אינו מסמן את היחידה כ־`CLOSED`.
+- לבצע push ו־CI רק לאחר אימות מצב חיצוני ואישור מפורש.
+- לפתוח את `R&D 002` לפי ה־Opening Block המחייב וה־handoff לעיל.
 - להשאיר Production ו־external delivery כבויים עד לאישור והוכחה נפרדים.

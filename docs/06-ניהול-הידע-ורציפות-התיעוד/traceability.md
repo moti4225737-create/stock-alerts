@@ -117,9 +117,25 @@ Validation evidence:
 
 Repository / Production evidence:
 
-- implementation and documentation remain uncommitted in the local working tree;
-- Commit / PR / CI: `NOT CREATED / NOT RUN` for this closure preparation;
+- R&D unit: `R&D 001 — Opening Runtime Local E2E`;
+- status: `IMPLEMENTATION COMPLETE — CLOSURE IN PROGRESS`, not `CLOSED`;
+- local implementation commit:
+  `dc9d8914cda1a31f877cd25c4ff2fe953c16f88a`;
+- Push / PR / CI for this commit: `NOT RUN`;
 - Production remains `OFF`; external reconnect, deployment and restart are
   `NOT APPROVED`;
+- current external Railway control-plane, Auto Deploy and Wait for CI state:
+  `NOT VERIFIED`;
 - local evidence does not prove real Perplexity, SEC, Telegram or Production
   behavior.
+
+Continuity:
+
+- permanent protocol and R&D Register:
+  `../03-ניהול-הפיתוח-ההנדסי/ניהול-ספרינטים.md`;
+- successor: `R&D 002 — Alpha Portfolio Initial Integration`;
+- successor status: `NEXT — NOT OPEN`;
+- transferred work includes real portfolio onboarding, bounded canary
+  activation, real Perplexity/SEC Opening proof, live Opening-to-continuous-
+  operation proof, real-world flood-prevention validation and holding/company-
+  specific onboarding corrections.

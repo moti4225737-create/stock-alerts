@@ -259,3 +259,20 @@ correlation/summary/presentation נוספת, Telegram Production validation או
 רשומת הספרינט וה־handoff הנוכחיים:
 
 `chronicle/ספרינטים/2026-09-02-opening-runtime-local-e2e.md`
+
+יחידת העבודה רשומה כ־`R&D 001 — Opening Runtime Local E2E` במצב
+`IMPLEMENTATION COMPLETE — CLOSURE IN PROGRESS`; היא אינה `CLOSED`.
+ה־implementation snapshot נמצא ב־commit המקומי
+`dc9d8914cda1a31f877cd25c4ff2fe953c16f88a`. push ו־CI עבור commit זה לא
+בוצעו.
+
+היחידה הבאה הרשומה היא
+`R&D 002 — Alpha Portfolio Initial Integration` במצב `NEXT — NOT OPEN`.
+היא מחזיקה את העבודה האמיתית של portfolio onboarding, canary activation,
+real Perplexity/SEC proof, ‏live Opening-to-continuous-operation proof,
+real-world flood-prevention validation ובעיות onboarding תלויות holding או
+company. יכולות אלה אינן מוכחות על־ידי ה־Local E2E של R&D 001.
+
+Production נשאר `OFF` לפי ה־Current Truth המתועד, אך מצב Railway control
+plane החיצוני הנוכחי, Auto Deploy ו־Wait for CI הם `NOT VERIFIED`. אין אישור
+ל־push, reconnect, restart או deployment מכוח תיעוד זה.
