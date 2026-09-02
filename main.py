@@ -18,10 +18,21 @@ from application.default_investor_brief_enrichment import (
     build_default_investor_brief_enrichment_service,
 )
 from application.portfolio_truth_service import PortfolioTruthService
+from application.sec_source_bootstrap_acceptance_producer import (
+    SECSourceBootstrapAcceptanceProducer,
+)
+from application.source_bootstrap_application import SourceBootstrapApplication
+from application.source_bootstrap_researcher import (
+    BoundedResearchLimits,
+    BoundedSourceBootstrapResearcher,
+)
 from application.source_runtime_factory import SourceRuntimeFactory
 from engines.intelligence_pipeline import IntelligencePipeline
 from engines.source_acquisition_policy import SourceAcquisitionPolicy
 from models.event import Event
+from models.portfolio import Portfolio
+from models.source_bootstrap_state import SourceBootstrapState
+from modules.file_source_bootstrap_store import FileSourceBootstrapStore
 from modules.file_portfolio_truth_store import FilePortfolioTruthStore
 from modules.healthchecks_work_evidence_reporter import (
     HealthchecksWorkEvidenceReporter,
@@ -29,6 +40,15 @@ from modules.healthchecks_work_evidence_reporter import (
 from modules.json_file_portfolio_source import JsonFilePortfolioSource
 from modules.notification_history import NotificationHistory
 from modules.provider_manager import ProviderManager
+from modules.perplexity_api_request_client import PerplexityAPIRequestClient
+from modules.perplexity_source_bootstrap_transport import (
+    PerplexitySourceBootstrapTransport,
+)
+from modules.sec_company_identity_resolver import SECCompanyIdentityResolver
+from modules.sec_filing_client import SECFilingClient
+from modules.sec_filing_extractor import SECFilingExtractor
+from modules.sec_filing_parser import SECFilingParser
+from modules.sec_signal_extractor import SECSignalExtractor
 from modules.telegram_sender import TelegramSender
 from modules.ticker_resolver import TickerResolver
 from product.openai_semantic_finding_analyzer import (
@@ -37,6 +57,10 @@ from product.openai_semantic_finding_analyzer import (
 from product.semantic_finding_analyzer_adapter import (
     SemanticFindingAnalyzerAdapter,
 )
+from product.sec_deterministic_finding_discoverer import (
+    SECDeterministicFindingDiscoverer,
+)
+from product.sec_source_document_provider import SECSourceDocumentProvider
 from product.openai_semantic_significance_assessor import (
     OpenAISemanticSignificanceAssessor,
 )
@@ -213,6 +237,59 @@ def build_autonomous_loop(
     )
 
 
+def _build_opening_components(
+    *,
+    portfolio_service: PortfolioTruthService,
+    providers: dict,
+) -> tuple[
+    SourceBootstrapApplication,
+    BoundedSourceBootstrapResearcher,
+    SECCompanyIdentityResolver,
+    SECSourceBootstrapAcceptanceProducer,
+    FileSourceBootstrapStore,
+]:
+    user_agent = os.environ["SEC_USER_AGENT"]
+    store = FileSourceBootstrapStore("data/opening_state/")
+    application = SourceBootstrapApplication(
+        portfolio_service=portfolio_service,
+        store=store,
+    )
+    provider_request = PerplexityAPIRequestClient(
+        api_key=os.environ.get("PERPLEXITY_API_KEY"),
+        http_request=requests.post,
+        timeout_seconds=60,
+        max_output_tokens=2_000,
+    )
+    research = BoundedSourceBootstrapResearcher(
+        transport=PerplexitySourceBootstrapTransport(
+            provider_request=provider_request,
+        ),
+        limits=BoundedResearchLimits(
+            max_candidates=10,
+            max_document_characters=20_000,
+        ),
+    )
+    identity_resolver = SECCompanyIdentityResolver(
+        user_agent=user_agent,
+        http_request=requests.get,
+        timeout_seconds=20,
+    )
+    document_provider = SECSourceDocumentProvider(
+        filing_extractor=SECFilingExtractor(
+            client=SECFilingClient(user_agent=user_agent),
+            parser=SECFilingParser(),
+        ),
+    )
+    finding_discoverer = SECDeterministicFindingDiscoverer(
+        signal_extractor=SECSignalExtractor(),
+    )
+    verification = SECSourceBootstrapAcceptanceProducer(
+        official_event_discovery=providers["SEC"].fetch_events,
+        document_reconstruction=document_provider.build,
+        finding_discovery=finding_discoverer.discover,
+    )
+    return application, research, identity_resolver, verification, store
+
 def main() -> None:
     """
     Configure Stock Sentinel and run autonomous source acquisition.
@@ -288,8 +365,64 @@ def main() -> None:
     if portfolio_service.portfolio is None:
         raise RuntimeError("Portfolio Truth is unavailable")
 
+    introduced_holdings = tuple(portfolio_service.introduced_holdings)
+    introduced_symbols = {
+        holding.symbol for holding in introduced_holdings
+    }
+    opening_states: dict[str, SourceBootstrapState] = {}
+
+    opening_store = FileSourceBootstrapStore("data/opening_state/")
+    for holding in portfolio_service.portfolio.holdings:
+        if holding.symbol in introduced_symbols:
+            continue
+        restored = opening_store.load(target_holding=holding)
+        if restored is not None:
+            opening_states[holding.symbol] = restored
+
+    if introduced_holdings:
+        (
+            opening_application,
+            opening_research,
+            opening_identity_resolver,
+            opening_verification,
+            opening_store,
+        ) = _build_opening_components(
+            portfolio_service=portfolio_service,
+            providers=providers,
+        )
+        for holding in introduced_holdings:
+            try:
+                opening_states[holding.symbol] = opening_application.run(
+                    target_holding=holding,
+                    research=opening_research,
+                    identity_resolver=opening_identity_resolver,
+                    opening_verification=opening_verification,
+                )
+            except Exception:
+                continue
+
+    if introduced_symbols or opening_states:
+        def runtime_portfolio_provider() -> Portfolio | None:
+            authoritative = portfolio_service.portfolio
+            if authoritative is None:
+                return None
+            return Portfolio(
+                holding
+                for holding in authoritative.holdings
+                if (
+                    holding.symbol not in introduced_symbols
+                    and holding.symbol not in opening_states
+                )
+                or (
+                    holding.symbol in opening_states
+                    and opening_states[holding.symbol].is_ready
+                )
+            )
+    else:
+        runtime_portfolio_provider = lambda: portfolio_service.portfolio
+
     runtime_factory = SourceRuntimeFactory(
-        portfolio_provider=lambda: portfolio_service.portfolio,
+        portfolio_provider=runtime_portfolio_provider,
         telegram_sender=send_telegram,
         enrichment_service=enrichment_service,
         telegram_transport=telegram_transport,

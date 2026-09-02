@@ -39,6 +39,7 @@ def _prepare_main(
     service.restore.return_value = restore_result
     service.refresh.return_value = refresh_result
     service.portfolio = portfolio
+    service.introduced_holdings = ()
     service_factory = Mock(return_value=service)
     runtime_factory_instance = Mock()
     runtime_factory = Mock(return_value=runtime_factory_instance)
@@ -65,6 +66,14 @@ def _prepare_main(
     )
     monkeypatch.setattr(main, "SourceRuntimeFactory", runtime_factory)
     monkeypatch.setattr(main, "build_autonomous_loop", loop_factory)
+    opening_store = Mock()
+    opening_store.load.return_value = None
+    monkeypatch.setattr(
+        main,
+        "FileSourceBootstrapStore",
+        Mock(return_value=opening_store),
+        raising=False,
+    )
 
     return {
         "source_factory": source_factory,

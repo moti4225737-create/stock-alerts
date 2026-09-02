@@ -12,6 +12,11 @@ from models.candidate_portfolio_snapshot import (
     SnapshotCompleteness,
 )
 from models.portfolio_holding import PortfolioHolding
+from models.source_bootstrap_state import (
+    OpeningFactCandidate,
+    OpeningResearchResult,
+)
+from models.source_evidence import SourceEvidence
 from modules.file_portfolio_truth_store import PortfolioTruthStorageError
 
 
@@ -359,3 +364,92 @@ def test_first_boot_no_change_results_leave_portfolio_absent(
     assert service.refresh() is False
     assert service.portfolio is None
     store.save.assert_not_called()
+
+
+def test_new_holding_source_bootstrap_is_learning_until_opening_decisions(
+) -> None:
+    holding = _holding("ONDS", "25")
+    service, _, _, _ = _service(
+        source_result=_success(_candidate((holding,))),
+    )
+    research = Mock(
+        return_value=OpeningResearchResult(
+            candidates=(OpeningFactCandidate(
+                fact="ONDS filed an authoritative company report.",
+                category="sec_filing",
+                evidence=(SourceEvidence(
+                    source_url="https://example.test/evidence",
+                    text="Candidate evidence.",
+                ),),
+            ),),
+            completed_successfully=True,
+        )
+    )
+
+    assert service.refresh() is True
+
+    first = service.begin_source_bootstrap(
+        target_holding=holding,
+        research=research,
+    )
+    restarted = service.begin_source_bootstrap(
+        target_holding=holding,
+        research=research,
+    )
+
+    request = research.call_args.args[0]
+    assert request.holding == holding
+    assert request.time_zero == first.time_zero
+    assert first.lifecycle.value == "learning"
+    assert first.is_ready is False
+    assert restarted.time_zero == first.time_zero
+    research.assert_called_once()
+
+
+def test_source_bootstrap_selects_only_holding_introduced_by_truth_transition(
+) -> None:
+    existing_a = _holding("AAPL", "10")
+    existing_b = _holding("MSFT", "5")
+    introduced_c = _holding("ONDS", "25")
+    service, _, _, _ = _service(
+        restored_truth=_accepted((existing_a, existing_b)),
+        source_result=_success(
+            _candidate((existing_a, existing_b, introduced_c))
+        ),
+    )
+    research = Mock(return_value=OpeningResearchResult(
+        candidates=(),
+        completed_successfully=True,
+    ))
+
+    assert service.restore() is True
+    assert service.refresh() is True
+
+    state = service.begin_source_bootstrap(
+        target_holding=introduced_c,
+        research=research,
+    )
+
+    assert state.request.holding == introduced_c
+
+
+def test_restored_holdings_are_not_newly_introduced_without_bootstrap_memory(
+) -> None:
+    existing_a = _holding("AAPL", "10")
+    existing_b = _holding("MSFT", "5")
+    service, _, _, _ = _service(
+        restored_truth=_accepted((existing_a, existing_b)),
+    )
+    research = Mock(return_value=OpeningResearchResult(
+        candidates=(),
+        completed_successfully=True,
+    ))
+
+    assert service.restore() is True
+
+    service.begin_source_bootstrap(
+        target_holding=existing_a,
+        research=research,
+    )
+
+    research.assert_not_called()

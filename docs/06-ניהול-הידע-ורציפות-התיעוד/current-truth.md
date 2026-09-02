@@ -214,47 +214,48 @@ Healthchecks נשאר מקור עצמאי ונפרד ל־fresh work / liveness e
 
 מעבר ל־multi-replica Production חייב לפתוח מחדש את החוזה לפני הפיכתו לסטנדרט.
 
-## Opening Picture — Interrupted / Preserved — 2026-08-28
+## Opening / Initialization — Local Runtime Integration Proven — 2026-09-02
 
-מימוש Opening Picture נמצא במצב `INTERRUPTED / PRESERVED` ואינו מושלם.
+ה־Opening הנוכחי ממומש כמחזור חיים עצמאי לכל holding חדש לאחר קבלת
+Portfolio Truth סמכותי ולפני צריכת התיק ב־runtime. הוא כולל זהות מאומתת
+בבעלות Sentinel, מחקר bounded, החלטות אימות מפורשות, מצבי `LEARNING` /
+`READY`, persistence לכל holding, וסינון זכאות דרך גבול
+`SourceRuntimeFactory.portfolio_provider` הקיים.
 
-נקודת השימור החריגה היא:
+Portfolio Truth נשאר מקור הסמכות היחיד לחברות בתיק ואינו משתנה לצורך יצירת
+תצוגת runtime. holding חדש במצב `READY` נעשה זכאי; holding חדש במצב
+`LEARNING` או כשל נשאר סמכותי אך אינו נמסר ל־runtime; holdings שהיו נוכחים
+ברציפות נשארים זכאים. הסרה והצגה מחדש יוצרות lifecycle ו־`time_zero` חדשים,
+בעוד שינוי רציף בכמות או בעלות ממוצעת אינו עושה זאת. `LEARNING` נשמר ונשחזר
+עם `time_zero` המקורי.
 
-`fa95156a0b6c8633bf5cc0a9e14057cafaeb24d1 — Preserve interrupted Opening Picture work for architecture review`
+החוזה והזרימה התקפים מתועדים בבית הארכיטקטורה הטבעי:
 
-נקודה זו משמרת את מצב המימוש והראיות לצורך בחינה מחודשת. היא אינה מאשרת את הארכיטקטורה, אינה סוגרת את הספרינט ואינה מחליפה או יוצרת Gate מקביל. פרוטוקול השינוי, האימות, המסירה והסגירה הסמכותי הקיים נשאר ה־Closure Authority היחיד.
+`../02-ספר-המוצר/02.05-ארכיטקטורת-המערכת/02.05.03-תהליכים-ואינטראקציות.md`
 
-תחנת השימור / ההתאוששות החריגה וה־operational containment המתועד
-שלה נסגרו ברמת Documentation Checkpoint לפני Git anchoring. סגירת
-תחנה זו אינה מכריזה על ספרינט Opening Picture כ־`COMPLETE`, אינה
-מאשרת הפעלת Production מחדש ואינה סוגרת את עבודת סיבת השורש של
-האירוע.
+המסלול הוכח מקומית באמצעות doubles דטרמיניסטיים בגבולות החיצוניים. הראיות
+כוללות Runtime Integration focused של `3 passed`, neighborhood של
+`71 passed`, full regression מוקדם לפני Local E2E של `801 passed`, Local
+E2E של `1 passed` ו־`3 deselected`, ו־post-E2E neighborhood של
+`72 passed`. לאחר ניקוי test-contract מורשתי אומתו `25 passed` focused
+ו־`72 passed` neighborhood, וסריקת חוזה Opening מורשתי עברה. ראיית הסגירה
+הסופית לאחר כלל הניקויים היא: `802 passed in 15.41s`.
 
-Production והמסירה החיצונית אינם נחשבים מוחזרים או מאומתים מכוח נקודת שימור זו.
+ראיות אלה אינן מוכיחות התנהגות אמיתית של Perplexity או SEC, אינן מוכיחות
+Telegram או Production, ואינן מהוות אישור ל־Railway restart, deployment או
+חיבור חיצוני. Production נשאר `OFF` במכוון והפעלה מחדש אינה מאושרת.
 
-לאחר אירוע 2026-08-28, Railway Production הוא `OFF` במכוון וללא
-deployment פעיל. אין אישור להפעלה מחדש לפני השלמת הבקרות המתקנות
-והאימות הנדרש. Telegram credential rotation / containment הושלם;
-Telegram runtime / Production validation נשאר pending להפעלה עתידית
-מאושרת.
+השלב הבא הוא `Alpha Portfolio Initial Integration`: חיבור הדרגתי ומבוקר של
+התיק האמיתי, holding אחר holding, עם blast radius מוגבל והפיכת כל כשל ממשי
+ל־diagnosis, correction bounded ו־regression case. טרם הושלמו onboarding
+אמיתי, source coverage לכל holding, הרחבת רשת המקורות, אינטגרציית
+correlation/summary/presentation נוספת, Telegram Production validation או
+הוכחת Alpha מלאה בעולם האמיתי.
 
-Forward Consequence Check נוסף לפרוטוקול ה־End-to-End הסמכותי היחיד.
-ה־local main pre-push confirmation hook הוא `IMPLEMENTED / VERIFIED`
-כ־Defense in Depth. שתי הבקרות הן פנימיות לפרוטוקול ואינן Gate או
-Closure Authority חדש.
-
-סיבת השורש של alert storm / ריבוי בקשות OpenAI היא `NOT SOLVED`
-ונשארת follow-up. אין חידוש של מימוש Opening Picture בתחנה זו.
-
-הפערים הידועים של Opening Picture נשארים פתוחים, ובכללם זיהוי LEARNING ללא התקדמות משמעותית מעולם, שילוב runtime, ‏persistence אוטומטי לאחר שינויי lifecycle ועקביות crash בין delivery ל־ACK.
-
-רצף המוצר הבא לאחר סגירת התחנה החריגה נשאר:
-
-second horizontal review of all 28 product sections
-→ Alpha decision freeze
-→ approved implementation Impact Map
-→ only then implementation.
-
-ההקשר ההיסטורי, הראיות והפערים הפתוחים מתועדים ב־:
+היסטוריית תחנת השימור הקודמת נשמרת ב־:
 
 `chronicle/ספרינטים/2026-08-28-opening-picture-interrupted-preservation.md`
+
+רשומת הספרינט וה־handoff הנוכחיים:
+
+`chronicle/ספרינטים/2026-09-02-opening-runtime-local-e2e.md`

@@ -62,6 +62,7 @@ def test_main_builds_lifeguard_reporter_from_environment(
     portfolio_service.restore.return_value = False
     portfolio_service.refresh.return_value = True
     portfolio_service.portfolio = Portfolio([])
+    portfolio_service.introduced_holdings = ()
     monkeypatch.setattr(
         main,
         "JsonFilePortfolioSource",
@@ -78,6 +79,14 @@ def test_main_builds_lifeguard_reporter_from_environment(
         main,
         "PortfolioTruthService",
         Mock(return_value=portfolio_service),
+        raising=False,
+    )
+    opening_store = Mock()
+    opening_store.load.return_value = None
+    monkeypatch.setattr(
+        main,
+        "FileSourceBootstrapStore",
+        Mock(return_value=opening_store),
         raising=False,
     )
 
