@@ -124,7 +124,11 @@ Repository / Production evidence:
   `dc9d8914cda1a31f877cd25c4ff2fe953c16f88a`;
 - local continuity-protocol commit:
   `d6546e9869c79589b97e2904112868fc24341abf`;
-- Push / PR / CI for this commit: `NOT RUN`;
+- local open-gate Handoff commit and current Pre-Commit Local HEAD:
+  `61ba9da11336a6623c4eaf68a2f55899685afaad`;
+- post-closure governance hardening:
+  `FINAL / HANDOFF COMMIT: PENDING`;
+- Push / PR / CI for this local R&D chain and pending hardening: `NOT RUN`;
 - Production remains `OFF`; external reconnect, deployment and restart are
   `NOT APPROVED`;
 - current external Railway control-plane, Auto Deploy and Wait for CI state:
@@ -144,8 +148,28 @@ Continuity:
   external GitHub/Railway safety verification (`BLOCKED`), Forward Consequence
   Check (`BLOCKED`, previous `STOP`), approved Push (`BLOCKED`), CI on the
   authoritative pushed SHA (`BLOCKED`), local/remote SHA parity (`BLOCKED`),
-  and final R&D 001 authoritative Closure Gate PASS (`OPEN`);
-- late evidence must write back to the R&D 001 Chronicle/closure record,
+  final R&D 001 authoritative Closure Gate PASS (`OPEN`), and
+  `POST-CLOSURE GOVERNANCE HARDENING` (`OPEN`);
+- the governance hardening is closure-evidence work and does not reopen R&D 001
+  implementation; once committed locally, its exact commit is part of the
+  authoritative local repository state inherited by R&D 002;
+- the official R&D 002 Opening Block generated after Final Re-grounding must
+  carry that item explicitly among its `OPEN`/`BLOCKED` controls; acknowledgement
+  or presence in the Opening Block is not closure evidence;
+- its Push, CI and local/remote SHA-parity evidence remains governed by the same
+  authoritative Closure Gate and must be completed with the other carried Git
+  controls;
+- permanent Natural Homes changed by the local, uncommitted hardening are
+  `../03-ניהול-הפיתוח-ההנדסי/ניהול-ספרינטים.md`,
+  `נהלי-העבודה-המחייבים.md`,
+  `../03-ניהול-הפיתוח-ההנדסי/פרוטוקול-השינוי-האימות-המסירה-והסגירה-הסמכותי.md`,
+  and `../../AGENTS.md` for Codex enforcement only;
+- the synchronized semantic delta covers causal continuity, obligation
+  disposition, Final Historical / Causal Reconstruction, Governance Delta
+  Check, Accumulated Delta Sweep, Genericity / Instance-Leak validation, Final
+  Re-grounding, Pre-Commit Continuity, pending closing-SHA semantics and proof
+  levels; its commit / Push / CI / parity evidence remains `OPEN`;
+- late evidence must write back to the R&D 001 and R&D 002 Chronicle/closure records,
   Register, Current Truth and Traceability, then reevaluate the same
   authoritative Gate without reopening R&D 001 implementation scope;
 - no Push, deployment, Production, runtime or external permission is inherited

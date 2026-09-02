@@ -143,6 +143,46 @@ Distinguish clearly:
 
 No required evidence means no PASS.
 
+When describing proof, label its applicable boundary consistently with the
+evidence taxonomy in the authoritative protocol:
+
+- `LEVEL 1 — LOCAL / CONTRACT PROOF`;
+- `LEVEL 2 — EXTERNAL MECHANISM PROOF`;
+- `LEVEL 3 — REAL END-TO-END PRODUCT PROOF`.
+
+Do not silently promote evidence across levels.
+
+### Authoritative Grounding and Execution Triggers
+
+The procedures themselves remain owned by their Natural Homes in
+`docs/03-ניהול-הפיתוח-ההנדסי/ניהול-ספרינטים.md` and
+`docs/06-ניהול-הידע-ורציפות-התיעוד/נהלי-העבודה-המחייבים.md`; this section
+only enforces Codex triggers.
+
+Codex must:
+
+- perform the applicable authoritative reload and re-grounding at R&D Opening,
+  on manual `הפסקה`, on detected material grounding loss or drift, and before
+  finalizing an authoritative Handoff;
+- automatically invoke `ממסר` when work encounters a genuinely missing
+  mechanism, integration or linking layer, before its Impact Map;
+- stop immediately on material deviation from an approved plan, contract,
+  scope, mechanism, architecture, dependency assumption or approved order,
+  and perform no new RED, GREEN or scope-changing compatibility repair before
+  Product Owner decision;
+- treat mapped legacy debt appearing exactly as approved, and purely
+  operational runner/permission issues that do not change the approved
+  mechanism, according to their evidence rather than automatically as material
+  architectural deviations;
+- treat `לעיון/אישור בלבד` as non-executable;
+- continue automatically after a safe successful step to the next authorized,
+  protocol-correct action unless evidence, approval or a mandatory STOP is
+  genuinely required;
+- complete the applicable Accumulated Delta Sweep and Genericity /
+  Instance-Leak validation at the pre-closure station;
+- never predict or invent the SHA of a closing commit that does not yet exist;
+  use `FINAL / HANDOFF COMMIT: PENDING` until repository evidence exists.
+
 ### Git Safety
 
 Read-only Git inspection is allowed autonomously.

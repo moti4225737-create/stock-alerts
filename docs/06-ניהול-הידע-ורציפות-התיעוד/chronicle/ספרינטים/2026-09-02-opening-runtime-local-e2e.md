@@ -137,6 +137,15 @@ case, בלי redesign אוטומטי של הארכיטקטורה.
   per-holding opening lifecycle into runtime`;
 - continuity-protocol commit:
   `d6546e9869c79589b97e2904112868fc24341abf — docs: anchor R&D continuity protocol`;
+- open-gate Handoff commit:
+  `61ba9da11336a6623c4eaf68a2f55899685afaad — docs: finalize R&D 001 open-gate handoff`;
+- current Pre-Commit Local HEAD:
+  `61ba9da11336a6623c4eaf68a2f55899685afaad`;
+- post-closure governance hardening:
+  `FINAL / HANDOFF COMMIT: PENDING`;
+- authoritative pushed SHA for these local commits: `NOT VERIFIED`;
+- deployed SHA: not applicable while Production remains `OFF` and deployment
+  is not approved;
 - ה־implementation snapshot עוגן ב־commit המקומי; push ו־CI עבור commit זה
   לא בוצעו.
 - היקף הייצור כולל את Portfolio Truth lifecycle, מודלי/יישומי Opening,
@@ -222,7 +231,9 @@ R&D 002 הוא ה־successor היחיד המקבל בעלות רציפות על 
    - Status: `BLOCKED`.
    - Evidence earned: local commits
      `dc9d8914cda1a31f877cd25c4ff2fe953c16f88a` and
-     `d6546e9869c79589b97e2904112868fc24341abf` exist.
+     `d6546e9869c79589b97e2904112868fc24341abf`, and Handoff commit
+     `61ba9da11336a6623c4eaf68a2f55899685afaad` exist; the governance-hardening
+     closing commit remains `PENDING`.
    - Reason: Push safety has not passed.
    - Prerequisite: controls 1–2 pass.
    - Approval/safety: explicit PO Push approval is required.
@@ -256,10 +267,38 @@ R&D 002 הוא ה־successor היחיד המקבל בעלות רציפות על 
      Traceability.
    - Approval/safety: only the authoritative Closure protocol may grant PASS.
 
+7. **POST-CLOSURE GOVERNANCE HARDENING**
+   - Gate identity: the same authoritative End-to-End Closure Gate; this is
+     closure-evidence work and does not reopen R&D 001 implementation.
+   - Status: `OPEN`.
+   - Evidence earned: the bounded closed-loop continuity rules are documented
+     locally in their existing Natural Homes and the applicable state/evidence
+     records are synchronized; the working-tree change is not yet a commit, and
+     presence in an Opening Block is not closure evidence.
+   - Reason: its exact local commit and the corresponding Push, CI and
+     local/remote SHA-parity evidence do not yet exist.
+   - Prerequisite: after the governance hardening is committed locally, R&D 002
+     inherits that commit as part of the authoritative local repository state
+     and completes its repository/remote evidence together with controls 3–5.
+   - Approval/safety: no external permission is inherited; the existing
+     approval and Forward Consequence controls remain binding.
+
+ה־Natural Homes ששונו הם נוהל רציפות יחידות R&D, נהלי העבודה המחייבים,
+ה־End-to-End Closure protocol היחיד ו־`AGENTS.md` כ־Codex enforcement בלבד.
+השינוי מקבע באופן כללי closed-loop continuity, ‏Accumulated Delta Sweep,
+Genericity / Instance-Leak validation, re-grounding, causal reconstruction,
+pre-commit continuity ו־proof levels. הוא אינו מקודד את פרטי instance זה
+ככלל קבוע, אינו יוצר Gate חדש ואינו פותח מחדש את מימוש R&D 001.
+
 Before consequential work, the R&D 002 Opening Block / First-Minute
-Re-grounding must acknowledge these six controls, their unchanged statuses and
-their approval boundaries. Late completion writes evidence back to R&D 001 and
-must not reopen or expand its completed implementation scope.
+Re-grounding must acknowledge these seven controls, their unchanged statuses
+and their approval boundaries. The official Opening Block generated after
+Final Re-grounding must explicitly carry `POST-CLOSURE GOVERNANCE HARDENING`
+among its `OPEN`/`BLOCKED` controls and identify the inherited local commit;
+including it there does not constitute closure evidence. Late completion writes
+evidence back to the authoritative R&D 001 and R&D 002 records, Register,
+Current Truth and Traceability under the existing late-evidence/write-back rule,
+and must not reopen or expand R&D 001's completed implementation scope.
 
 ## Follow-ups
 

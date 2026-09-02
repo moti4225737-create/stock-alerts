@@ -268,6 +268,11 @@ correlation/summary/presentation נוספת, Telegram Production validation או
 בוצעו.
 נוהל הרציפות עוגן ב־commit המקומי
 `d6546e9869c79589b97e2904112868fc24341abf`.
+ה־open-gate Handoff עוגן ב־commit המקומי
+`61ba9da11336a6623c4eaf68a2f55899685afaad`, שהוא גם ה־Pre-Commit Local HEAD
+הנוכחי. עבור post-closure governance hardening נרשם
+`FINAL / HANDOFF COMMIT: PENDING`; אין עדיין authoritative pushed SHA או CI
+עבור שרשרת commits זו.
 
 היחידה הבאה הרשומה היא
 `R&D 002 — Alpha Portfolio Initial Integration` במצב `NEXT — NOT OPEN`.
@@ -280,10 +285,26 @@ Production נשאר `OFF` לפי ה־Current Truth המתועד, אך מצב Rai
 plane החיצוני הנוכחי, Auto Deploy ו־Wait for CI הם `NOT VERIFIED`. אין אישור
 ל־push, reconnect, restart או deployment מכוח תיעוד זה.
 
-ששת ה־Gate controls הנישאים ל־R&D 002 הם: external GitHub/Railway safety
+שבעת ה־Gate controls הנישאים ל־R&D 002 הם: external GitHub/Railway safety
 verification; rerun של Forward Consequence Check; Push מאושר; CI על ה־SHA
 הסמכותי; local/remote SHA parity; ו־Final authoritative Closure Gate PASS
-ל־R&D 001. חמשת הראשונים `BLOCKED` והאחרון `OPEN`. R&D 002 חייב לאשר אותם
-ב־Opening/Re-grounding לפני consequential work. ראיה מאוחרת נכתבת בחזרה
-לרשומת R&D 001 ולבתי ה־Register, ‏Current Truth ו־Traceability בלי להרחיב
-מחדש את scope המימוש שהושלם.
+ל־R&D 001; וכן `POST-CLOSURE GOVERNANCE HARDENING`. חמשת הראשונים `BLOCKED`
+ושני האחרונים `OPEN`. פריט ההקשחה אינו פותח מחדש את implementation של R&D
+001. לאחר יצירת ה־commit המקומי שלו, הוא יהיה חלק ממצב המאגר המקומי הסמכותי
+שיורש R&D 002; עצם הופעתו ב־Opening Block אינה ראיית סגירה. R&D 002 חייב
+לאשר את כל שבעת הפריטים ב־Opening/Re-grounding לפני consequential work,
+וה־Opening Block הרשמי שיופק לאחר Final Re-grounding חייב לשאת את פריט
+ההקשחה במפורש. ראיה מאוחרת, לרבות Push, ‏CI ו־local/remote SHA parity, נכתבת
+בחזרה לרשומות הסמכותיות של R&D 001 ו־R&D 002 ולבתי ה־Register, ‏Current Truth
+ו־Traceability לפי כלל ה־late-evidence/write-back הקיים, בלי להרחיב מחדש את
+scope המימוש שהושלם. עצם ה־handoff או הרישום ב־Opening Block אינם ראיית סגירה.
+
+ה־closed-loop continuity hardening מאושר ומתועד כעת בשינוי מקומי לא־מחויב
+בבתי הסמכות הקיימים: ניהול ספרינטים ורציפות R&D, נהלי העבודה המחייבים,
+ה־End-to-End Closure protocol היחיד, ו־`AGENTS.md` כ־Codex enforcement בלבד.
+הוא כולל causal continuity, סיווג obligations, ‏Final Historical / Causal
+Reconstruction, ‏Governance Delta Check, ‏Accumulated Delta Sweep,
+Genericity / Instance-Leak validation, ‏Final Re-grounding, ‏Pre-Commit
+Continuity, מניעת SHA self-reference ו־proof levels. זהו מצב תיעוד מקומי
+`OPEN`: אין עדיין closing commit, ‏Push, ‏CI או SHA parity עבור שינוי זה, והוא
+אינו משנה את `CLOSED — HANDED OFF` של R&D 001 או פותח את R&D 002.
