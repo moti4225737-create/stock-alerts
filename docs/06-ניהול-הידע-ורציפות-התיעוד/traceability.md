@@ -118,9 +118,12 @@ Validation evidence:
 Repository / Production evidence:
 
 - R&D unit: `R&D 001 — Opening Runtime Local E2E`;
-- status: `IMPLEMENTATION COMPLETE — CLOSURE IN PROGRESS`, not `CLOSED`;
+- unit / conversation status: `CLOSED — HANDED OFF`;
+- authoritative Closure Gate: `OPEN`, not `PASS`;
 - local implementation commit:
   `dc9d8914cda1a31f877cd25c4ff2fe953c16f88a`;
+- local continuity-protocol commit:
+  `d6546e9869c79589b97e2904112868fc24341abf`;
 - Push / PR / CI for this commit: `NOT RUN`;
 - Production remains `OFF`; external reconnect, deployment and restart are
   `NOT APPROVED`;
@@ -135,6 +138,18 @@ Continuity:
   `../03-ניהול-הפיתוח-ההנדסי/ניהול-ספרינטים.md`;
 - successor: `R&D 002 — Alpha Portfolio Initial Integration`;
 - successor status: `NEXT — NOT OPEN`;
+- successor must acknowledge all carried R&D 001 Gate controls in its Opening
+  Block / First-Minute Re-grounding before consequential work;
+- carried controls retain their original Gate identities and statuses:
+  external GitHub/Railway safety verification (`BLOCKED`), Forward Consequence
+  Check (`BLOCKED`, previous `STOP`), approved Push (`BLOCKED`), CI on the
+  authoritative pushed SHA (`BLOCKED`), local/remote SHA parity (`BLOCKED`),
+  and final R&D 001 authoritative Closure Gate PASS (`OPEN`);
+- late evidence must write back to the R&D 001 Chronicle/closure record,
+  Register, Current Truth and Traceability, then reevaluate the same
+  authoritative Gate without reopening R&D 001 implementation scope;
+- no Push, deployment, Production, runtime or external permission is inherited
+  through this Handoff;
 - transferred work includes real portfolio onboarding, bounded canary
   activation, real Perplexity/SEC Opening proof, live Opening-to-continuous-
   operation proof, real-world flood-prevention validation and holding/company-

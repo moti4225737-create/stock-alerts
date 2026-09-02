@@ -260,11 +260,14 @@ correlation/summary/presentation נוספת, Telegram Production validation או
 
 `chronicle/ספרינטים/2026-09-02-opening-runtime-local-e2e.md`
 
-יחידת העבודה רשומה כ־`R&D 001 — Opening Runtime Local E2E` במצב
-`IMPLEMENTATION COMPLETE — CLOSURE IN PROGRESS`; היא אינה `CLOSED`.
+יחידת העבודה והשיחה רשומות כ־`R&D 001 — Opening Runtime Local E2E` במצב
+`CLOSED — HANDED OFF`. ה־Authoritative Closure Gate שלה נשאר `OPEN`; לא
+נרשם Gate PASS ואף control פתוח או חסום לא בוטל.
 ה־implementation snapshot נמצא ב־commit המקומי
 `dc9d8914cda1a31f877cd25c4ff2fe953c16f88a`. push ו־CI עבור commit זה לא
 בוצעו.
+נוהל הרציפות עוגן ב־commit המקומי
+`d6546e9869c79589b97e2904112868fc24341abf`.
 
 היחידה הבאה הרשומה היא
 `R&D 002 — Alpha Portfolio Initial Integration` במצב `NEXT — NOT OPEN`.
@@ -276,3 +279,11 @@ company. יכולות אלה אינן מוכחות על־ידי ה־Local E2E ש
 Production נשאר `OFF` לפי ה־Current Truth המתועד, אך מצב Railway control
 plane החיצוני הנוכחי, Auto Deploy ו־Wait for CI הם `NOT VERIFIED`. אין אישור
 ל־push, reconnect, restart או deployment מכוח תיעוד זה.
+
+ששת ה־Gate controls הנישאים ל־R&D 002 הם: external GitHub/Railway safety
+verification; rerun של Forward Consequence Check; Push מאושר; CI על ה־SHA
+הסמכותי; local/remote SHA parity; ו־Final authoritative Closure Gate PASS
+ל־R&D 001. חמשת הראשונים `BLOCKED` והאחרון `OPEN`. R&D 002 חייב לאשר אותם
+ב־Opening/Re-grounding לפני consequential work. ראיה מאוחרת נכתבת בחזרה
+לרשומת R&D 001 ולבתי ה־Register, ‏Current Truth ו־Traceability בלי להרחיב
+מחדש את scope המימוש שהושלם.

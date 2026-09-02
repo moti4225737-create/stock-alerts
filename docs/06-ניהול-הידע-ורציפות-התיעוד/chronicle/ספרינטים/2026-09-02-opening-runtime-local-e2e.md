@@ -3,7 +3,8 @@
 ## R&D Registration
 
 - R&D ID: `R&D 001`.
-- Status: `IMPLEMENTATION COMPLETE — CLOSURE IN PROGRESS`.
+- Unit / conversation status: `CLOSED — HANDED OFF`.
+- Authoritative Closure Gate: `OPEN`.
 - Predecessor: none registered under the permanent R&D numbering convention.
 - Successor: `R&D 002 — Alpha Portfolio Initial Integration`.
 - Successor status: `NEXT — NOT OPEN`.
@@ -134,6 +135,8 @@ case, בלי redesign אוטומטי של הארכיטקטורה.
 - upstream: `origin/main`;
 - commit מקומי: `dc9d8914cda1a31f877cd25c4ff2fe953c16f88a — feat: integrate
   per-holding opening lifecycle into runtime`;
+- continuity-protocol commit:
+  `d6546e9869c79589b97e2904112868fc24341abf — docs: anchor R&D continuity protocol`;
 - ה־implementation snapshot עוגן ב־commit המקומי; push ו־CI עבור commit זה
   לא בוצעו.
 - היקף הייצור כולל את Portfolio Truth lifecycle, מודלי/יישומי Opening,
@@ -191,10 +194,77 @@ R&D 002 מקבל בעלות מפורשת על:
 
 אף אחד מפריטים אלה אינו נחשב מושלם או מוכח על־ידי R&D 001.
 
+### Carried authoritative Gate controls
+
+R&D 002 הוא ה־successor היחיד המקבל בעלות רציפות על ה־controls הבאים. הבעלות
+אינה מוותרת, סוגרת, מחליפה או מסווגת אותם מחדש ואינה מעבירה הרשאה לפעולה
+חיצונית כלשהי.
+
+1. **External GitHub/Railway safety verification**
+   - Gate identity: Repository and Branch Truth / Forward Consequence safety.
+   - Status: `BLOCKED`.
+   - Evidence earned: repository-only pre-push audit completed.
+   - Reason: current Railway control-plane state is not externally verified.
+   - Prerequisite: authorized external verification of GitHub/Railway state.
+   - Approval/safety: PO approval required before external access or state change.
+
+2. **Forward Consequence Check before Push**
+   - Gate identity: Forward Consequence Check.
+   - Status: `BLOCKED`; previous result: `STOP`.
+   - Evidence earned: local chain from push through CI to possible Railway
+     deployment was mapped.
+   - Reason: the external safety premise remains unverified.
+   - Prerequisite: complete control 1, then rerun the same check.
+   - Approval/safety: no Push authority is inherited; PO approval remains required.
+
+3. **Push of the approved local commits**
+   - Gate identity: Commit and Push.
+   - Status: `BLOCKED`.
+   - Evidence earned: local commits
+     `dc9d8914cda1a31f877cd25c4ff2fe953c16f88a` and
+     `d6546e9869c79589b97e2904112868fc24341abf` exist.
+   - Reason: Push safety has not passed.
+   - Prerequisite: controls 1–2 pass.
+   - Approval/safety: explicit PO Push approval is required.
+
+4. **CI on the authoritative pushed SHA**
+   - Gate identity: CI.
+   - Status: `BLOCKED`.
+   - Evidence earned: local final regression is `802 passed in 15.41s`.
+   - Reason: local regression is not CI evidence and no authoritative SHA was pushed.
+   - Prerequisite: safe approved Push.
+   - Approval/safety: CI may be triggered only through the approved safe path.
+
+5. **Local/remote authoritative SHA parity**
+   - Gate identity: Repository and Branch Truth / Final Repository Closure.
+   - Status: `BLOCKED`.
+   - Evidence earned: local branch and commits are known; cached remote evidence
+     showed local `main` ahead before this Handoff update.
+   - Reason: remote authoritative SHA and CI result are absent.
+   - Prerequisite: Push, CI evidence and read-only remote parity verification.
+   - Approval/safety: external access and Push require their applicable approvals.
+
+6. **Final authoritative Closure Gate PASS for R&D 001**
+   - Gate identity: Final Repository Closure under the single authoritative
+     End-to-End Closure protocol.
+   - Status: `OPEN`.
+   - Evidence earned: R&D 001 implementation outcome and local validation passed;
+     repository-cleanliness control passed with protected artifacts contained.
+   - Reason: controls 1–5 remain incomplete.
+   - Prerequisite: all applicable carried controls pass and final evidence is
+     written back to this R&D 001 record, the Register, Current Truth and
+     Traceability.
+   - Approval/safety: only the authoritative Closure protocol may grant PASS.
+
+Before consequential work, the R&D 002 Opening Block / First-Minute
+Re-grounding must acknowledge these six controls, their unchanged statuses and
+their approval boundaries. Late completion writes evidence back to R&D 001 and
+must not reopen or expand its completed implementation scope.
+
 ## Follow-ups
 
-- להשלים את Closure של R&D 001 רק לפי הפרוטוקול הסמכותי היחיד; Handoff זה
-  אינו מסמן את היחידה כ־`CLOSED`.
+- להשלים את ה־Closure Gate של R&D 001 רק לפי הפרוטוקול הסמכותי היחיד;
+  `CLOSED — HANDED OFF` אינו Gate PASS.
 - לבצע push ו־CI רק לאחר אימות מצב חיצוני ואישור מפורש.
 - לפתוח את `R&D 002` לפי ה־Opening Block המחייב וה־handoff לעיל.
 - להשאיר Production ו־external delivery כבויים עד לאישור והוכחה נפרדים.
