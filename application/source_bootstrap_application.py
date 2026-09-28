@@ -28,7 +28,13 @@ class SourceBootstrapApplication:
         research: Callable[..., object],
         identity_resolver: SECCompanyIdentityResolver,
         opening_verification: Callable[[SourceBootstrapState], object],
+        admission_reason: str | None = None,
     ) -> SourceBootstrapState:
+        if admission_reason not in (
+            None,
+            "current authoritative holding missing Opening admission state",
+        ):
+            raise ValueError("Unsupported Opening admission reason")
         is_introduced = any(
             holding.symbol == target_holding.symbol
             for holding in self._portfolio_service.introduced_holdings
@@ -56,12 +62,17 @@ class SourceBootstrapApplication:
             verified_identity = identity
             return research(request, known_identity=identity)
 
+        initiation_options = (
+            {"admission_reason": admission_reason}
+            if admission_reason is not None else {}
+        )
         state = self._portfolio_service.begin_source_bootstrap(
             target_holding=target_holding,
             research=research_with_verified_identity,
+            **initiation_options,
         )
         if state is None:
-            raise RuntimeError("No newly introduced holding to bootstrap")
+            raise RuntimeError("No eligible current holding to bootstrap")
         if state.request.holding.symbol != target_holding.symbol:
             raise RuntimeError(
                 "Source Bootstrap state does not belong to target holding"

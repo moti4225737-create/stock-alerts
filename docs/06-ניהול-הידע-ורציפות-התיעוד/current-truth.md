@@ -216,6 +216,13 @@ Healthchecks נשאר מקור עצמאי ונפרד ל־fresh work / liveness e
 
 ## Opening / Initialization — Local Runtime Integration Proven — 2026-09-02
 
+HISTORICAL CHECKPOINT EVIDENCE — הסעיף הזה, עד לכותרת R&D 002 הבאה,
+משמר את תחנת Opening / R&D 001: `NEXT — NOT OPEN` היה מצב היחידה
+היורשת באותה תחנה, וגם טענות HEAD, מצב המאגר והמצב החיצוני שייכות
+לאותה תחנה. המצב והחוזים הנוכחיים מסופקים בסעיף
+`R&D 002 — Alpha Portfolio Initial Integration — Current State` להלן
+ובבית הארכיטקטורה המקושר. הסתייגות זו אינה סוגרת חובות שנותרו פתוחות.
+
 ה־Opening הנוכחי ממומש כמחזור חיים עצמאי לכל holding חדש לאחר קבלת
 Portfolio Truth סמכותי ולפני צריכת התיק ב־runtime. הוא כולל זהות מאומתת
 בבעלות Sentinel, מחקר bounded, החלטות אימות מפורשות, מצבי `LEARNING` /
@@ -308,3 +315,360 @@ Genericity / Instance-Leak validation, ‏Final Re-grounding, ‏Pre-Commit
 Continuity, מניעת SHA self-reference ו־proof levels. זהו מצב תיעוד מקומי
 `OPEN`: אין עדיין closing commit, ‏Push, ‏CI או SHA parity עבור שינוי זה, והוא
 אינו משנה את `CLOSED — HANDED OFF` של R&D 001 או פותח את R&D 002.
+## R&D 002 — Alpha Portfolio Initial Integration — Current State
+
+`R&D 002 — Alpha Portfolio Initial Integration` הוא יחידת העבודה הפעילה.
+
+### Runtime Admission / Opening
+
+runtime eligibility דורש current Portfolio Truth membership וגם Opening
+`READY` של מחזור החברות הרציף הנוכחי. הכלל חל גם על current/legacy holdings;
+אין grandfathering. removal/reintroduction יוצר lifecycle חדש ו־READY ישן
+אינו מקנה זכאות למחזור החדש.
+
+### Source Observation / time_zero
+
+`time_zero` הוא גבול `learn past, monitor forward`.
+historical occurrence שקדם לו יכול להילמד כהקשר אך אינו NEW בגלל discovery
+מאוחר. occurrence ב־`time_zero` או אחריו יכול להיכנס ל־NEW/CHANGE.
+missing/invalid authoritative occurrence time נכשל fail-closed.
+
+Opening = admission/lifecycle.
+Source Observation = observed objects/baseline/NEW/CHANGE/pending.
+NotificationHistory = delivery dedup בלבד.
+
+G1/G2 נסגרו ברמת המימוש והבדיקות המקומיות. Delta Sweep קיבע עבור
+ClinicalTrials שימוש ב־first-post ל־new-study וב־authoritative last-update
+ל־status transition ללא fallback מטעה.
+
+### Canary / validation
+
+`main.py` דורש `AUTONOMOUS_MAX_CYCLES` חיובי. יעד Alpha Canary הוא cycle אחד.
+
+latest full local regression: `877 passed in 19.03s`.
+זו אינה Production/Canary evidence.
+
+Production נשאר `OFF`.
+
+Railway: Auto Deploy disabled, replica יחיד, persistent volume ב־`/data`.
+חמישה changes מוכנים אך לא הוחלו: Source Observation durable path, שני
+ClinicalTrials page bounds = `1`, `AUTONOMOUS_MAX_CYCLES=1`, Restart Policy
+`Never`.
+
+### Open controls
+
+- C1 — `OPEN`: current authoritative real Portfolio Truth snapshot לפני Canary.
+- C2 — accumulated configuration/account/model/destination/bounds evidence;
+  אין overclaim מעבר למה שאומת.
+- X1 — local finite containment proven; remaining pre-activation evidence פתוח.
+- X2 — `OPEN`: Forward Consequence Check מול candidate SHA ומצב GitHub/Railway
+  הנוכחי לפני Push.
+- X3 — `OPEN`: real correlated Canary evidence.
+
+candidate closing Commit/SHA, Push, CI ו־Production Canary עדיין אינם קיימים.
+
+Chronicle:
+`chronicle/ספרינטים/2026-09-06-alpha-portfolio-initial-integration.md`.
+
+## Design C foundation — current station
+
+| Unit | Current unit state |
+|---|---|
+| R&D 002 | ACTIVE |
+
+The current station is the single station-state block in the R&D 002 Chronicle,
+section `WDS resolver GREEN — 2026-09-09`. Earlier C3 and
+Design C Foundation RED/GREEN station statements are historical checkpoints.
+The Design C foundation passed its approved local FOUNDATION_GREEN self-application validation. This is not Authoritative Closure PASS.
+Obligation status is owned only by
+`../03-ניהול-הפיתוח-ההנדסי/open-obligations.json`.
+#21/#22/#26 and C2/X1/X2/X3 remain OPEN at their recorded boundaries.
+The recovered PO audit reports C1's 22-holding snapshot achieved locally; the
+previous C1 OPEN entry is superseded at that checkpoint, not proof of future
+preactivation freshness. #10/#12/#35 write-back is recorded in the Chronicle
+and Traceability. 880 PASS is prior reported evidence, not a new run here.
+Production/external state was not rechecked. No WDS retry, activation, Git delivery
+or domain correction is authorized by this foundation record.
+
+### WDS resolver — local GREEN verified
+
+The PO supplied host RED evidence (7 failed, 46 passed) and approved GREEN on
+2026-09-09. The minimal target-scoped resolver correction is implemented.
+Agent-executed focused validation: 53 passed; directly affected Opening/identity
+protection: 136 passed. VERIFIED — LEVEL 1 — LOCAL / CONTRACT PROOF.
+See traceability.md, section "WDS resolver GREEN — 2026-09-09", for commands,
+timings, scope and evidence provenance. No RED tests were changed.
+
+The current station is the single Chronicle station-state block; R&D 002
+remains ACTIVE. The prior RED NOT RUN and revalidation-pending statements are
+historical and superseded by the recorded host evidence and current local run.
+No external outcome or authoritative closure is established. Historical exact
+SEC-row attribution remains unproven. Obligation statuses remain exclusively
+in open-obligations.json. No external retry or delivery is authorized.
+The PO subsequently accepted this local GREEN. After two obsolete pre-GREEN
+station assertions caused full regression failure (2 failed, 983 passed), the
+PO approved bounded test alignment. Five stale expectations were updated in
+tests/test_design_c_repository.py; production code was unchanged.
+Focused Design C: 7 passed in 2.05s. Full regression: 985 passed in 37.78s.
+The local GREEN package is now full-regression-proven at LEVEL 1 only.
+See the existing WDS GREEN Traceability section for provenance and commands.
+Station remains GREEN / LOCAL PASS, R&D 002 ACTIVE; no Closure or external proof.
+Fresh Design C proof was subsequently authorized and executed: focused JUnit
+85 passed (19.31s), full JUnit 985 passed (37.08s), zero failures/errors/skips.
+The three Design C receipts were renewed only after verifying those NEW
+artifacts and current subject hashes. Historical artifacts/receipts are retained.
+Baseline, bindings and obligation statuses are unchanged. See Traceability,
+"Fresh Design C executable proof — 2026-09-09". Evidence remains LEVEL 1 only.
+
+### RND002 recovery reconciliation
+
+The earlier prospective package descriptions are superseded as current truth by the applied-state checkpoint below. Their recovery history remains in the R&D 002 Chronicle and Traceability.
+
+### Post-reconciliation current state
+
+R&D 002 remains ACTIVE. The Authoritative Closure Gate remains OPEN.
+Chronicle Recovery is CLOSED. O28 is CLOSED / valid. Design C Evidence Reconciliation is CLOSED / VALID.
+The authoritative active receipts validate against their current subjects. The observed post-renewal Resolver returned RESOLVED_CONTEXT, diagnostics=[], for Traceability version 8c29682b28febd21a80ce9ef0330447b5f2e6edf4a01413301193ffbe8ae650c before this factual persistence package.
+
+Current station and local-only next_action remain in the single Chronicle station-state block. Earlier 985-test statements above describe historical WDS/Foundation checkpoints, not newly executed proof. Current proof provenance is in Traceability under O28 fresh evidence renewal and Design C final evidence renewal.
+
+The Product Owner has approved Exceptional Generated Replacement Mutation
+and Continuous Convergence Control. At the persistence-preparation checkpoint,
+controlled normative persistence and post-mutation validation remain PENDING;
+approval alone does not complete either. The decisions' sole normative owner
+is the authoritative protocol, §3 and §19 respectively.
+Decision provenance and checkpoint accounting:
+[Chronicle](chronicle/ספרינטים/2026-09-06-alpha-portfolio-initial-integration.md#rnd002-approved-governance-decisions---persistence-preparation).
+This supersedes earlier descriptions of the Mutation Safety PO decision as
+pending; it does not change historical evidence or establish Documentation
+Checkpoint or Closure PASS. No STATION_COMPLETE or Closure PASS is claimed. No WDS/external action, Production/Canary, delivery, Stage/Commit/Push authorization follows.
+
+### Continuous Accountability contract state
+
+Design Contract: APPROVED by the Product Owner.
+Authoritative home:
+[Documentation Checkpoint](documentation-checkpoint.md#continuous-accountability-design-contract).
+Documentation anchoring: written; post-write verification pending.
+Mechanism: NOT IMPLEMENTED. RED: NOT STARTED.
+The cumulative accounting collection has not been created or activated;
+R&D 002 migration has not been performed.
+Approval and history:
+[Chronicle](chronicle/ספרינטים/2026-09-06-alpha-portfolio-initial-integration.md#continuous-accountability-contract-anchoring).
+Verification and evidence boundary:
+[Traceability](traceability.md#continuous-accountability-contract-anchoring).
+R&D 002 remains ACTIVE; Documentation Checkpoint is not complete and
+authoritative Closure remains OPEN. The separate mutation-safety matter
+is not resolved by this contract's approval or anchoring.
+
+<!-- DC-CONTINUOUS-ACCOUNTABILITY-CURRENT-TRUTH -->
+### Documentation Checkpoint Continuous Accountability
+
+Current state:
+- Design Contract: **PO APPROVED / DOCUMENTATION PERSISTED** after successful post-write verification.
+- Authoritative Natural Home:
+  `docs/06-ניהול-הידע-ורציפות-התיעוד/documentation-checkpoint.md`.
+- Mechanism implementation: **NOT IMPLEMENTED**.
+- Cumulative Known Material Outcomes collection: **NOT ACTIVATED**.
+- R&D 002 migration: **NOT STARTED**.
+- RED: **NOT STARTED**.
+- This state is not Documentation Checkpoint PASS and not Closure PASS.
+<!-- /DC-CONTINUOUS-ACCOUNTABILITY-CURRENT-TRUTH -->
+
+<!-- DC-CONTINUOUS-ACCOUNTABILITY-RND002-APPLIED-STATE -->
+### Documentation Checkpoint Continuous Accountability ? applied implementation state
+
+Current Truth supersedes the earlier `NOT IMPLEMENTED / NOT ACTIVATED / NOT STARTED`
+implementation statements in this document.
+
+- Design Contract: **PO APPROVED / PERSISTED**.
+- Mechanism: **IMPLEMENTED LOCALLY**.
+- Canonical cumulative checkpoint accounting: **ACTIVATED for R&D 002**.
+- R&D 002 migration: **APPLIED**.
+- Validation: domain 16 PASS; integration/continuity 15 PASS; post-migration focused
+  validation 31 PASS.
+- Design C Controlled Renewal: **TECHNICAL / EVIDENTIAL PASS**; focused 95 PASS,
+  full regression 1016 PASS. The three existing receipts are renewed against fresh verified
+  JUnit artifacts; historical evidence remains preserved.
+- Post-renewal LOCAL_DIAGNOSIS: **RESOLVED_CONTEXT**, diagnostics=[], exit 0.
+- Bounded checkpoint population review/disposition: **RECONCILED**; six existing outcomes,
+  six valid RESOLVED dispositions, zero registered PENDING. This is accounting readiness,
+  not Documentation Checkpoint PASS.
+- Next existing control: **Governance Delta Check and Accumulated Delta Sweep**, followed
+  by remaining population checks, Final Documentation Review and Final Re-grounding.
+- Repository-side stale `?????` dependency: **NOT FOUND**.
+- WDS real one-holding proof: **NOT EXECUTED / NOT PASS; transferred by PO decision to
+  the first execution objective of R&D 003**.
+- Repository Mutation Safety retains its existing governance/process disposition. Design C
+  evidence-lifecycle friction is resolved by Controlled Renewal; historical failures are retained
+  in Chronicle/Traceability. Neither creates a new Closure authority.
+- R&D 002 remains ACTIVE and authoritative Closure remains OPEN until the remaining
+  checkpoint/closure requirements are completed.
+<!-- /DC-CONTINUOUS-ACCOUNTABILITY-RND002-APPLIED-STATE -->
+
+
+### Controlled Renewal checkpoint reconciliation - 2026-09-13
+
+The accepted Controlled Renewal result supersedes earlier current-state regression-failure claims. The existing RND002-DESIGN-C-EVIDENCE-LIFECYCLE outcome is RESOLVED / CONTROLLED_RENEWAL_PASS. Population comparison and disposition provenance: [R&D002 Chronicle](chronicle/ספרינטים/2026-09-06-alpha-portfolio-initial-integration.md#Controlled Renewal checkpoint reconciliation - 2026-09-13). Zero PENDING does not establish Checkpoint or R&D002 Closure PASS. WDS remains NOT EXECUTED / NOT PASS, transferred to R&D003. Permanent governance Natural-Home anchoring remains part of the next existing Governance Delta Check; no normative authority is created here.
+
+### Orientation Before Direction Change - PO-approved persistence
+
+The PO-approved Orientation rule is persisted in
+[mandatory working procedures](נהלי-העבודה-המחייבים.md#orientation-before-direction-change).
+Approval/accounting: [R&D 002 Chronicle](chronicle/ספרינטים/2026-09-06-alpha-portfolio-initial-integration.md#orientation-before-direction-change---po-approved-persistence).
+This decision does not require an Operational Analysis Classifier implementation
+or authorize an enforcement component. The population is now seven RESOLVED outcomes, zero PENDING, after persistence validation and bounded seven-outcome population review. Earlier six-outcome/zero-PENDING
+statements describe the prior checkpoint. R&D 002 remains ACTIVE, Closure OPEN.
+WDS remains NOT EXECUTED / NOT PASS with its approved R&D 003 first-execution intent.
+### RND002 closed-work persistence - D1 D2 D3
+
+The PO accepted D1/D2/D3 as CLOSED bounded local defects and authorized their
+closed-work persistence independently of remaining O22/O26 work.
+D1: SEC/FDA acquisition/storage failures remain visible through the pipeline/runner
+before ACK/completion. D2: SEC/FDA eligible durable pending replays with selective ACK.
+D3: durable NotificationHistory candidate publication precedes in-memory membership.
+
+Accepted evidence: focused D3/D2/D1 9/34/18 PASS (overlap); fault proof 29 PASS;
+neighboring 165 PASS; full regression 1050 PASS in 48.14s, exit 0.
+The fault/full JUnit artifacts have zero failures/errors/skips; this package does not
+rerun those tests. Earlier 1016 PASS remains historical Design C evidence.
+
+O21 is substantively proven; its authoritative status remains owned by
+open-obligations.json and may change only after E-O21 receipt validation.
+O22 remains OPEN, unchanged and unimplemented.
+O26 remains OPEN: bounded D1 SEC/FDA evidence is partial; ClinicalTrials acquisition
+failure-to-empty and separate TickerResolver failure-to-empty findings remain unresolved.
+No CT/TickerResolver implementation or O26 closure is authorized.
+
+#20 broader completeness remains unresolved / PROOF_INCONCLUSIVE for SEC capped,
+FDA capped and FDA partially malformed cases. #38 demonstrated deterministic local
+recovery defects are resolved; accepted-then-timeout remains AMBIGUOUS_EXTERNAL_OUTCOME,
+without exactly-once or real Telegram proof.
+
+Approval/history/accounting: [Chronicle](chronicle/ספרינטים/2026-09-06-alpha-portfolio-initial-integration.md#rnd002-closed-work-persistence---d1-d2-d3).
+Proof/provenance: [Traceability](traceability.md#rnd002-closed-work-persistence---d1-d2-d3).
+The three new checkpoint outcomes enter PENDING; final bounded accounting follows
+only after evidence, documentation and population validation.
+LEVEL 1 - LOCAL / CONTRACT PROOF only. R&D 002 remains ACTIVE. No station transition, whole-sprint Documentation Checkpoint PASS, Accumulated Delta Sweep PASS or R&D002 Closure PASS. No Stage/Commit/Push/Deploy, Production/external execution or WDS. WDS remains NOT EXECUTED / NOT PASS and transferred unchanged as the first execution objective of R&D 003.
+
+Persistence reconciliation: O21 CLOSED / E-O21 after validated durable receipt;
+O22 and O26 remain OPEN. The three new outcomes completed supported handling and
+existing focused accountability validation (16 PASS, exit 0). Bounded population:
+seven prior dispositions preserved plus three RESOLVED additions; ten RESOLVED,
+zero registered PENDING. This is not full Documentation Checkpoint or Closure PASS.
+
+### RND002 governance bounded procedural reconciliation - 2026-09-15
+
+PO authorization: bounded procedural reconciliation following TECHNICAL_GREEN_PASS;
+source approval: Codex attachment 17b04be1-0fa0-43c1-91dd-5b12b5fedf5c/pasted-text.txt.
+Scope: two authority documents, eight authority digests, bounded validation and
+current-state persistence only. This is not authorization for evidence renewal,
+O21/O22/O28 repair, Full Regression, transition, promotion, closure or external work.
+
+The original governance RED_PROVEN showed that the resolver lacked a separately
+authorized bounded intermediate GREEN action: 1 failed / 29 passed. The expanded
+pre-GREEN contract produced 20 failed / 29 passed / 41 deselected. Technical GREEN
+then passed 49 focused tests (41 deselected) and 79 safety tests; the original 29
+protection controls remained passing. This remains LEVEL 1 - LOCAL / CONTRACT
+PROOF, not foundation acceptance or renewed evidence.
+
+The protocol now states the intermediate/acceptance distinction in section 4.
+Engineering Decisions owns the detailed Lean Design C / Controlled Renewal and
+invocation contract: only explicit matched intermediate_execution.permission
+PERMITTED permits the bounded action; RESOLVED_CONTEXT alone is not authorization.
+Stale proof remains INVALID / RENEWAL_REQUIRED when eligible; independent blockers
+still block, and fresh proof remains required at the existing boundaries.
+
+Exactly eight authority digests were synchronized: B-O28, B-C2, B-X1,
+B-DC-FOUNDATION, B-DC-CONTINUITY, B-X2, B-X3 and B-DC-REGRESSION. No binding identity,
+applicability, mapping, assertion, proof requirement or required-before boundary
+changed. AGENTS and Mandatory Working Procedures were not modified.
+
+Post-synchronization canonical LOCAL_DIAGNOSIS: UNRESOLVED; EVIDENCE_INVALID for
+O21, O28, DC-FOUNDATION, DC-CONTINUITY and DC-REGRESSION. No unexpected diagnostic
+was observed. Bounded validation on the reconciled candidate: 49 passed / 41
+deselected in 16.72s and 79 passed in 17.16s, both exit 0; both JUnit artifacts
+have zero failures/errors/skips. Selected passes do not constitute complete native
+foundation acceptance, Full Regression or transition proof.
+
+O21 remains CLOSED in the unchanged obligation register, but E-O21 is stale;
+its shared fault-proof subject and missing mapping remain a separate unresolved
+dependency, not evidence of an established behavioral regression. O22 remains
+OPEN with its existing RED preserved; no O22 GREEN was performed. O28 remains
+CLOSED in the unchanged register, but its registry subject is now stale and its
+renewal applicability under the runtime binding remains unresolved. No mapping
+was manufactured and no subject was removed from any receipt.
+
+No evidence receipt was renewed. Historical receipts/artifacts and the approved
+baseline remain unchanged. Complete native focused acceptance is still blocked
+by the separate O21 evidence expectation issue; O28 adds the mapped applicability
+problem, and preserved O22 RED prevents Full Regression PASS. Stop before renewed
+evidence activation, foundation acceptance or transition/closure. R&D002 remains
+ACTIVE; the existing ten-RESOLVED/zero-PENDING bounded population is not expanded
+or promoted to a whole-checkpoint claim. WDS remains NOT EXECUTED / NOT PASS and
+transferred to R&D003. No Stage/Commit/Push/Deploy or Production/external action.
+
+Proof and execution details: [Traceability](traceability.md#rnd002-governance-bounded-procedural-reconciliation---2026-09-15).
+
+## RND002 O22 O26 local closure recovery - 2026-09-22
+
+O22 is CLOSED / E-O22 at LEVEL 1. Current SEC/FDA implementation compares
+observed objects and suppresses repeated live NEW; the focused existing tests
+cover same-process and reconstructed-provider replay after ACK plus the distinct
+object positive control.
+
+O26 is CLOSED / E-O26 at LEVEL 1. SEC/FDA failures retain authoritative state
+and do not report success; ClinicalTrials acquisition failures propagate without
+partial observation save; TickerResolver infrastructure failure propagates; and
+pipeline/runtime aggregation raises before pending ACK. Focused result: 30 PASS,
+zero failures/errors, artifact SHA-256
+`a5dec6cc28bda4b429fef0e537374f190fb54cab02b168f877b748655c2d4a3e`.
+
+No production code changed. Remaining Closure obligations are C2, X1 and X2.
+X3 remains bound to its original matched candidate/action evidence. R&D002
+Closure remains OPEN; no external, Production/Railway or Git delivery action
+occurred.
+
+## C2 bounded LEVEL 2 mechanism proof closure - 2026-09-23
+
+C2 is CLOSED with E-C2. The PO-authorized action
+`rnd002-c2-bounded-mechanism-proof-retry1` completed one autonomous cycle,
+one successful Telegram API/message attempt to the PO-bound destination
+Moti Stock Alerts, one durable NotificationHistory record outside the
+repository and a successful fresh-instance reload. Retry and waiter continuation
+were zero; providers, WDS, OpenAI, Railway, Production, deployment and Lifeguard
+remained unused. Evidence boundary: LEVEL 2 — EXTERNAL MECHANISM PROOF.
+This does not claim continuous Production operation or exactly-once delivery
+under accepted-then-timeout ambiguity. X1 and X2 remain OPEN / NOT STARTED.
+
+## X1 bounded LEVEL 2 finite containment proof closure - 2026-09-23
+
+X1 is CLOSED with E-X1. Action
+`rnd002-x1-bounded-finite-containment-proof` completed one autonomous cycle and
+one coordinator execution, returned normally, and produced no second cycle,
+waiter call, retry, continuation or post-return external activity. The bounded
+real mechanism used one Telegram API/message attempt to the PO-bound Moti Stock
+Alerts destination. Providers, WDS, OpenAI, Railway, Production, deployment and
+Lifeguard remained unused. Evidence boundary: LEVEL 2 — EXTERNAL MECHANISM PROOF.
+This does not claim continuous Production operation or exactly-once delivery
+under accepted-then-timeout ambiguity. C2 remains CLOSED; X2 remains OPEN / NOT
+STARTED.
+
+## Component Evolution - 2026-09-27
+
+Authorized local continuation through PRE_COMMIT is complete: LOCAL PRECOMMIT_READY,
+verified 2026-09-28. This is not Closure.
+Material C2/X1/X3 contracts now have explicit successor binding/obligation records
+with the suffix REUSABLE; root predecessor identities and historical receipts
+are preserved. C2/X1 use explicitly approved reuse of existing LEVEL 2 evidence.
+X3 uses a new receipt for the preserved 2026-09-25 LEVEL 3 renewal, not a replay.
+X2 remains in-place, OPEN, with candidate_match_required=true and
+fresh_for_action=true. The independently pinned Baseline is unchanged.
+
+Seven synthetic evolution RED failures and seven initial GREEN passes are
+recorded in Traceability, followed by the bounded repeated-evolution and pinned
+history RED/GREEN corrections. Final regression: 1110 PASS; PRE_COMMIT:
+TRANSITION_ALLOWED, no diagnostics. No Stage/Commit/Push, external action, Production/deployment or R&D003
+is authorized. The current recorded Railway/Production state remains OFF; this
+unit has made no live external observation. The completed scope/classification
+reconciliation is retained. See Engineering Decisions, Material Contract Evolution,
+and the matching Chronicle/Traceability records.

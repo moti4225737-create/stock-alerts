@@ -1,0 +1,214 @@
+<?xml version="1.0" encoding="utf-8"?><testsuites name="pytest tests"><testsuite name="pytest" errors="0" failures="7" skipped="0" tests="7" time="2.406" timestamp="2026-09-27T20:14:03.316804+03:00" hostname="DESKTOP-JHDV6C6"><testcase classname="tests.test_design_c_hardening" name="test_evolution_durable_relation_does_not_authorize_current_action" time="0.367"><failure message="AssertionError: [{'code': 'SUPERSESSION_INVALID', 'subject': 'B-O21'}, {'code': 'DISPOSITION_INVALID', 'subject': 'O21'}, {'code': 'EVIDENCE_INVALID', 'subject': 'REUSABLE'}]&#10;assert 'UNRESOLVED' == 'RESOLVED_CONTEXT'&#10;  &#10;  - RESOLVED_CONTEXT&#10;  + UNRESOLVED">case = &lt;tests.test_support.design_c_fixture.RepositoryCase object at 0x0000015B53F486E0&gt;
+
+    def test_evolution_durable_relation_does_not_authorize_current_action(case):
+        _evolved(case)
+        historical = deepcopy(case.evidence["evidence"])
+        case.request.update(action_id="later-action", candidate_sha="b" * 40)
+        case.station["approval_refs"] = []
+        report = case.run()
+&gt;       assert report["status"] == "RESOLVED_CONTEXT", report["diagnostics"]
+E       AssertionError: [{'code': 'SUPERSESSION_INVALID', 'subject': 'B-O21'}, {'code': 'DISPOSITION_INVALID', 'subject': 'O21'}, {'code': 'EVIDENCE_INVALID', 'subject': 'REUSABLE'}]
+E       assert 'UNRESOLVED' == 'RESOLVED_CONTEXT'
+E         
+E         - RESOLVED_CONTEXT
+E         + UNRESOLVED
+
+tests\test_design_c_hardening.py:69: AssertionError</failure></testcase><testcase classname="tests.test_design_c_hardening" name="test_evolution_protects_contract_and_complete_migration[assertion]" time="0.315"><failure message="AssertionError: Expected specific diagnostic EVOLUTION_INVALID, got [{'code': 'DISPOSITION_INVALID', 'subject': 'O21'}, {'code': 'EVIDENCE_INVALID', 'subject': 'REUSABLE'}]">case = &lt;tests.test_support.design_c_fixture.RepositoryCase object at 0x0000015B53ED6C10&gt;
+fault = 'assertion'
+
+    @pytest.mark.parametrize("fault", ["assertion", "consumer", "obligation", "history", "policy", "receipt"])
+    def test_evolution_protects_contract_and_complete_migration(case, fault):
+        d = _evolved(case)
+        if fault == "assertion":
+            case.binding("B-REUSABLE")["obligations"][0]["required_assertions"] = ["weaker"]
+        elif fault == "consumer":
+            case.bindings["components"]["observation"]["consumers"].append("NEW")
+        elif fault == "obligation":
+            case.obligation("REUSABLE")["required_before"] = ["PRE_CLOSURE"]
+        elif fault == "history":
+            case.binding("B-O21")["obligations"][0]["fresh_for_action"] = False
+        elif fault == "policy":
+            d["evolution"]["obligations"][0]["evidence_policy"] = "NOT_APPLICABLE"
+        else:
+            case.evidence["evidence"][0]["action_id"] = "rewritten-history"
+&gt;       rejected(case.run(), "EVOLUTION_INVALID")
+
+tests\test_design_c_hardening.py:92: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+report = {'status': 'UNRESOLVED', 'diagnostics': [{'code': 'DISPOSITION_INVALID', 'subject': 'O21'}, {'code': 'EVIDENCE_INVALID...: 'docs/06-ניהול-הידע-ורציפות-התיעוד/chronicle/ספרינטים/fixture-station.md#audit', 'scope': 'R&amp;D 002', ...}, ...], ...}
+code = 'EVOLUTION_INVALID', subject = None
+
+    def rejected(report, code, subject=None):
+        assert report["status"] in {"TRANSITION_BLOCKED", "UNRESOLVED"}
+        matches = [d for d in report["diagnostics"] if d["code"] == code]
+&gt;       assert matches, f"Expected specific diagnostic {code}, got {report['diagnostics']}"
+               ^^^^^^^
+E       AssertionError: Expected specific diagnostic EVOLUTION_INVALID, got [{'code': 'DISPOSITION_INVALID', 'subject': 'O21'}, {'code': 'EVIDENCE_INVALID', 'subject': 'REUSABLE'}]
+
+tests\test_support\design_c_fixture.py:261: AssertionError</failure></testcase><testcase classname="tests.test_design_c_hardening" name="test_evolution_protects_contract_and_complete_migration[consumer]" time="0.258"><failure message="AssertionError: Expected specific diagnostic EVOLUTION_INVALID, got [{'code': 'DISPOSITION_INVALID', 'subject': 'O21'}, {'code': 'EVIDENCE_INVALID', 'subject': 'REUSABLE'}]">case = &lt;tests.test_support.design_c_fixture.RepositoryCase object at 0x0000015B53FB4050&gt;
+fault = 'consumer'
+
+    @pytest.mark.parametrize("fault", ["assertion", "consumer", "obligation", "history", "policy", "receipt"])
+    def test_evolution_protects_contract_and_complete_migration(case, fault):
+        d = _evolved(case)
+        if fault == "assertion":
+            case.binding("B-REUSABLE")["obligations"][0]["required_assertions"] = ["weaker"]
+        elif fault == "consumer":
+            case.bindings["components"]["observation"]["consumers"].append("NEW")
+        elif fault == "obligation":
+            case.obligation("REUSABLE")["required_before"] = ["PRE_CLOSURE"]
+        elif fault == "history":
+            case.binding("B-O21")["obligations"][0]["fresh_for_action"] = False
+        elif fault == "policy":
+            d["evolution"]["obligations"][0]["evidence_policy"] = "NOT_APPLICABLE"
+        else:
+            case.evidence["evidence"][0]["action_id"] = "rewritten-history"
+&gt;       rejected(case.run(), "EVOLUTION_INVALID")
+
+tests\test_design_c_hardening.py:92: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+report = {'status': 'UNRESOLVED', 'diagnostics': [{'code': 'DISPOSITION_INVALID', 'subject': 'O21'}, {'code': 'EVIDENCE_INVALID...: 'docs/06-ניהול-הידע-ורציפות-התיעוד/chronicle/ספרינטים/fixture-station.md#audit', 'scope': 'R&amp;D 002', ...}, ...], ...}
+code = 'EVOLUTION_INVALID', subject = None
+
+    def rejected(report, code, subject=None):
+        assert report["status"] in {"TRANSITION_BLOCKED", "UNRESOLVED"}
+        matches = [d for d in report["diagnostics"] if d["code"] == code]
+&gt;       assert matches, f"Expected specific diagnostic {code}, got {report['diagnostics']}"
+               ^^^^^^^
+E       AssertionError: Expected specific diagnostic EVOLUTION_INVALID, got [{'code': 'DISPOSITION_INVALID', 'subject': 'O21'}, {'code': 'EVIDENCE_INVALID', 'subject': 'REUSABLE'}]
+
+tests\test_support\design_c_fixture.py:261: AssertionError</failure></testcase><testcase classname="tests.test_design_c_hardening" name="test_evolution_protects_contract_and_complete_migration[obligation]" time="0.255"><failure message="AssertionError: Expected specific diagnostic EVOLUTION_INVALID, got [{'code': 'DISPOSITION_INVALID', 'subject': 'O21'}, {'code': 'OBLIGATION_COVERAGE', 'subject': 'REUSABLE'}, {'code': 'EVIDENCE_INVALID', 'subject': 'REUSABLE'}]">case = &lt;tests.test_support.design_c_fixture.RepositoryCase object at 0x0000015B53ECAC40&gt;
+fault = 'obligation'
+
+    @pytest.mark.parametrize("fault", ["assertion", "consumer", "obligation", "history", "policy", "receipt"])
+    def test_evolution_protects_contract_and_complete_migration(case, fault):
+        d = _evolved(case)
+        if fault == "assertion":
+            case.binding("B-REUSABLE")["obligations"][0]["required_assertions"] = ["weaker"]
+        elif fault == "consumer":
+            case.bindings["components"]["observation"]["consumers"].append("NEW")
+        elif fault == "obligation":
+            case.obligation("REUSABLE")["required_before"] = ["PRE_CLOSURE"]
+        elif fault == "history":
+            case.binding("B-O21")["obligations"][0]["fresh_for_action"] = False
+        elif fault == "policy":
+            d["evolution"]["obligations"][0]["evidence_policy"] = "NOT_APPLICABLE"
+        else:
+            case.evidence["evidence"][0]["action_id"] = "rewritten-history"
+&gt;       rejected(case.run(), "EVOLUTION_INVALID")
+
+tests\test_design_c_hardening.py:92: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+report = {'status': 'UNRESOLVED', 'diagnostics': [{'code': 'DISPOSITION_INVALID', 'subject': 'O21'}, {'code': 'OBLIGATION_COVER...: 'docs/06-ניהול-הידע-ורציפות-התיעוד/chronicle/ספרינטים/fixture-station.md#audit', 'scope': 'R&amp;D 002', ...}, ...], ...}
+code = 'EVOLUTION_INVALID', subject = None
+
+    def rejected(report, code, subject=None):
+        assert report["status"] in {"TRANSITION_BLOCKED", "UNRESOLVED"}
+        matches = [d for d in report["diagnostics"] if d["code"] == code]
+&gt;       assert matches, f"Expected specific diagnostic {code}, got {report['diagnostics']}"
+               ^^^^^^^
+E       AssertionError: Expected specific diagnostic EVOLUTION_INVALID, got [{'code': 'DISPOSITION_INVALID', 'subject': 'O21'}, {'code': 'OBLIGATION_COVERAGE', 'subject': 'REUSABLE'}, {'code': 'EVIDENCE_INVALID', 'subject': 'REUSABLE'}]
+
+tests\test_support\design_c_fixture.py:261: AssertionError</failure></testcase><testcase classname="tests.test_design_c_hardening" name="test_evolution_protects_contract_and_complete_migration[history]" time="0.381"><failure message="AssertionError: Expected specific diagnostic EVOLUTION_INVALID, got [{'code': 'DISPOSITION_INVALID', 'subject': 'O21'}, {'code': 'EVIDENCE_INVALID', 'subject': 'REUSABLE'}]">case = &lt;tests.test_support.design_c_fixture.RepositoryCase object at 0x0000015B53ECB100&gt;
+fault = 'history'
+
+    @pytest.mark.parametrize("fault", ["assertion", "consumer", "obligation", "history", "policy", "receipt"])
+    def test_evolution_protects_contract_and_complete_migration(case, fault):
+        d = _evolved(case)
+        if fault == "assertion":
+            case.binding("B-REUSABLE")["obligations"][0]["required_assertions"] = ["weaker"]
+        elif fault == "consumer":
+            case.bindings["components"]["observation"]["consumers"].append("NEW")
+        elif fault == "obligation":
+            case.obligation("REUSABLE")["required_before"] = ["PRE_CLOSURE"]
+        elif fault == "history":
+            case.binding("B-O21")["obligations"][0]["fresh_for_action"] = False
+        elif fault == "policy":
+            d["evolution"]["obligations"][0]["evidence_policy"] = "NOT_APPLICABLE"
+        else:
+            case.evidence["evidence"][0]["action_id"] = "rewritten-history"
+&gt;       rejected(case.run(), "EVOLUTION_INVALID")
+
+tests\test_design_c_hardening.py:92: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+report = {'status': 'UNRESOLVED', 'diagnostics': [{'code': 'DISPOSITION_INVALID', 'subject': 'O21'}, {'code': 'EVIDENCE_INVALID...: 'docs/06-ניהול-הידע-ורציפות-התיעוד/chronicle/ספרינטים/fixture-station.md#audit', 'scope': 'R&amp;D 002', ...}, ...], ...}
+code = 'EVOLUTION_INVALID', subject = None
+
+    def rejected(report, code, subject=None):
+        assert report["status"] in {"TRANSITION_BLOCKED", "UNRESOLVED"}
+        matches = [d for d in report["diagnostics"] if d["code"] == code]
+&gt;       assert matches, f"Expected specific diagnostic {code}, got {report['diagnostics']}"
+               ^^^^^^^
+E       AssertionError: Expected specific diagnostic EVOLUTION_INVALID, got [{'code': 'DISPOSITION_INVALID', 'subject': 'O21'}, {'code': 'EVIDENCE_INVALID', 'subject': 'REUSABLE'}]
+
+tests\test_support\design_c_fixture.py:261: AssertionError</failure></testcase><testcase classname="tests.test_design_c_hardening" name="test_evolution_protects_contract_and_complete_migration[policy]" time="0.253"><failure message="AssertionError: Expected specific diagnostic EVOLUTION_INVALID, got [{'code': 'DISPOSITION_INVALID', 'subject': 'O21'}, {'code': 'EVIDENCE_INVALID', 'subject': 'REUSABLE'}]">case = &lt;tests.test_support.design_c_fixture.RepositoryCase object at 0x0000015B53F5A9F0&gt;
+fault = 'policy'
+
+    @pytest.mark.parametrize("fault", ["assertion", "consumer", "obligation", "history", "policy", "receipt"])
+    def test_evolution_protects_contract_and_complete_migration(case, fault):
+        d = _evolved(case)
+        if fault == "assertion":
+            case.binding("B-REUSABLE")["obligations"][0]["required_assertions"] = ["weaker"]
+        elif fault == "consumer":
+            case.bindings["components"]["observation"]["consumers"].append("NEW")
+        elif fault == "obligation":
+            case.obligation("REUSABLE")["required_before"] = ["PRE_CLOSURE"]
+        elif fault == "history":
+            case.binding("B-O21")["obligations"][0]["fresh_for_action"] = False
+        elif fault == "policy":
+            d["evolution"]["obligations"][0]["evidence_policy"] = "NOT_APPLICABLE"
+        else:
+            case.evidence["evidence"][0]["action_id"] = "rewritten-history"
+&gt;       rejected(case.run(), "EVOLUTION_INVALID")
+
+tests\test_design_c_hardening.py:92: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+report = {'status': 'UNRESOLVED', 'diagnostics': [{'code': 'DISPOSITION_INVALID', 'subject': 'O21'}, {'code': 'EVIDENCE_INVALID...: 'docs/06-ניהול-הידע-ורציפות-התיעוד/chronicle/ספרינטים/fixture-station.md#audit', 'scope': 'R&amp;D 002', ...}, ...], ...}
+code = 'EVOLUTION_INVALID', subject = None
+
+    def rejected(report, code, subject=None):
+        assert report["status"] in {"TRANSITION_BLOCKED", "UNRESOLVED"}
+        matches = [d for d in report["diagnostics"] if d["code"] == code]
+&gt;       assert matches, f"Expected specific diagnostic {code}, got {report['diagnostics']}"
+               ^^^^^^^
+E       AssertionError: Expected specific diagnostic EVOLUTION_INVALID, got [{'code': 'DISPOSITION_INVALID', 'subject': 'O21'}, {'code': 'EVIDENCE_INVALID', 'subject': 'REUSABLE'}]
+
+tests\test_support\design_c_fixture.py:261: AssertionError</failure></testcase><testcase classname="tests.test_design_c_hardening" name="test_evolution_protects_contract_and_complete_migration[receipt]" time="0.231"><failure message="AssertionError: Expected specific diagnostic EVOLUTION_INVALID, got [{'code': 'DISPOSITION_INVALID', 'subject': 'O21'}, {'code': 'EVIDENCE_INVALID', 'subject': 'REUSABLE'}]">case = &lt;tests.test_support.design_c_fixture.RepositoryCase object at 0x0000015B53F36030&gt;
+fault = 'receipt'
+
+    @pytest.mark.parametrize("fault", ["assertion", "consumer", "obligation", "history", "policy", "receipt"])
+    def test_evolution_protects_contract_and_complete_migration(case, fault):
+        d = _evolved(case)
+        if fault == "assertion":
+            case.binding("B-REUSABLE")["obligations"][0]["required_assertions"] = ["weaker"]
+        elif fault == "consumer":
+            case.bindings["components"]["observation"]["consumers"].append("NEW")
+        elif fault == "obligation":
+            case.obligation("REUSABLE")["required_before"] = ["PRE_CLOSURE"]
+        elif fault == "history":
+            case.binding("B-O21")["obligations"][0]["fresh_for_action"] = False
+        elif fault == "policy":
+            d["evolution"]["obligations"][0]["evidence_policy"] = "NOT_APPLICABLE"
+        else:
+            case.evidence["evidence"][0]["action_id"] = "rewritten-history"
+&gt;       rejected(case.run(), "EVOLUTION_INVALID")
+
+tests\test_design_c_hardening.py:92: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+report = {'status': 'UNRESOLVED', 'diagnostics': [{'code': 'DISPOSITION_INVALID', 'subject': 'O21'}, {'code': 'EVIDENCE_INVALID...: 'docs/06-ניהול-הידע-ורציפות-התיעוד/chronicle/ספרינטים/fixture-station.md#audit', 'scope': 'R&amp;D 002', ...}, ...], ...}
+code = 'EVOLUTION_INVALID', subject = None
+
+    def rejected(report, code, subject=None):
+        assert report["status"] in {"TRANSITION_BLOCKED", "UNRESOLVED"}
+        matches = [d for d in report["diagnostics"] if d["code"] == code]
+&gt;       assert matches, f"Expected specific diagnostic {code}, got {report['diagnostics']}"
+               ^^^^^^^
+E       AssertionError: Expected specific diagnostic EVOLUTION_INVALID, got [{'code': 'DISPOSITION_INVALID', 'subject': 'O21'}, {'code': 'EVIDENCE_INVALID', 'subject': 'REUSABLE'}]
+
+tests\test_support\design_c_fixture.py:261: AssertionError</failure></testcase></testsuite></testsuites>

@@ -86,6 +86,53 @@ def test_search_includes_page_token() -> None:
     )
 
 
+def test_search_preserves_source_next_page_token() -> None:
+    client = ClinicalTrialsClient(timeout=20)
+    mock_response = Mock()
+    mock_response.json.return_value = {
+        "studies": [],
+        "nextPageToken": "TOKEN_2",
+    }
+
+    with patch(
+        "modules.clinical_trials_client.requests.get",
+        return_value=mock_response,
+    ):
+        page = client.search_studies("Liquidia")
+
+    assert list(page) == []
+    assert page.next_page_token == "TOKEN_2"
+
+
+def test_search_supports_one_explicit_query_term_contract() -> None:
+    client = ClinicalTrialsClient(timeout=20)
+    mock_response = Mock()
+    mock_response.json.return_value = {"studies": []}
+    query_term = (
+        'AREA[SponsorSearch]"Liquidia" AND '
+        'AREA[LastUpdatePostDate]RANGE[2026-07-19, MAX]'
+    )
+
+    with patch(
+        "modules.clinical_trials_client.requests.get",
+        return_value=mock_response,
+    ) as mock_get:
+        client.search_studies(
+            query_term=query_term,
+            page_size=10,
+        )
+
+    mock_get.assert_called_once_with(
+        "https://clinicaltrials.gov/api/v2/studies",
+        params={
+            "query.term": query_term,
+            "pageSize": 10,
+            "format": "json",
+        },
+        timeout=20,
+    )
+
+
 def test_search_returns_empty_list_for_empty_query() -> None:
     client = ClinicalTrialsClient()
 

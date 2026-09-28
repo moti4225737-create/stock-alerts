@@ -1,0 +1,249 @@
+<?xml version="1.0" encoding="utf-8"?><testsuites name="pytest tests"><testsuite name="pytest" errors="0" failures="8" skipped="0" tests="12" time="2.982" timestamp="2026-09-15T12:47:58.964333+03:00" hostname="DESKTOP-JHDV6C6"><testcase classname="tests.test_rnd002_fault_injection_proof" name="test_o22_first_live_durable_and_pre_ack_replay[SEC]" file="tests\test_rnd002_fault_injection_proof.py" line="494" time="0.051" /><testcase classname="tests.test_rnd002_fault_injection_proof" name="test_o22_first_live_durable_and_pre_ack_replay[FDA]" file="tests\test_rnd002_fault_injection_proof.py" line="494" time="0.028" /><testcase classname="tests.test_rnd002_fault_injection_proof" name="test_o22_identical_after_processing_ack[zero-events-same-provider-SEC]" file="tests\test_rnd002_fault_injection_proof.py" line="499" time="0.038"><properties><property name="local_proof" value="{&quot;assertion&quot;: &quot;zero-events&quot;, &quot;emitted&quot;: [&quot;SEC|first&quot;], &quot;identical_objects&quot;: true, &quot;pending&quot;: [{&quot;event_id&quot;: &quot;SEC|first&quot;, &quot;importance&quot;: 1, &quot;published_at&quot;: &quot;2026-07-21&quot;, &quot;sentiment&quot;: &quot;neutral&quot;, &quot;source&quot;: &quot;SEC&quot;, &quot;summary&quot;: &quot;Material agreement&quot;, &quot;symbol&quot;: &quot;LQDA&quot;, &quot;title&quot;: &quot;SEC Filing: 8-K&quot;, &quot;url&quot;: &quot;https://www.sec.gov/Archives/edgar/data/1/first/a.htm&quot;}], &quot;restart&quot;: false, &quot;source&quot;: &quot;SEC&quot;}" /></properties><failure message="AssertionError: O22: identical post-ACK object must emit zero new events&#10;assert [Event(symbol...='SEC|first')] == []&#10;  &#10;  Left contains one more item: Event(symbol='LQDA', source='SEC', title='SEC Filing: 8-K', summary='Material agreement', published_at='2026-07-21', importance=1, sentiment='neutral', url='https://www.sec.gov/Archives/edgar/data/1/first/a.htm', event_id='SEC|first')&#10;  Use -v to get more diff">tmp_path = WindowsPath('C:/Users/User/AppData/Local/Temp/pytest-of-User/pytest-317/test_o22_identical_after_proce0')
+record_property = &lt;function record_property.&lt;locals&gt;.append_property at 0x0000022C23D20CC0&gt;
+source = 'SEC', restart = False, assertion = 'zero-events'
+
+    @pytest.mark.parametrize("source", ["SEC", "FDA"])
+    @pytest.mark.parametrize("restart", [False, True], ids=["same-provider", "reconstructed"])
+    @pytest.mark.parametrize("assertion", ["zero-events", "no-pending"])
+    def test_o22_identical_after_processing_ack(
+            tmp_path, record_property, source, restart, assertion):
+        provider, store, acquire, first, before = _o22_processed_and_acked(tmp_path, source)
+        if restart:
+            provider, store, acquire = _o22_provider(tmp_path, source)
+        acquire.reset_mock()
+        provider.begin_attempt()
+        events = provider.fetch_events("LQDA")
+        after = FileSourceObservationStore(tmp_path / "observation").load(
+            source=source, scope="LQDA")
+        acquire.assert_called_once()
+        assert after.objects == before.objects, "Reacquired source object is identical"
+        evidence(record_property, source=source, restart=restart, assertion=assertion,
+                 emitted=[e.event_id for e in events], pending=list(after.pending),
+                 identical_objects=after.objects == before.objects)
+        if assertion == "zero-events":
+&gt;           assert events == [], "O22: identical post-ACK object must emit zero new events"
+E           AssertionError: O22: identical post-ACK object must emit zero new events
+E           assert [Event(symbol...='SEC|first')] == []
+E             
+E             Left contains one more item: Event(symbol='LQDA', source='SEC', title='SEC Filing: 8-K', summary='Material agreement', published_at='2026-07-21', importance=1, sentiment='neutral', url='https://www.sec.gov/Archives/edgar/data/1/first/a.htm', event_id='SEC|first')
+E             Use -v to get more diff
+
+tests\test_rnd002_fault_injection_proof.py:519: AssertionError</failure></testcase><testcase classname="tests.test_rnd002_fault_injection_proof" name="test_o22_identical_after_processing_ack[zero-events-same-provider-FDA]" file="tests\test_rnd002_fault_injection_proof.py" line="499" time="0.042"><properties><property name="local_proof" value="{&quot;assertion&quot;: &quot;zero-events&quot;, &quot;emitted&quot;: [&quot;FDA|recall|first&quot;], &quot;identical_objects&quot;: true, &quot;pending&quot;: [{&quot;event_id&quot;: &quot;FDA|recall|first&quot;, &quot;importance&quot;: 1, &quot;published_at&quot;: &quot;20260721&quot;, &quot;sentiment&quot;: &quot;negative&quot;, &quot;source&quot;: &quot;FDA&quot;, &quot;summary&quot;: &quot;Contamination | Recall number: first&quot;, &quot;symbol&quot;: &quot;LQDA&quot;, &quot;title&quot;: &quot;FDA Drug Recall \u2014 Liquidia&quot;, &quot;url&quot;: &quot;https://www.accessdata.fda.gov/scripts/ires/index.cfm&quot;}], &quot;restart&quot;: false, &quot;source&quot;: &quot;FDA&quot;}" /></properties><failure message="AssertionError: O22: identical post-ACK object must emit zero new events&#10;assert [Event(symbol...ecall|first')] == []&#10;  &#10;  Left contains one more item: Event(symbol='LQDA', source='FDA', title='FDA Drug Recall — Liquidia', summary='Contamination | Recall number: first',...ance=1, sentiment='negative', url='https://www.accessdata.fda.gov/scripts/ires/index.cfm', event_id='FDA|recall|first')&#10;  Use -v to get more diff">tmp_path = WindowsPath('C:/Users/User/AppData/Local/Temp/pytest-of-User/pytest-317/test_o22_identical_after_proce1')
+record_property = &lt;function record_property.&lt;locals&gt;.append_property at 0x0000022C23CE5760&gt;
+source = 'FDA', restart = False, assertion = 'zero-events'
+
+    @pytest.mark.parametrize("source", ["SEC", "FDA"])
+    @pytest.mark.parametrize("restart", [False, True], ids=["same-provider", "reconstructed"])
+    @pytest.mark.parametrize("assertion", ["zero-events", "no-pending"])
+    def test_o22_identical_after_processing_ack(
+            tmp_path, record_property, source, restart, assertion):
+        provider, store, acquire, first, before = _o22_processed_and_acked(tmp_path, source)
+        if restart:
+            provider, store, acquire = _o22_provider(tmp_path, source)
+        acquire.reset_mock()
+        provider.begin_attempt()
+        events = provider.fetch_events("LQDA")
+        after = FileSourceObservationStore(tmp_path / "observation").load(
+            source=source, scope="LQDA")
+        acquire.assert_called_once()
+        assert after.objects == before.objects, "Reacquired source object is identical"
+        evidence(record_property, source=source, restart=restart, assertion=assertion,
+                 emitted=[e.event_id for e in events], pending=list(after.pending),
+                 identical_objects=after.objects == before.objects)
+        if assertion == "zero-events":
+&gt;           assert events == [], "O22: identical post-ACK object must emit zero new events"
+E           AssertionError: O22: identical post-ACK object must emit zero new events
+E           assert [Event(symbol...ecall|first')] == []
+E             
+E             Left contains one more item: Event(symbol='LQDA', source='FDA', title='FDA Drug Recall — Liquidia', summary='Contamination | Recall number: first',...ance=1, sentiment='negative', url='https://www.accessdata.fda.gov/scripts/ires/index.cfm', event_id='FDA|recall|first')
+E             Use -v to get more diff
+
+tests\test_rnd002_fault_injection_proof.py:519: AssertionError</failure></testcase><testcase classname="tests.test_rnd002_fault_injection_proof" name="test_o22_identical_after_processing_ack[zero-events-reconstructed-SEC]" file="tests\test_rnd002_fault_injection_proof.py" line="499" time="0.045"><properties><property name="local_proof" value="{&quot;assertion&quot;: &quot;zero-events&quot;, &quot;emitted&quot;: [&quot;SEC|first&quot;], &quot;identical_objects&quot;: true, &quot;pending&quot;: [{&quot;event_id&quot;: &quot;SEC|first&quot;, &quot;importance&quot;: 1, &quot;published_at&quot;: &quot;2026-07-21&quot;, &quot;sentiment&quot;: &quot;neutral&quot;, &quot;source&quot;: &quot;SEC&quot;, &quot;summary&quot;: &quot;Material agreement&quot;, &quot;symbol&quot;: &quot;LQDA&quot;, &quot;title&quot;: &quot;SEC Filing: 8-K&quot;, &quot;url&quot;: &quot;https://www.sec.gov/Archives/edgar/data/1/first/a.htm&quot;}], &quot;restart&quot;: true, &quot;source&quot;: &quot;SEC&quot;}" /></properties><failure message="AssertionError: O22: identical post-ACK object must emit zero new events&#10;assert [Event(symbol...='SEC|first')] == []&#10;  &#10;  Left contains one more item: Event(symbol='LQDA', source='SEC', title='SEC Filing: 8-K', summary='Material agreement', published_at='2026-07-21', importance=1, sentiment='neutral', url='https://www.sec.gov/Archives/edgar/data/1/first/a.htm', event_id='SEC|first')&#10;  Use -v to get more diff">tmp_path = WindowsPath('C:/Users/User/AppData/Local/Temp/pytest-of-User/pytest-317/test_o22_identical_after_proce2')
+record_property = &lt;function record_property.&lt;locals&gt;.append_property at 0x0000022C23CE4CC0&gt;
+source = 'SEC', restart = True, assertion = 'zero-events'
+
+    @pytest.mark.parametrize("source", ["SEC", "FDA"])
+    @pytest.mark.parametrize("restart", [False, True], ids=["same-provider", "reconstructed"])
+    @pytest.mark.parametrize("assertion", ["zero-events", "no-pending"])
+    def test_o22_identical_after_processing_ack(
+            tmp_path, record_property, source, restart, assertion):
+        provider, store, acquire, first, before = _o22_processed_and_acked(tmp_path, source)
+        if restart:
+            provider, store, acquire = _o22_provider(tmp_path, source)
+        acquire.reset_mock()
+        provider.begin_attempt()
+        events = provider.fetch_events("LQDA")
+        after = FileSourceObservationStore(tmp_path / "observation").load(
+            source=source, scope="LQDA")
+        acquire.assert_called_once()
+        assert after.objects == before.objects, "Reacquired source object is identical"
+        evidence(record_property, source=source, restart=restart, assertion=assertion,
+                 emitted=[e.event_id for e in events], pending=list(after.pending),
+                 identical_objects=after.objects == before.objects)
+        if assertion == "zero-events":
+&gt;           assert events == [], "O22: identical post-ACK object must emit zero new events"
+E           AssertionError: O22: identical post-ACK object must emit zero new events
+E           assert [Event(symbol...='SEC|first')] == []
+E             
+E             Left contains one more item: Event(symbol='LQDA', source='SEC', title='SEC Filing: 8-K', summary='Material agreement', published_at='2026-07-21', importance=1, sentiment='neutral', url='https://www.sec.gov/Archives/edgar/data/1/first/a.htm', event_id='SEC|first')
+E             Use -v to get more diff
+
+tests\test_rnd002_fault_injection_proof.py:519: AssertionError</failure></testcase><testcase classname="tests.test_rnd002_fault_injection_proof" name="test_o22_identical_after_processing_ack[zero-events-reconstructed-FDA]" file="tests\test_rnd002_fault_injection_proof.py" line="499" time="0.038"><properties><property name="local_proof" value="{&quot;assertion&quot;: &quot;zero-events&quot;, &quot;emitted&quot;: [&quot;FDA|recall|first&quot;], &quot;identical_objects&quot;: true, &quot;pending&quot;: [{&quot;event_id&quot;: &quot;FDA|recall|first&quot;, &quot;importance&quot;: 1, &quot;published_at&quot;: &quot;20260721&quot;, &quot;sentiment&quot;: &quot;negative&quot;, &quot;source&quot;: &quot;FDA&quot;, &quot;summary&quot;: &quot;Contamination | Recall number: first&quot;, &quot;symbol&quot;: &quot;LQDA&quot;, &quot;title&quot;: &quot;FDA Drug Recall \u2014 Liquidia&quot;, &quot;url&quot;: &quot;https://www.accessdata.fda.gov/scripts/ires/index.cfm&quot;}], &quot;restart&quot;: true, &quot;source&quot;: &quot;FDA&quot;}" /></properties><failure message="AssertionError: O22: identical post-ACK object must emit zero new events&#10;assert [Event(symbol...ecall|first')] == []&#10;  &#10;  Left contains one more item: Event(symbol='LQDA', source='FDA', title='FDA Drug Recall — Liquidia', summary='Contamination | Recall number: first',...ance=1, sentiment='negative', url='https://www.accessdata.fda.gov/scripts/ires/index.cfm', event_id='FDA|recall|first')&#10;  Use -v to get more diff">tmp_path = WindowsPath('C:/Users/User/AppData/Local/Temp/pytest-of-User/pytest-317/test_o22_identical_after_proce3')
+record_property = &lt;function record_property.&lt;locals&gt;.append_property at 0x0000022C23CE4220&gt;
+source = 'FDA', restart = True, assertion = 'zero-events'
+
+    @pytest.mark.parametrize("source", ["SEC", "FDA"])
+    @pytest.mark.parametrize("restart", [False, True], ids=["same-provider", "reconstructed"])
+    @pytest.mark.parametrize("assertion", ["zero-events", "no-pending"])
+    def test_o22_identical_after_processing_ack(
+            tmp_path, record_property, source, restart, assertion):
+        provider, store, acquire, first, before = _o22_processed_and_acked(tmp_path, source)
+        if restart:
+            provider, store, acquire = _o22_provider(tmp_path, source)
+        acquire.reset_mock()
+        provider.begin_attempt()
+        events = provider.fetch_events("LQDA")
+        after = FileSourceObservationStore(tmp_path / "observation").load(
+            source=source, scope="LQDA")
+        acquire.assert_called_once()
+        assert after.objects == before.objects, "Reacquired source object is identical"
+        evidence(record_property, source=source, restart=restart, assertion=assertion,
+                 emitted=[e.event_id for e in events], pending=list(after.pending),
+                 identical_objects=after.objects == before.objects)
+        if assertion == "zero-events":
+&gt;           assert events == [], "O22: identical post-ACK object must emit zero new events"
+E           AssertionError: O22: identical post-ACK object must emit zero new events
+E           assert [Event(symbol...ecall|first')] == []
+E             
+E             Left contains one more item: Event(symbol='LQDA', source='FDA', title='FDA Drug Recall — Liquidia', summary='Contamination | Recall number: first',...ance=1, sentiment='negative', url='https://www.accessdata.fda.gov/scripts/ires/index.cfm', event_id='FDA|recall|first')
+E             Use -v to get more diff
+
+tests\test_rnd002_fault_injection_proof.py:519: AssertionError</failure></testcase><testcase classname="tests.test_rnd002_fault_injection_proof" name="test_o22_identical_after_processing_ack[no-pending-same-provider-SEC]" file="tests\test_rnd002_fault_injection_proof.py" line="499" time="0.033"><properties><property name="local_proof" value="{&quot;assertion&quot;: &quot;no-pending&quot;, &quot;emitted&quot;: [&quot;SEC|first&quot;], &quot;identical_objects&quot;: true, &quot;pending&quot;: [{&quot;event_id&quot;: &quot;SEC|first&quot;, &quot;importance&quot;: 1, &quot;published_at&quot;: &quot;2026-07-21&quot;, &quot;sentiment&quot;: &quot;neutral&quot;, &quot;source&quot;: &quot;SEC&quot;, &quot;summary&quot;: &quot;Material agreement&quot;, &quot;symbol&quot;: &quot;LQDA&quot;, &quot;title&quot;: &quot;SEC Filing: 8-K&quot;, &quot;url&quot;: &quot;https://www.sec.gov/Archives/edgar/data/1/first/a.htm&quot;}], &quot;restart&quot;: false, &quot;source&quot;: &quot;SEC&quot;}" /></properties><failure message="AssertionError: O22: identical post-ACK object must not recreate pending&#10;assert ({'event_id':...utral', ...},) == ()&#10;  &#10;  Left contains one more item: {'event_id': 'SEC|first', 'importance': 1, 'published_at': '2026-07-21', 'sentiment': 'neutral', ...}&#10;  Use -v to get more diff">tmp_path = WindowsPath('C:/Users/User/AppData/Local/Temp/pytest-of-User/pytest-317/test_o22_identical_after_proce4')
+record_property = &lt;function record_property.&lt;locals&gt;.append_property at 0x0000022C23D20C20&gt;
+source = 'SEC', restart = False, assertion = 'no-pending'
+
+    @pytest.mark.parametrize("source", ["SEC", "FDA"])
+    @pytest.mark.parametrize("restart", [False, True], ids=["same-provider", "reconstructed"])
+    @pytest.mark.parametrize("assertion", ["zero-events", "no-pending"])
+    def test_o22_identical_after_processing_ack(
+            tmp_path, record_property, source, restart, assertion):
+        provider, store, acquire, first, before = _o22_processed_and_acked(tmp_path, source)
+        if restart:
+            provider, store, acquire = _o22_provider(tmp_path, source)
+        acquire.reset_mock()
+        provider.begin_attempt()
+        events = provider.fetch_events("LQDA")
+        after = FileSourceObservationStore(tmp_path / "observation").load(
+            source=source, scope="LQDA")
+        acquire.assert_called_once()
+        assert after.objects == before.objects, "Reacquired source object is identical"
+        evidence(record_property, source=source, restart=restart, assertion=assertion,
+                 emitted=[e.event_id for e in events], pending=list(after.pending),
+                 identical_objects=after.objects == before.objects)
+        if assertion == "zero-events":
+            assert events == [], "O22: identical post-ACK object must emit zero new events"
+        else:
+&gt;           assert after.pending == (), "O22: identical post-ACK object must not recreate pending"
+E           AssertionError: O22: identical post-ACK object must not recreate pending
+E           assert ({'event_id':...utral', ...},) == ()
+E             
+E             Left contains one more item: {'event_id': 'SEC|first', 'importance': 1, 'published_at': '2026-07-21', 'sentiment': 'neutral', ...}
+E             Use -v to get more diff
+
+tests\test_rnd002_fault_injection_proof.py:521: AssertionError</failure></testcase><testcase classname="tests.test_rnd002_fault_injection_proof" name="test_o22_identical_after_processing_ack[no-pending-same-provider-FDA]" file="tests\test_rnd002_fault_injection_proof.py" line="499" time="0.028"><properties><property name="local_proof" value="{&quot;assertion&quot;: &quot;no-pending&quot;, &quot;emitted&quot;: [&quot;FDA|recall|first&quot;], &quot;identical_objects&quot;: true, &quot;pending&quot;: [{&quot;event_id&quot;: &quot;FDA|recall|first&quot;, &quot;importance&quot;: 1, &quot;published_at&quot;: &quot;20260721&quot;, &quot;sentiment&quot;: &quot;negative&quot;, &quot;source&quot;: &quot;FDA&quot;, &quot;summary&quot;: &quot;Contamination | Recall number: first&quot;, &quot;symbol&quot;: &quot;LQDA&quot;, &quot;title&quot;: &quot;FDA Drug Recall \u2014 Liquidia&quot;, &quot;url&quot;: &quot;https://www.accessdata.fda.gov/scripts/ires/index.cfm&quot;}], &quot;restart&quot;: false, &quot;source&quot;: &quot;FDA&quot;}" /></properties><failure message="AssertionError: O22: identical post-ACK object must not recreate pending&#10;assert ({'event_id':...ative', ...},) == ()&#10;  &#10;  Left contains one more item: {'event_id': 'FDA|recall|first', 'importance': 1, 'published_at': '20260721', 'sentiment': 'negative', ...}&#10;  Use -v to get more diff">tmp_path = WindowsPath('C:/Users/User/AppData/Local/Temp/pytest-of-User/pytest-317/test_o22_identical_after_proce5')
+record_property = &lt;function record_property.&lt;locals&gt;.append_property at 0x0000022C23D22700&gt;
+source = 'FDA', restart = False, assertion = 'no-pending'
+
+    @pytest.mark.parametrize("source", ["SEC", "FDA"])
+    @pytest.mark.parametrize("restart", [False, True], ids=["same-provider", "reconstructed"])
+    @pytest.mark.parametrize("assertion", ["zero-events", "no-pending"])
+    def test_o22_identical_after_processing_ack(
+            tmp_path, record_property, source, restart, assertion):
+        provider, store, acquire, first, before = _o22_processed_and_acked(tmp_path, source)
+        if restart:
+            provider, store, acquire = _o22_provider(tmp_path, source)
+        acquire.reset_mock()
+        provider.begin_attempt()
+        events = provider.fetch_events("LQDA")
+        after = FileSourceObservationStore(tmp_path / "observation").load(
+            source=source, scope="LQDA")
+        acquire.assert_called_once()
+        assert after.objects == before.objects, "Reacquired source object is identical"
+        evidence(record_property, source=source, restart=restart, assertion=assertion,
+                 emitted=[e.event_id for e in events], pending=list(after.pending),
+                 identical_objects=after.objects == before.objects)
+        if assertion == "zero-events":
+            assert events == [], "O22: identical post-ACK object must emit zero new events"
+        else:
+&gt;           assert after.pending == (), "O22: identical post-ACK object must not recreate pending"
+E           AssertionError: O22: identical post-ACK object must not recreate pending
+E           assert ({'event_id':...ative', ...},) == ()
+E             
+E             Left contains one more item: {'event_id': 'FDA|recall|first', 'importance': 1, 'published_at': '20260721', 'sentiment': 'negative', ...}
+E             Use -v to get more diff
+
+tests\test_rnd002_fault_injection_proof.py:521: AssertionError</failure></testcase><testcase classname="tests.test_rnd002_fault_injection_proof" name="test_o22_identical_after_processing_ack[no-pending-reconstructed-SEC]" file="tests\test_rnd002_fault_injection_proof.py" line="499" time="0.032"><properties><property name="local_proof" value="{&quot;assertion&quot;: &quot;no-pending&quot;, &quot;emitted&quot;: [&quot;SEC|first&quot;], &quot;identical_objects&quot;: true, &quot;pending&quot;: [{&quot;event_id&quot;: &quot;SEC|first&quot;, &quot;importance&quot;: 1, &quot;published_at&quot;: &quot;2026-07-21&quot;, &quot;sentiment&quot;: &quot;neutral&quot;, &quot;source&quot;: &quot;SEC&quot;, &quot;summary&quot;: &quot;Material agreement&quot;, &quot;symbol&quot;: &quot;LQDA&quot;, &quot;title&quot;: &quot;SEC Filing: 8-K&quot;, &quot;url&quot;: &quot;https://www.sec.gov/Archives/edgar/data/1/first/a.htm&quot;}], &quot;restart&quot;: true, &quot;source&quot;: &quot;SEC&quot;}" /></properties><failure message="AssertionError: O22: identical post-ACK object must not recreate pending&#10;assert ({'event_id':...utral', ...},) == ()&#10;  &#10;  Left contains one more item: {'event_id': 'SEC|first', 'importance': 1, 'published_at': '2026-07-21', 'sentiment': 'neutral', ...}&#10;  Use -v to get more diff">tmp_path = WindowsPath('C:/Users/User/AppData/Local/Temp/pytest-of-User/pytest-317/test_o22_identical_after_proce6')
+record_property = &lt;function record_property.&lt;locals&gt;.append_property at 0x0000022C23D22660&gt;
+source = 'SEC', restart = True, assertion = 'no-pending'
+
+    @pytest.mark.parametrize("source", ["SEC", "FDA"])
+    @pytest.mark.parametrize("restart", [False, True], ids=["same-provider", "reconstructed"])
+    @pytest.mark.parametrize("assertion", ["zero-events", "no-pending"])
+    def test_o22_identical_after_processing_ack(
+            tmp_path, record_property, source, restart, assertion):
+        provider, store, acquire, first, before = _o22_processed_and_acked(tmp_path, source)
+        if restart:
+            provider, store, acquire = _o22_provider(tmp_path, source)
+        acquire.reset_mock()
+        provider.begin_attempt()
+        events = provider.fetch_events("LQDA")
+        after = FileSourceObservationStore(tmp_path / "observation").load(
+            source=source, scope="LQDA")
+        acquire.assert_called_once()
+        assert after.objects == before.objects, "Reacquired source object is identical"
+        evidence(record_property, source=source, restart=restart, assertion=assertion,
+                 emitted=[e.event_id for e in events], pending=list(after.pending),
+                 identical_objects=after.objects == before.objects)
+        if assertion == "zero-events":
+            assert events == [], "O22: identical post-ACK object must emit zero new events"
+        else:
+&gt;           assert after.pending == (), "O22: identical post-ACK object must not recreate pending"
+E           AssertionError: O22: identical post-ACK object must not recreate pending
+E           assert ({'event_id':...utral', ...},) == ()
+E             
+E             Left contains one more item: {'event_id': 'SEC|first', 'importance': 1, 'published_at': '2026-07-21', 'sentiment': 'neutral', ...}
+E             Use -v to get more diff
+
+tests\test_rnd002_fault_injection_proof.py:521: AssertionError</failure></testcase><testcase classname="tests.test_rnd002_fault_injection_proof" name="test_o22_identical_after_processing_ack[no-pending-reconstructed-FDA]" file="tests\test_rnd002_fault_injection_proof.py" line="499" time="0.056"><properties><property name="local_proof" value="{&quot;assertion&quot;: &quot;no-pending&quot;, &quot;emitted&quot;: [&quot;FDA|recall|first&quot;], &quot;identical_objects&quot;: true, &quot;pending&quot;: [{&quot;event_id&quot;: &quot;FDA|recall|first&quot;, &quot;importance&quot;: 1, &quot;published_at&quot;: &quot;20260721&quot;, &quot;sentiment&quot;: &quot;negative&quot;, &quot;source&quot;: &quot;FDA&quot;, &quot;summary&quot;: &quot;Contamination | Recall number: first&quot;, &quot;symbol&quot;: &quot;LQDA&quot;, &quot;title&quot;: &quot;FDA Drug Recall \u2014 Liquidia&quot;, &quot;url&quot;: &quot;https://www.accessdata.fda.gov/scripts/ires/index.cfm&quot;}], &quot;restart&quot;: true, &quot;source&quot;: &quot;FDA&quot;}" /></properties><failure message="AssertionError: O22: identical post-ACK object must not recreate pending&#10;assert ({'event_id':...ative', ...},) == ()&#10;  &#10;  Left contains one more item: {'event_id': 'FDA|recall|first', 'importance': 1, 'published_at': '20260721', 'sentiment': 'negative', ...}&#10;  Use -v to get more diff">tmp_path = WindowsPath('C:/Users/User/AppData/Local/Temp/pytest-of-User/pytest-317/test_o22_identical_after_proce7')
+record_property = &lt;function record_property.&lt;locals&gt;.append_property at 0x0000022C23D22FC0&gt;
+source = 'FDA', restart = True, assertion = 'no-pending'
+
+    @pytest.mark.parametrize("source", ["SEC", "FDA"])
+    @pytest.mark.parametrize("restart", [False, True], ids=["same-provider", "reconstructed"])
+    @pytest.mark.parametrize("assertion", ["zero-events", "no-pending"])
+    def test_o22_identical_after_processing_ack(
+            tmp_path, record_property, source, restart, assertion):
+        provider, store, acquire, first, before = _o22_processed_and_acked(tmp_path, source)
+        if restart:
+            provider, store, acquire = _o22_provider(tmp_path, source)
+        acquire.reset_mock()
+        provider.begin_attempt()
+        events = provider.fetch_events("LQDA")
+        after = FileSourceObservationStore(tmp_path / "observation").load(
+            source=source, scope="LQDA")
+        acquire.assert_called_once()
+        assert after.objects == before.objects, "Reacquired source object is identical"
+        evidence(record_property, source=source, restart=restart, assertion=assertion,
+                 emitted=[e.event_id for e in events], pending=list(after.pending),
+                 identical_objects=after.objects == before.objects)
+        if assertion == "zero-events":
+            assert events == [], "O22: identical post-ACK object must emit zero new events"
+        else:
+&gt;           assert after.pending == (), "O22: identical post-ACK object must not recreate pending"
+E           AssertionError: O22: identical post-ACK object must not recreate pending
+E           assert ({'event_id':...ative', ...},) == ()
+E             
+E             Left contains one more item: {'event_id': 'FDA|recall|first', 'importance': 1, 'published_at': '20260721', 'sentiment': 'negative', ...}
+E             Use -v to get more diff
+
+tests\test_rnd002_fault_injection_proof.py:521: AssertionError</failure></testcase><testcase classname="tests.test_rnd002_fault_injection_proof" name="test_o22_distinct_live_object_still_emits[SEC]" file="tests\test_rnd002_fault_injection_proof.py" line="523" time="0.048" /><testcase classname="tests.test_rnd002_fault_injection_proof" name="test_o22_distinct_live_object_still_emits[FDA]" file="tests\test_rnd002_fault_injection_proof.py" line="523" time="0.062" /></testsuite></testsuites>

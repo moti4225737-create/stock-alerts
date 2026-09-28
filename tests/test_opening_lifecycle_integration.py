@@ -7,6 +7,7 @@ import pytest
 
 from application.portfolio_truth_reconciler import PortfolioAcquisitionResult
 from application.portfolio_truth_service import PortfolioTruthService
+from application.source_bootstrap_application import SourceBootstrapApplication
 from application.source_runtime_factory import SourceRuntimeFactory
 from engines.intelligence_pipeline import IntelligencePipeline
 from models.accepted_portfolio_truth import AcceptedPortfolioTruth
@@ -151,6 +152,40 @@ def test_zero_introductions_and_position_updates_keep_existing_lifecycle() -> No
     ) is None
     assert service.portfolio.holdings == [updated]
     research.assert_not_called()
+
+
+def test_explicit_adoption_uses_opening_without_introducing_restored_holding(tmp_path):
+    holding = _holding("A")
+    service, _ = _service(restored=(holding,), results=(_snapshot(holding),))
+    assert service.refresh() is True
+    assert service.introduced_holdings == ()
+    expected = _ready_state(holding)
+    identity = Mock()
+    identity.resolve.return_value = expected.verified_identity
+    research = Mock(return_value=expected.research_output)
+    verification = Mock(return_value=expected.decisions)
+    store = FileSourceBootstrapStore(tmp_path / "opening")
+    application = SourceBootstrapApplication(portfolio_service=service, store=store)
+
+    state = application.run(
+        target_holding=holding,
+        admission_reason="current authoritative holding missing Opening admission state",
+        research=research,
+        identity_resolver=identity,
+        opening_verification=verification,
+    )
+
+    assert service.introduced_holdings == ()
+    assert service.portfolio.holdings == [holding]
+    assert state.time_zero == BASE_TIME + timedelta(seconds=1)
+    assert state.is_ready is True
+    identity.resolve.assert_called_once_with(holding.symbol)
+    research.assert_called_once_with(
+        state.request, known_identity=expected.verified_identity,
+    )
+    verification.assert_called_once()
+    assert verification.call_args.args[0].research_output == expected.research_output
+    assert store.load(target_holding=holding) == state
 
 
 def test_bootstrap_requires_an_explicit_target_holding() -> None:

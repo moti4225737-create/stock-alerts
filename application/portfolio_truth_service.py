@@ -58,7 +58,11 @@ class PortfolioTruthService:
         self._reconciler = reconciler
         return True
 
-    def refresh(self) -> bool:
+    def refresh(
+        self,
+        *,
+        invalidate_opening: Callable[[str], None] | None = None,
+    ) -> bool:
         result = self._source.acquire()
         candidate = result.candidate
         if candidate is None or not candidate.is_eligible_for_acceptance:
@@ -86,6 +90,11 @@ class PortfolioTruthService:
             source_as_of=candidate.source_as_of,
             accepted_at=accepted_at.astimezone(timezone.utc),
         )
+        # Invalidate prior-lifecycle admission before new membership is durable.
+        # Failure must prevent acceptance, otherwise restart could reuse old READY.
+        if invalidate_opening is not None:
+            for symbol in sorted(candidate_symbols - previous_symbols):
+                invalidate_opening(symbol)
         self._store.save(accepted_truth)
 
         reconciler = self._reconciler or PortfolioTruthReconciler()
@@ -105,7 +114,13 @@ class PortfolioTruthService:
         *,
         target_holding: PortfolioHolding,
         research: Callable[[SourceBootstrapResearchRequest], object],
+        admission_reason: str | None = None,
     ) -> SourceBootstrapState | None:
+        if admission_reason not in (
+            None,
+            "current authoritative holding missing Opening admission state",
+        ):
+            raise ValueError("Unsupported Opening admission reason")
         portfolio = self.portfolio
         if portfolio is None:
             raise RuntimeError("Portfolio Truth is unavailable")
@@ -118,7 +133,7 @@ class PortfolioTruthService:
         if existing is not None:
             return existing
 
-        if not any(
+        if admission_reason is None and not any(
             introduced.symbol == holding.symbol
             for introduced in self._introduced_holdings
         ):

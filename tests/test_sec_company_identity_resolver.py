@@ -37,13 +37,8 @@ def _response(payload: object) -> Mock:
 
 def _payload(*, ticker: object = "ONDS", title: object = "Ondas Holdings Inc.",
              cik: object = 1646188) -> dict:
-    return {
-        "0": {
-            "ticker": ticker,
-            "title": title,
-            "cik_str": cik,
-        }
-    }
+    # Preserve these field-negative cases while reaching association parsing.
+    return _association_payload(ticker=ticker, company_name=title, cik=cik)
 
 
 def _association_payload(
@@ -273,23 +268,23 @@ def test_unknown_ticker_fails_closed() -> None:
 
 
 @pytest.mark.parametrize(
-    "payload",
+    "payload, error_message",
     (
-        [],
-        _payload(ticker=""),
-        _payload(ticker="   "),
-        _payload(title=""),
-        _payload(title="   "),
-        _payload(cik=None),
-        _payload(cik=""),
-        _payload(cik="not-a-cik"),
+        ([], "SEC ticker mapping payload is malformed"),
+        (_payload(ticker=""), "SEC company ticker is missing"),
+        (_payload(ticker="   "), "SEC company ticker is missing"),
+        (_payload(title=""), "SEC company title is missing"),
+        (_payload(title="   "), "SEC company title is missing"),
+        (_payload(cik=None), "SEC company CIK is invalid"),
+        (_payload(cik=""), "SEC company CIK is invalid"),
+        (_payload(cik="not-a-cik"), "SEC company CIK is invalid"),
     ),
 )
-def test_malformed_sec_identity_data_fails_closed(payload: object) -> None:
+def test_malformed_sec_identity_data_fails_closed(payload, error_message) -> None:
     _, error_type = _resolver_contract()
     http_request = Mock(return_value=_response(payload))
 
-    with pytest.raises(error_type):
+    with pytest.raises(error_type, match=error_message):
         _resolver(http_request).resolve("ONDS")
 
 
@@ -332,3 +327,136 @@ def test_identity_failure_prevents_research_eligibility() -> None:
         )
 
     researcher.assert_not_called()
+
+
+# Synthetic SEC associations, not the unpreserved historical WDS response.
+@pytest.mark.parametrize("position", ("before", "after"))
+@pytest.mark.parametrize(
+    "unrelated_row",
+    (
+        pytest.param([222, None, "OTHER", "Nasdaq"], id="missing-name"),
+        pytest.param([None, "Other Issuer", "OTHER", "Nasdaq"], id="missing-cik"),
+        pytest.param([222, "Other Issuer", "OTHER", None], id="missing-exchange"),
+    ),
+)
+def test_valid_target_isolated_from_unrelated_incomplete_identity(
+    position, unrelated_row,
+) -> None:
+    target_row = [111, "WDS Test Issuer", "WDS", "NYSE"]
+    rows = ([unrelated_row, target_row] if position == "before"
+            else [target_row, unrelated_row])
+    payload = {"fields": ["cik", "name", "ticker", "exchange"], "data": rows}
+    http_request = Mock(return_value=_response(payload))
+
+    identity = _resolver(http_request).resolve("WDS")
+
+    assert identity == CompanyIdentity(
+        ticker="WDS", company_name="WDS Test Issuer",
+        cik="0000000111", exchange="NYSE",
+    )
+
+
+@pytest.mark.parametrize(
+    "invalid_fields, error_message",
+    (
+        ({"company_name": None}, "SEC company title is missing"),
+        ({"company_name": "   "}, "SEC company title is missing"),
+        ({"cik": None}, "SEC company CIK is invalid"),
+        ({"cik": "not-a-cik"}, "SEC company CIK is invalid"),
+        ({"cik": "12345678901"}, "SEC company CIK is invalid"),
+        ({"exchange": None}, "SEC company exchange is missing"),
+        ({"exchange": "   "}, "SEC company exchange is missing"),
+    ),
+)
+def test_incomplete_target_still_fails_with_valid_unrelated_association(
+    invalid_fields, error_message,
+) -> None:
+    _, error_type = _resolver_contract()
+    payload = _association_payload(ticker="WDS", **invalid_fields)
+    payload["data"].insert(0, [222, "Other Issuer", "OTHER", "Nasdaq"])
+    http_request = Mock(return_value=_response(payload))
+
+    with pytest.raises(error_type, match=error_message):
+        _resolver(http_request).resolve("WDS")
+
+
+@pytest.mark.parametrize(
+    "second_target",
+    (
+        pytest.param([111, "WDS Test Issuer", "WDS", "NYSE"], id="duplicate"),
+        pytest.param([333, "Conflicting Issuer", " wds ", "Nasdaq"], id="conflicting"),
+    ),
+)
+def test_multiple_target_associations_fail_closed(second_target) -> None:
+    _, error_type = _resolver_contract()
+    payload = {
+        "fields": ["cik", "name", "ticker", "exchange"],
+        "data": [[111, "WDS Test Issuer", "WDS", "NYSE"], second_target],
+    }
+    http_request = Mock(return_value=_response(payload))
+
+    with pytest.raises(error_type, match="SEC company ticker is ambiguous"):
+        _resolver(http_request).resolve("WDS")
+
+
+@pytest.mark.parametrize(
+    "payload, error_message",
+    (
+        pytest.param(
+            {"fields": ["cik", "name", "exchange"],
+             "data": [[111, "WDS Test Issuer", "NYSE"]]},
+            "SEC ticker mapping payload is malformed", id="no-ticker-column",
+        ),
+        pytest.param(
+            {"fields": ["cik", "name", "ticker", "ticker", "exchange"],
+             "data": [[111, "WDS Test Issuer", "WDS", "OTHER", "NYSE"]]},
+            "SEC ticker mapping payload is malformed", id="ambiguous-ticker-columns",
+        ),
+        pytest.param(
+            {"fields": ["cik", "name", "ticker", "exchange"],
+             "data": [None, [111, "WDS Test Issuer", "WDS", "NYSE"]]},
+            "SEC company identity data is malformed", id="unidentifiable-row-before",
+        ),
+        pytest.param(
+            {"fields": ["cik", "name", "ticker", "exchange"],
+             "data": [[111, "WDS Test Issuer", "WDS", "NYSE"], []]},
+            "SEC company identity data is malformed", id="unidentifiable-row-after",
+        ),
+    ),
+)
+def test_unreliable_target_identification_fails_at_structural_boundary(
+    payload, error_message,
+) -> None:
+    _, error_type = _resolver_contract()
+    http_request = Mock(return_value=_response(payload))
+
+    with pytest.raises(error_type, match=error_message):
+        _resolver(http_request).resolve("WDS")
+
+
+def test_cached_source_reused_without_validating_unrelated_identities() -> None:
+    payload = {
+        "fields": ["cik", "name", "ticker", "exchange"],
+        "data": [
+            [111, "WDS Test Issuer", "WDS", "NYSE"],
+            [222, "Other Issuer", "OTHER", None],
+            [333, "Second Target", "SECOND", "Nasdaq"],
+        ],
+    }
+    response = _response(payload)
+    http_request = Mock(return_value=response)
+    resolver = _resolver(http_request)
+    http_request.assert_not_called()
+
+    first = resolver.resolve("WDS")
+    assert first == CompanyIdentity(
+        ticker="WDS", company_name="WDS Test Issuer",
+        cik="0000000111", exchange="NYSE",
+    )
+    assert resolver.resolve(" wds ") is first
+    assert resolver.resolve("SECOND") == CompanyIdentity(
+        ticker="SECOND", company_name="Second Target",
+        cik="0000000333", exchange="Nasdaq",
+    )
+    http_request.assert_called_once()
+    response.raise_for_status.assert_called_once()

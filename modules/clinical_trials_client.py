@@ -3,6 +3,16 @@ from typing import Any
 import requests
 
 
+class ClinicalTrialsStudyPage(list[dict[str, Any]]):
+    def __init__(
+        self,
+        studies: list[dict[str, Any]],
+        next_page_token: str | None,
+    ) -> None:
+        super().__init__(studies)
+        self.next_page_token = next_page_token
+
+
 class ClinicalTrialsClient:
     """
     Client for the official ClinicalTrials.gov API v2.
@@ -15,10 +25,11 @@ class ClinicalTrialsClient:
 
     def search_studies(
         self,
-        query: str,
+        query: str | None = None,
         page_size: int = 10,
         page_token: str | None = None,
-    ) -> list[dict[str, Any]]:
+        query_term: str | None = None,
+    ) -> ClinicalTrialsStudyPage:
         """
         Search ClinicalTrials.gov studies by sponsor-related fields.
 
@@ -36,13 +47,13 @@ class ClinicalTrialsClient:
             List of study dictionaries.
         """
 
-        normalized_query = query.strip()
+        normalized_query = (query_term if query_term is not None else query or "").strip()
 
         if not normalized_query:
-            return []
+            return ClinicalTrialsStudyPage([], None)
 
         params: dict[str, Any] = {
-            "query.spons": normalized_query,
+            "query.term" if query_term is not None else "query.spons": normalized_query,
             "pageSize": page_size,
             "format": "json",
         }
@@ -61,8 +72,14 @@ class ClinicalTrialsClient:
         payload = response.json()
 
         studies = payload.get("studies", [])
+        next_page_token = payload.get("nextPageToken")
 
         if not isinstance(studies, list):
             raise ValueError("Invalid ClinicalTrials response.")
+        if next_page_token is not None and not isinstance(
+            next_page_token,
+            str,
+        ):
+            raise ValueError("Invalid ClinicalTrials response.")
 
-        return studies
+        return ClinicalTrialsStudyPage(studies, next_page_token)

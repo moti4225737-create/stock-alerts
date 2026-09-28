@@ -1,5 +1,7 @@
 from unittest.mock import Mock
 
+import pytest
+
 import main
 from models.portfolio import Portfolio
 
@@ -17,6 +19,7 @@ def _prepare_main(monkeypatch):
         "LIFEGUARD_PING_URL",
         "https://example.test/lifeguard",
     )
+    monkeypatch.setenv("AUTONOMOUS_MAX_CYCLES", "2")
 
     providers = {
         "FDA": Mock(),
@@ -90,7 +93,7 @@ def test_main_builds_and_runs_autonomous_acquisition_loop(
     main.main()
 
     provider_manager.build_named.assert_called_once_with()
-    loop.run.assert_called_once_with()
+    loop.run.assert_called_once_with(max_cycles=2)
 
 
 def test_main_uses_default_notification_history_path(
@@ -221,6 +224,58 @@ def test_main_wires_semantic_grounded_enrichment(
     assert "materiality_policy" not in kwargs
 
 
+def test_main_wires_clinical_trials_source_observation_configuration(
+    monkeypatch,
+) -> None:
+    _prepare_main(monkeypatch)
+    monkeypatch.setenv(
+        "SOURCE_OBSERVATION_STATE_PATH",
+        "/data/source_observation/",
+    )
+    observation_store = Mock()
+    store_factory = Mock(return_value=observation_store)
+    provider_manager_factory = main.ProviderManager
+    monkeypatch.setattr(
+        main,
+        "FileSourceObservationStore",
+        store_factory,
+        raising=False,
+    )
+
+    main.main()
+
+    store_factory.assert_called_once_with("/data/source_observation/")
+    manager_kwargs = provider_manager_factory.call_args.kwargs
+    time_zero_for = manager_kwargs["time_zero_for"]
+    assert callable(time_zero_for)
+    assert time_zero_for.__module__ == main.__name__
+    assert time_zero_for.__qualname__ == "main.<locals>.time_zero_for"
+    assert manager_kwargs == {
+        "time_zero_for": time_zero_for,
+        "ticker_resolver": manager_kwargs["ticker_resolver"],
+        "source_observation_store": observation_store,
+        "clinical_trials_page_size": 1000,
+    }
+
+
+def test_main_uses_default_source_observation_state_path(monkeypatch) -> None:
+    _prepare_main(monkeypatch)
+    monkeypatch.delenv("SOURCE_OBSERVATION_STATE_PATH", raising=False)
+    store_factory = Mock(return_value=Mock())
+    monkeypatch.setattr(
+        main,
+        "FileSourceObservationStore",
+        store_factory,
+        raising=False,
+    )
+
+    main.main()
+
+    store_factory.assert_called_once_with("data/source_observation/")
+
+
+
+
 def test_main_wires_semantic_significance_assessor(
     monkeypatch,
 ) -> None:
@@ -291,3 +346,22 @@ def test_main_wires_semantic_significance_assessor(
         is significance_assessor
     )
     assert "materiality_policy" not in kwargs
+
+def test_main_rejects_missing_autonomous_max_cycles(monkeypatch) -> None:
+    _prepare_main(monkeypatch)
+    monkeypatch.delenv("AUTONOMOUS_MAX_CYCLES", raising=False)
+
+    with pytest.raises(KeyError):
+        main.main()
+
+
+@pytest.mark.parametrize("value", ["0", "-1", "not-an-integer"])
+def test_main_rejects_invalid_autonomous_max_cycles(
+    monkeypatch,
+    value,
+) -> None:
+    _prepare_main(monkeypatch)
+    monkeypatch.setenv("AUTONOMOUS_MAX_CYCLES", value)
+
+    with pytest.raises(ValueError):
+        main.main()

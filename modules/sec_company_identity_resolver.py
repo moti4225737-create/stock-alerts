@@ -33,25 +33,35 @@ class SECCompanyIdentityResolver:
         }
         self._http_request = http_request
         self._timeout_seconds = timeout_seconds
-        self._identity_by_ticker: dict[str, CompanyIdentity] | None = None
+        self._associations_by_ticker: dict[str, list[dict[str, Any]]] | None = None
+        self._identity_by_ticker: dict[str, CompanyIdentity] = {}
 
     def resolve(self, symbol: str) -> CompanyIdentity:
         normalized_symbol = symbol.strip().upper()
 
-        if self._identity_by_ticker is None:
-            self._identity_by_ticker = self._load_identity_mapping()
+        if self._associations_by_ticker is None:
+            self._associations_by_ticker = self._load_identity_mapping()
 
-        identity = self._identity_by_ticker.get(normalized_symbol)
+        candidates = self._associations_by_ticker.get(normalized_symbol)
 
-        if identity is None:
+        if not candidates:
             raise SECCompanyIdentityResolutionError(
                 "SEC identity was not found for symbol: "
                 f"{normalized_symbol}"
             )
 
-        return identity
+        if len(candidates) != 1:
+            raise SECCompanyIdentityResolutionError(
+                "SEC company ticker is ambiguous"
+            )
 
-    def _load_identity_mapping(self) -> dict[str, CompanyIdentity]:
+        if normalized_symbol not in self._identity_by_ticker:
+            self._identity_by_ticker[normalized_symbol] = self._parse_identity(
+                candidates[0]
+            )
+        return self._identity_by_ticker[normalized_symbol]
+
+    def _load_identity_mapping(self) -> dict[str, list[dict[str, Any]]]:
         response = self._http_request(
             self.TICKERS_EXCHANGE_URL,
             headers=self._headers,
@@ -85,21 +95,23 @@ class SECCompanyIdentityResolver:
                 "SEC ticker mapping payload is malformed"
             )
 
-        identities: dict[str, CompanyIdentity] = {}
+        associations: dict[str, list[dict[str, Any]]] = {}
 
         for record in data:
             if not isinstance(record, list) or len(record) != len(fields):
                 raise SECCompanyIdentityResolutionError(
                     "SEC company identity data is malformed"
                 )
-            identity = self._parse_identity(dict(zip(fields, record)))
-            if identity.ticker in identities:
+            company = dict(zip(fields, record))
+            ticker = company["ticker"]
+            # Every row must be identifiable; identity completeness is target-only.
+            if not isinstance(ticker, str) or not ticker.strip():
                 raise SECCompanyIdentityResolutionError(
-                    "SEC company ticker is ambiguous"
+                    "SEC company ticker is missing"
                 )
-            identities[identity.ticker] = identity
+            associations.setdefault(ticker.strip().upper(), []).append(company)
 
-        return identities
+        return associations
 
     @staticmethod
     def _parse_identity(company: object) -> CompanyIdentity:

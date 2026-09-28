@@ -23,7 +23,6 @@ def test_run_live_preview_sends_quote_alert():
     )
 
     quote_fetcher.assert_called_once_with("LQDA")
-    pipeline.collect_events.assert_called_once_with("LQDA")
     telegram_sender.assert_called_once()
 
     sent_message = telegram_sender.call_args.args[0]
@@ -33,7 +32,7 @@ def test_run_live_preview_sends_quote_alert():
     assert "67.25" in sent_message
 
 
-def test_run_live_preview_sends_provider_events():
+def test_run_live_preview_does_not_collect_or_send_provider_events():
     event = Event(
         symbol="LQDA",
         source="ClinicalTrials.gov",
@@ -62,13 +61,11 @@ def test_run_live_preview_sends_provider_events():
         telegram_sender=telegram_sender,
     )
 
-    assert telegram_sender.call_count == 2
-
-    event_message = telegram_sender.call_args_list[1].args[0]
-
-    assert "LQDA" in event_message
-    assert "ClinicalTrials.gov" in event_message
-    assert "Clinical Trial — Test Study" in event_message
-    assert "A clinical study was found." in event_message
-    assert "2026-07-26" in event_message
-    assert "https://clinicaltrials.gov/study/NCT00000001" in event_message
+    pipeline.collect_events.assert_not_called()
+    telegram_sender.assert_called_once()
+    price_message = telegram_sender.call_args.args[0]
+    assert "LQDA" in price_message
+    assert "Finnhub" in price_message
+    assert "67.25" in price_message
+    assert "ClinicalTrials.gov" not in price_message
+    assert "A clinical study was found." not in price_message

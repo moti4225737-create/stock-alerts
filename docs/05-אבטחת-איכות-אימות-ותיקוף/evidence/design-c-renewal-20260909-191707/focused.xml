@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?><testsuites name="pytest tests"><testsuite name="pytest" errors="0" failures="2" skipped="0" tests="8" time="5.202" timestamp="2026-09-09T19:17:08.141337+03:00" hostname="DESKTOP-JHDV6C6"><testcase classname="tests.test_design_c_repository" name="test_native_context_reconstructs_current_station_with_honest_evidence_status" time="0.719" /><testcase classname="tests.test_design_c_repository" name="test_native_carried_obligations_block_their_boundaries[PRE_CANARY-required0]" time="1.124"><failure message="AssertionError: [{'code': 'OBLIGATION_DUE', 'subject': 'O21'}, {'code': 'OBLIGATION_DUE', 'subject': 'O22'}, {'code': 'OBLIGATION_DUE'..._DUE', 'subject': 'C2'}, {'code': 'OBLIGATION_DUE', 'subject': 'X1'}, {'code': 'OBLIGATION_DUE', 'subject': 'X2'}, ...]&#10;assert False&#10; +  where False = &lt;built-in method issubset of set object at 0x0000018C77D1C820&gt;({'C2', 'O21', 'O22', 'O26', 'X1', 'X2'})&#10; +    where &lt;built-in method issubset of set object at 0x0000018C77D1C820&gt; = {'C2', 'O21', 'O22', 'O26', 'O28', 'X1', ...}.issubset">action = 'PRE_CANARY', required = {'C2', 'O21', 'O22', 'O26', 'O28', 'X1', ...}
+
+    @pytest.mark.parametrize("action,required", [
+        ("PRE_CANARY", {"O21", "O22", "O26", "O28", "C2", "X1", "X2"}),
+        ("PRE_PRODUCTION", {"O21", "O22", "O26", "O28", "C2", "X1", "X2"}),
+        ("PRE_PUSH_OR_PROMOTION", {"X2"}),
+        ("PRE_CLOSURE", {"X3"}),
+    ])
+    def test_native_carried_obligations_block_their_boundaries(action, required):
+        report = native(action)
+        assert report["status"] == "TRANSITION_BLOCKED"
+        due = {d["subject"] for d in report["diagnostics"] if d["code"] == "OBLIGATION_DUE"}
+&gt;       assert required.issubset(due), report["diagnostics"]
+E       AssertionError: [{'code': 'OBLIGATION_DUE', 'subject': 'O21'}, {'code': 'OBLIGATION_DUE', 'subject': 'O22'}, {'code': 'OBLIGATION_DUE'..._DUE', 'subject': 'C2'}, {'code': 'OBLIGATION_DUE', 'subject': 'X1'}, {'code': 'OBLIGATION_DUE', 'subject': 'X2'}, ...]
+E       assert False
+E        +  where False = &lt;built-in method issubset of set object at 0x0000018C77D1C820&gt;({'C2', 'O21', 'O22', 'O26', 'X1', 'X2'})
+E        +    where &lt;built-in method issubset of set object at 0x0000018C77D1C820&gt; = {'C2', 'O21', 'O22', 'O26', 'O28', 'X1', ...}.issubset
+
+tests\test_design_c_repository.py:130: AssertionError</failure></testcase><testcase classname="tests.test_design_c_repository" name="test_native_carried_obligations_block_their_boundaries[PRE_PRODUCTION-required1]" time="0.684"><failure message="AssertionError: [{'code': 'OBLIGATION_DUE', 'subject': 'O21'}, {'code': 'OBLIGATION_DUE', 'subject': 'O22'}, {'code': 'OBLIGATION_DUE'..._DUE', 'subject': 'C2'}, {'code': 'OBLIGATION_DUE', 'subject': 'X1'}, {'code': 'OBLIGATION_DUE', 'subject': 'X2'}, ...]&#10;assert False&#10; +  where False = &lt;built-in method issubset of set object at 0x0000018C77D1CBA0&gt;({'C2', 'O21', 'O22', 'O26', 'X1', 'X2'})&#10; +    where &lt;built-in method issubset of set object at 0x0000018C77D1CBA0&gt; = {'C2', 'O21', 'O22', 'O26', 'O28', 'X1', ...}.issubset">action = 'PRE_PRODUCTION', required = {'C2', 'O21', 'O22', 'O26', 'O28', 'X1', ...}
+
+    @pytest.mark.parametrize("action,required", [
+        ("PRE_CANARY", {"O21", "O22", "O26", "O28", "C2", "X1", "X2"}),
+        ("PRE_PRODUCTION", {"O21", "O22", "O26", "O28", "C2", "X1", "X2"}),
+        ("PRE_PUSH_OR_PROMOTION", {"X2"}),
+        ("PRE_CLOSURE", {"X3"}),
+    ])
+    def test_native_carried_obligations_block_their_boundaries(action, required):
+        report = native(action)
+        assert report["status"] == "TRANSITION_BLOCKED"
+        due = {d["subject"] for d in report["diagnostics"] if d["code"] == "OBLIGATION_DUE"}
+&gt;       assert required.issubset(due), report["diagnostics"]
+E       AssertionError: [{'code': 'OBLIGATION_DUE', 'subject': 'O21'}, {'code': 'OBLIGATION_DUE', 'subject': 'O22'}, {'code': 'OBLIGATION_DUE'..._DUE', 'subject': 'C2'}, {'code': 'OBLIGATION_DUE', 'subject': 'X1'}, {'code': 'OBLIGATION_DUE', 'subject': 'X2'}, ...]
+E       assert False
+E        +  where False = &lt;built-in method issubset of set object at 0x0000018C77D1CBA0&gt;({'C2', 'O21', 'O22', 'O26', 'X1', 'X2'})
+E        +    where &lt;built-in method issubset of set object at 0x0000018C77D1CBA0&gt; = {'C2', 'O21', 'O22', 'O26', 'O28', 'X1', ...}.issubset
+
+tests\test_design_c_repository.py:130: AssertionError</failure></testcase><testcase classname="tests.test_design_c_repository" name="test_native_carried_obligations_block_their_boundaries[PRE_PUSH_OR_PROMOTION-required2]" time="0.976" /><testcase classname="tests.test_design_c_repository" name="test_native_carried_obligations_block_their_boundaries[PRE_CLOSURE-required3]" time="0.467" /><testcase classname="tests.test_design_c_repository" name="test_native_completed_wds_diagnosis_does_not_restore_superseded_prohibition" time="0.536" /><testcase classname="tests.test_design_c_repository" name="test_native_station_completion_never_promotes_stale_receipts_to_pass" time="0.320" /><testcase classname="tests.test_design_c_repository" name="test_repository_governance_mapping_covers_native_test_without_unknown_scope_escape" time="0.003" /></testsuite></testsuites>

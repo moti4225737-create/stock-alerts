@@ -1,0 +1,568 @@
+{
+  "schema_version": 1,
+  "components": {
+    "opening": {
+      "paths": [
+        "application/source_bootstrap*.py",
+        "application/sec_source_bootstrap_acceptance_producer.py",
+        "modules/sec_company_identity_resolver.py",
+        "tests/test_sec_company_identity_resolver.py",
+        "modules/perplexity*.py",
+        "models/source_bootstrap_state.py",
+        "tests/test*opening*.py",
+        "tests/test*bootstrap*.py",
+        "modules/file_source_bootstrap_store.py",
+        "tests/test_portfolio_truth_service.py",
+        "tests/test_main_portfolio_truth_wiring.py",
+        "application/portfolio_truth_service.py"
+      ],
+      "consumers": [
+        "Opening",
+        "SEC",
+        "Perplexity"
+      ]
+    },
+    "observation": {
+      "paths": [
+        "models/source_observation.py",
+        "modules/file_source_observation_store.py",
+        "modules/clinical_trials*.py",
+        "modules/sec_provider.py",
+        "modules/fda_provider.py",
+        "modules/provider_manager.py",
+        "application/source_runtime_runner.py",
+        "tests/test*source_observation*.py",
+        "tests/test*provider*.py",
+        "tests/evidence/rnd002-local-fault-proof-20260915-01/run.txt",
+        "modules/ticker_resolver.py",
+        "tests/test_openfda_client.py",
+        "modules/openfda_client.py",
+        "tests/test_source_runtime_runner.py",
+        "tests/evidence/o22-bounded-red-20260915.xml",
+        "models/event.py",
+        "tests/evidence/rnd002-local-fault-proof-20260915-01/proof.xml",
+        "tests/test_clinical_trials_client.py",
+        "tests/test_rnd002_fault_injection_proof.py",
+        "tests/test_ticker_resolver.py",
+        "modules/source_observation_lifecycle.py",
+        "tests/evidence/rnd002-local-fault-proof-20260915-02/run.txt",
+        "tests/evidence/rnd002-local-fault-proof-20260915-02/proof.xml"
+      ],
+      "consumers": [
+        "SEC",
+        "FDA",
+        "ClinicalTrials.gov",
+        "SourceRuntimeRunner"
+      ]
+    },
+    "runtime": {
+      "paths": [
+        "main.py",
+        "application/autonomous_acquisition_loop.py",
+        "engines/*.py",
+        "modules/healthchecks*.py",
+        "tests/test_main_autonomous_runtime.py",
+        "tests/evidence/rnd002-local-fault-proof-20260915-01/run.txt",
+        "tests/test_portfolio_truth_service.py",
+        "tests/test_autonomous_acquisition_loop.py",
+        "tests/test_main_portfolio_truth_wiring.py",
+        "tests/test_source_runtime_runner.py",
+        "models/event.py",
+        "tests/evidence/rnd002-local-fault-proof-20260915-01/proof.xml",
+        "modules/notification_history.py",
+        "tests/test_rnd002_fault_injection_proof.py",
+        "tests/test_notification_history.py",
+        "application/portfolio_truth_service.py",
+        "tests/evidence/rnd002-local-fault-proof-20260915-02/run.txt",
+        "tests/evidence/rnd002-local-fault-proof-20260915-02/proof.xml",
+        "tests/test_main_lifeguard_runtime_wiring.py",
+        "tests/test_live_preview.py"
+      ],
+      "consumers": [
+        "Opening",
+        "Acquisition",
+        "WorkEvidence",
+        "Telegram"
+      ]
+    },
+    "governance": {
+      "paths": [
+        "tools/resolve_authority.py",
+        "AGENTS.md",
+        "docs/**",
+        "tests/test_authority*.py",
+        "tests/test_transition_guard.py",
+        "tests/test_support/design_c_fixture.py",
+        "tests/test_design_c_repository.py",
+        "tests/test_design_c_hardening.py",
+        "tests/evidence/governance-procedural-safety.xml",
+        "tests/evidence/governance-technical-focused-green.xml",
+        "tests/evidence/governance-technical-safety-green.xml",
+        "tests/evidence/governance-procedural-focused.xml",
+        "tests/evidence/governance-technical-expanded-red.xml",
+        "modules/documentation_checkpoint_accountability.py",
+        "tests/evidence/governance-intermediate-red.xml",
+        "tests/test_documentation_checkpoint_accountability.py"
+      ],
+      "consumers": [
+        "Codex",
+        "ChatGPT",
+        "compatible-agent",
+        "pytest",
+        "existing-closure-protocol"
+      ]
+    }
+  },
+  "bindings": [
+    {
+      "id": "D06",
+      "authority": {
+        "path": "docs/02-ספר-המוצר/02.05-ארכיטקטורת-המערכת/02.05.03-תהליכים-ואינטראקציות.md",
+        "anchor": "## Opening / Initialization",
+        "digest": "28655941ad369a700870ac35ae5866cca4f7e324800dfda853d5fc17ae93cfd7"
+      },
+      "applies_to": {
+        "components": [
+          "opening"
+        ],
+        "operations": [
+          "diagnosis"
+        ]
+      },
+      "obligations": []
+    },
+    {
+      "id": "B-O21",
+      "authority": {
+        "path": "docs/02-ספר-המוצר/02.05-ארכיטקטורת-המערכת/02.05.03-תהליכים-ואינטראקציות.md",
+        "anchor": "## Source Observation / Monitoring Boundary",
+        "digest": "28655941ad369a700870ac35ae5866cca4f7e324800dfda853d5fc17ae93cfd7"
+      },
+      "applies_to": {
+        "components": [
+          "observation"
+        ],
+        "operations": [
+          "diagnosis",
+          "transition"
+        ],
+        "always": false
+      },
+      "obligations": [
+        {
+          "id": "proof-O21",
+          "required_follow_up": true,
+          "scope": "R&D 002",
+          "required_before": [
+            "PRE_CANARY",
+            "PRE_PRODUCTION"
+          ],
+          "proof_class": "LEVEL_1",
+          "enforcement": "HARD",
+          "required_assertions": [
+            "SEC/FDA durable pending replay and ACK after processing"
+          ],
+          "fresh_for_action": false
+        }
+      ]
+    },
+    {
+      "id": "B-O22",
+      "authority": {
+        "path": "docs/02-ספר-המוצר/02.05-ארכיטקטורת-המערכת/02.05.03-תהליכים-ואינטראקציות.md",
+        "anchor": "## Source Observation / Monitoring Boundary",
+        "digest": "28655941ad369a700870ac35ae5866cca4f7e324800dfda853d5fc17ae93cfd7"
+      },
+      "applies_to": {
+        "components": [
+          "observation"
+        ],
+        "operations": [
+          "diagnosis",
+          "transition"
+        ],
+        "always": false
+      },
+      "obligations": [
+        {
+          "id": "proof-O22",
+          "required_follow_up": true,
+          "scope": "R&D 002",
+          "required_before": [
+            "PRE_CANARY",
+            "PRE_PRODUCTION"
+          ],
+          "proof_class": "LEVEL_1",
+          "enforcement": "HARD",
+          "required_assertions": [
+            "SEC/FDA observed-object comparison suppresses repeated live NEW"
+          ],
+          "fresh_for_action": false
+        }
+      ]
+    },
+    {
+      "id": "B-O26",
+      "authority": {
+        "path": "docs/04-תפעול-המערכת/טיפול-בכשלים-והתאוששות.md",
+        "anchor": "## Fail Safely",
+        "digest": "4d8c6c60aa1cc8cde313ee036b517ba0f184f30156be59c6269d4c9b5a22511d"
+      },
+      "applies_to": {
+        "components": [
+          "runtime"
+        ],
+        "operations": [
+          "diagnosis",
+          "transition"
+        ],
+        "always": false
+      },
+      "obligations": [
+        {
+          "id": "proof-O26",
+          "required_follow_up": true,
+          "scope": "R&D 002",
+          "required_before": [
+            "PRE_CANARY",
+            "PRE_PRODUCTION"
+          ],
+          "proof_class": "LEVEL_1",
+          "enforcement": "HARD",
+          "required_assertions": [
+            "Provider/runtime failure remains visible and is not success evidence"
+          ],
+          "fresh_for_action": false
+        }
+      ]
+    },
+    {
+      "id": "B-O28",
+      "authority": {
+        "path": "docs/03-ניהול-הפיתוח-ההנדסי/החלטות-הנדסיות.md",
+        "anchor": "## Required-before transitions",
+        "digest": "75ba60805c5356cbb1a0b087e6c2d83513fd359b2abbebdc070efc1854d6a56f"
+      },
+      "applies_to": {
+        "components": [
+          "runtime"
+        ],
+        "operations": [
+          "diagnosis",
+          "transition"
+        ],
+        "always": false
+      },
+      "obligations": [
+        {
+          "id": "proof-O28",
+          "required_follow_up": true,
+          "scope": "R&D 002",
+          "required_before": [
+            "PRE_EXTERNAL_WORK"
+          ],
+          "proof_class": "LEVEL_1",
+          "enforcement": "HARD",
+          "required_assertions": [
+            "Missing or invalid bounds reject with zero prior external consequence"
+          ],
+          "fresh_for_action": false
+        }
+      ]
+    },
+    {
+      "id": "B-C2",
+      "supersession_ref": "EV-C2-20260927",
+      "authority": {
+        "path": "docs/03-ניהול-הפיתוח-ההנדסי/החלטות-הנדסיות.md",
+        "anchor": "## Required-before transitions",
+        "digest": "4502d5430da2c48425f9c245f69168f803357d2fa752975fc50b5f5041443082"
+      },
+      "applies_to": {
+        "components": [
+          "runtime"
+        ],
+        "operations": [
+          "diagnosis",
+          "transition"
+        ],
+        "always": false
+      },
+      "obligations": [
+        {
+          "id": "proof-C2",
+          "required_follow_up": true,
+          "scope": "R&D 002",
+          "required_before": [
+            "PRE_CANARY",
+            "PRE_PRODUCTION"
+          ],
+          "proof_class": "LEVEL_2",
+          "enforcement": "HARD",
+          "required_assertions": [
+            "Applicable account configuration destination bounds and persistence evidence"
+          ],
+          "fresh_for_action": true
+        }
+      ]
+    },
+    {
+      "id": "B-X1",
+      "supersession_ref": "EV-X1-20260927",
+      "authority": {
+        "path": "docs/03-ניהול-הפיתוח-ההנדסי/החלטות-הנדסיות.md",
+        "anchor": "## Required-before transitions",
+        "digest": "4502d5430da2c48425f9c245f69168f803357d2fa752975fc50b5f5041443082"
+      },
+      "applies_to": {
+        "components": [
+          "runtime"
+        ],
+        "operations": [
+          "diagnosis",
+          "transition"
+        ],
+        "always": false
+      },
+      "obligations": [
+        {
+          "id": "proof-X1",
+          "required_follow_up": true,
+          "scope": "R&D 002",
+          "required_before": [
+            "PRE_CANARY",
+            "PRE_PRODUCTION"
+          ],
+          "proof_class": "LEVEL_2",
+          "enforcement": "HARD",
+          "required_assertions": [
+            "Remaining real preactivation finite-consequence containment evidence"
+          ],
+          "fresh_for_action": true
+        }
+      ]
+    },
+    {
+      "id": "B-X2",
+      "authority": {
+        "path": "docs/03-ניהול-הפיתוח-ההנדסי/פרוטוקול-השינוי-האימות-המסירה-והסגירה-הסמכותי.md",
+        "anchor": "### Forward Consequence Check",
+        "digest": "f4a06c65464375e287b816cb5fd9a189e2bea5d87ebee728a04704858a4310d1"
+      },
+      "applies_to": {
+        "components": [
+          "runtime"
+        ],
+        "operations": [
+          "diagnosis",
+          "transition"
+        ],
+        "always": false
+      },
+      "obligations": [
+        {
+          "id": "proof-X2",
+          "required_follow_up": true,
+          "scope": "R&D 002",
+          "required_before": [
+            "PRE_PUSH_OR_PROMOTION"
+          ],
+          "proof_class": "LEVEL_2",
+          "enforcement": "HARD",
+          "required_assertions": [
+            "Fresh Forward Consequence and delivery coupling for actual candidate/action"
+          ],
+          "fresh_for_action": true,
+          "candidate_match_required": true
+        }
+      ]
+    },
+    {
+      "id": "B-X3",
+      "supersession_ref": "EV-X3-20260927",
+      "authority": {
+        "path": "docs/03-ניהול-הפיתוח-ההנדסי/פרוטוקול-השינוי-האימות-המסירה-והסגירה-הסמכותי.md",
+        "anchor": "## 15 — End-to-End Product Outcome Validation",
+        "digest": "f4a06c65464375e287b816cb5fd9a189e2bea5d87ebee728a04704858a4310d1"
+      },
+      "applies_to": {
+        "components": [
+          "runtime"
+        ],
+        "operations": [
+          "diagnosis",
+          "transition"
+        ],
+        "always": false
+      },
+      "obligations": [
+        {
+          "id": "proof-X3",
+          "required_follow_up": true,
+          "scope": "R&D 002",
+          "required_before": [
+            "PRE_CLOSURE"
+          ],
+          "proof_class": "LEVEL_3",
+          "enforcement": "HARD",
+          "required_assertions": [
+            "Real coordinated Canary before action consequence after outcome"
+          ],
+          "fresh_for_action": true
+        }
+      ]
+    },
+    {
+      "id": "B-C2-REUSABLE",
+      "authority": {
+        "path": "docs/03-ניהול-הפיתוח-ההנדסי/החלטות-הנדסיות.md",
+        "anchor": "## Material Contract Evolution",
+        "digest": "75ba60805c5356cbb1a0b087e6c2d83513fd359b2abbebdc070efc1854d6a56f"
+      },
+      "applies_to": {"components": ["runtime"], "operations": ["diagnosis", "transition"], "always": false},
+      "obligations": [{
+        "id": "proof-C2", "required_follow_up": true, "scope": "R&D 002",
+        "required_before": ["PRE_CANARY", "PRE_PRODUCTION"],
+        "proof_class": "LEVEL_2", "enforcement": "HARD",
+        "required_assertions": ["Applicable account configuration destination bounds and persistence evidence"],
+        "fresh_for_action": false, "candidate_match_required": false
+      }]
+    },
+    {
+      "id": "B-X1-REUSABLE",
+      "authority": {
+        "path": "docs/03-ניהול-הפיתוח-ההנדסי/החלטות-הנדסיות.md",
+        "anchor": "## Material Contract Evolution",
+        "digest": "75ba60805c5356cbb1a0b087e6c2d83513fd359b2abbebdc070efc1854d6a56f"
+      },
+      "applies_to": {"components": ["runtime"], "operations": ["diagnosis", "transition"], "always": false},
+      "obligations": [{
+        "id": "proof-X1", "required_follow_up": true, "scope": "R&D 002",
+        "required_before": ["PRE_CANARY", "PRE_PRODUCTION"],
+        "proof_class": "LEVEL_2", "enforcement": "HARD",
+        "required_assertions": ["Remaining real preactivation finite-consequence containment evidence"],
+        "fresh_for_action": false, "candidate_match_required": false
+      }]
+    },
+    {
+      "id": "B-X3-REUSABLE",
+      "authority": {
+        "path": "docs/03-ניהול-הפיתוח-ההנדסי/החלטות-הנדסיות.md",
+        "anchor": "## Material Contract Evolution",
+        "digest": "75ba60805c5356cbb1a0b087e6c2d83513fd359b2abbebdc070efc1854d6a56f"
+      },
+      "applies_to": {"components": ["runtime"], "operations": ["diagnosis", "transition"], "always": false},
+      "obligations": [{
+        "id": "proof-X3", "required_follow_up": true, "scope": "R&D 002",
+        "required_before": ["PRE_CLOSURE"], "proof_class": "LEVEL_3", "enforcement": "HARD",
+        "required_assertions": ["Real coordinated Canary before action consequence after outcome"],
+        "fresh_for_action": false, "candidate_match_required": false
+      }]
+    },
+    {
+      "id": "B-DC-FOUNDATION",
+      "authority": {
+        "path": "docs/03-ניהול-הפיתוח-ההנדסי/החלטות-הנדסיות.md",
+        "anchor": "## Lean Design C — binding and transition support",
+        "digest": "75ba60805c5356cbb1a0b087e6c2d83513fd359b2abbebdc070efc1854d6a56f"
+      },
+      "applies_to": {
+        "components": [
+          "governance"
+        ],
+        "operations": [
+          "diagnosis",
+          "transition"
+        ],
+        "always": true
+      },
+      "obligations": [
+        {
+          "id": "proof-DC-FOUNDATION",
+          "required_follow_up": true,
+          "scope": "R&D 002",
+          "required_before": [
+            "FOUNDATION_GREEN",
+            "PRE_COMMIT"
+          ],
+          "proof_class": "LEVEL_1",
+          "enforcement": "HARD",
+          "required_assertions": [
+            "Foundation focused and negative-control acceptance suite"
+          ],
+          "fresh_for_action": false
+        }
+      ]
+    },
+    {
+      "id": "B-DC-CONTINUITY",
+      "authority": {
+        "path": "docs/03-ניהול-הפיתוח-ההנדסי/החלטות-הנדסיות.md",
+        "anchor": "## Same-Station Decision Persistence",
+        "digest": "75ba60805c5356cbb1a0b087e6c2d83513fd359b2abbebdc070efc1854d6a56f"
+      },
+      "applies_to": {
+        "components": [
+          "governance"
+        ],
+        "operations": [
+          "diagnosis",
+          "transition"
+        ],
+        "always": true
+      },
+      "obligations": [
+        {
+          "id": "proof-DC-CONTINUITY",
+          "required_follow_up": true,
+          "scope": "R&D 002",
+          "required_before": [
+            "FOUNDATION_GREEN",
+            "PRE_COMMIT"
+          ],
+          "proof_class": "LEVEL_1",
+          "enforcement": "HARD",
+          "required_assertions": [
+            "Native repository continuity and same-station persistence replay"
+          ],
+          "fresh_for_action": false
+        }
+      ]
+    },
+    {
+      "id": "B-DC-REGRESSION",
+      "authority": {
+        "path": "docs/03-ניהול-הפיתוח-ההנדסי/פרוטוקול-השינוי-האימות-המסירה-והסגירה-הסמכותי.md",
+        "anchor": "## 6 — Full Regression",
+        "digest": "f4a06c65464375e287b816cb5fd9a189e2bea5d87ebee728a04704858a4310d1"
+      },
+      "applies_to": {
+        "components": [
+          "governance"
+        ],
+        "operations": [
+          "diagnosis",
+          "transition"
+        ],
+        "always": true
+      },
+      "obligations": [
+        {
+          "id": "proof-DC-REGRESSION",
+          "required_follow_up": true,
+          "scope": "R&D 002",
+          "required_before": [
+            "FOUNDATION_GREEN",
+            "PRE_COMMIT"
+          ],
+          "proof_class": "LEVEL_1",
+          "enforcement": "HARD",
+          "required_assertions": [
+            "Full local regression on synchronized foundation"
+          ],
+          "fresh_for_action": false
+        }
+      ]
+    }
+  ]
+}

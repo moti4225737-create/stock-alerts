@@ -453,3 +453,58 @@ def test_restored_holdings_are_not_newly_introduced_without_bootstrap_memory(
     )
 
     research.assert_not_called()
+
+
+def test_prior_opening_is_invalidated_before_introduction_is_saved():
+    existing = _holding("AAPL", "10")
+    introduced = _holding("MSFT", "5")
+    service, _, store, _ = _service(
+        restored_truth=_accepted((existing,)),
+        source_result=_success(_candidate((existing, introduced))),
+    )
+    service.restore()
+    order = []
+    invalidate = Mock(side_effect=lambda symbol: order.append(("invalidate", symbol)))
+    store.save.side_effect = lambda truth: order.append(("save", truth.positions))
+
+    assert service.refresh(invalidate_opening=invalidate) is True
+
+    assert order == [
+        ("invalidate", "MSFT"), ("save", (existing, introduced)),
+    ]
+    assert service.introduced_holdings == (introduced,)
+
+
+def test_opening_invalidation_failure_prevents_membership_acceptance():
+    existing = _holding("AAPL", "10")
+    introduced = _holding("MSFT", "5")
+    service, _, store, _ = _service(
+        restored_truth=_accepted((existing,)),
+        source_result=_success(_candidate((existing, introduced))),
+    )
+    service.restore()
+    invalidate = Mock(side_effect=OSError("invalidation unavailable"))
+
+    with pytest.raises(OSError, match="invalidation unavailable"):
+        service.refresh(invalidate_opening=invalidate)
+
+    store.save.assert_not_called()
+    assert service.portfolio.holdings == [existing]
+    assert service.introduced_holdings == ()
+
+
+def test_continuous_position_update_does_not_invalidate_opening():
+    existing = _holding("AAPL", "10")
+    updated = _holding("AAPL", "20")
+    service, _, _, _ = _service(
+        restored_truth=_accepted((existing,)),
+        source_result=_success(_candidate((updated,))),
+    )
+    service.restore()
+    invalidate = Mock()
+
+    assert service.refresh(invalidate_opening=invalidate) is True
+
+    invalidate.assert_not_called()
+    assert service.introduced_holdings == ()
+    assert service.portfolio.holdings == [updated]

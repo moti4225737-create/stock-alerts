@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?><testsuites name="pytest tests"><testsuite name="pytest" errors="0" failures="1" skipped="0" tests="1" time="0.460" timestamp="2026-09-28T06:38:10.459148+03:00" hostname="DESKTOP-JHDV6C6"><testcase classname="tests.test_design_c_hardening" name="test_evolution_approval_cannot_rewrite_pinned_obligation_provenance" time="0.239"><failure message="AssertionError">case = &lt;tests.test_support.design_c_fixture.RepositoryCase object at 0x000002324C7F86E0&gt;
+
+    def test_evolution_approval_cannot_rewrite_pinned_obligation_provenance(case):
+        d = _evolved(case)
+        case.obligation("O21")["origin_ref"] = "invented-origin"
+        contract = {k: v for k, v in case.obligation("O21").items()
+                    if k not in {"status", "evidence_refs", "disposition_ref"}}
+        d["evolution"]["obligations"][0]["contracts"]["O21"] = _seal(contract)
+        case.evidence["approvals"][0]["disposition_sha256"] = _seal(d)
+&gt;       rejected(case.run(), "BASELINE_COVERAGE", "O21")
+
+tests\test_design_c_hardening.py:125: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+report = {'status': 'RESOLVED_CONTEXT', 'diagnostics': [], 'controls': [{'id': 'D06', 'authority': {'path': 'docs/02-ספר-המוצר/...: 'docs/06-ניהול-הידע-ורציפות-התיעוד/chronicle/ספרינטים/fixture-station.md#audit', 'scope': 'R&amp;D 002', ...}, ...], ...}
+code = 'BASELINE_COVERAGE', subject = 'O21'
+
+    def rejected(report, code, subject=None):
+&gt;       assert report["status"] in {"TRANSITION_BLOCKED", "UNRESOLVED"}
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       AssertionError
+
+tests\test_support\design_c_fixture.py:259: AssertionError</failure></testcase></testsuite></testsuites>

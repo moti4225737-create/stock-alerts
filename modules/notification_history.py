@@ -1,3 +1,5 @@
+import os
+import tempfile
 from pathlib import Path
 
 
@@ -24,15 +26,27 @@ class NotificationHistory:
         if not event_id:
             return
 
-        self._delivered_event_ids.add(event_id)
-        self._persist()
+        candidate = self._delivered_event_ids | {event_id}
+        self._persist(candidate)
+        self._delivered_event_ids = candidate
 
-    def _persist(self) -> None:
+    def _persist(self, candidate: set[str]) -> None:
         if not self._path:
             return
 
         self._path.parent.mkdir(parents=True, exist_ok=True)
-        self._path.write_text(
-            "\n".join(sorted(self._delivered_event_ids)) + ("\n" if self._delivered_event_ids else ""),
-            encoding="utf-8",
-        )
+        temporary_path = None
+        try:
+            with tempfile.NamedTemporaryFile(
+                mode="w", encoding="utf-8", newline="\n",
+                dir=self._path.parent, prefix=f".{self._path.name}.",
+                suffix=".tmp", delete=False,
+            ) as temporary:
+                temporary_path = Path(temporary.name)
+                temporary.write("\n".join(sorted(candidate)) + ("\n" if candidate else ""))
+                temporary.flush()
+                os.fsync(temporary.fileno())
+            os.replace(temporary_path, self._path)
+        finally:
+            if temporary_path is not None and temporary_path.exists():
+                temporary_path.unlink()

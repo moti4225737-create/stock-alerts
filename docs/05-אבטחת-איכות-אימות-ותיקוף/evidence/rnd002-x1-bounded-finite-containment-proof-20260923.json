@@ -1,0 +1,74 @@
+{
+  "schema_version": 1,
+  "status": "PASS",
+  "proof": "X1",
+  "requirement": "proof-X1",
+  "proof_class": "LEVEL_2",
+  "date": "2026-09-23",
+  "action_id": "rnd002-x1-bounded-finite-containment-proof",
+  "candidate_sha": null,
+  "approval_ref": "PO-RND002-X1-BOUNDED-FINITE-CONTAINMENT-PROOF-2026-09-23",
+  "authorization": "TRANSITION_ALLOWED",
+  "assertion": "Remaining real preactivation finite-consequence containment evidence",
+  "input": {
+    "event_id": "rnd002-x1-bounded-finite-containment-proof-event-20260923",
+    "deterministic_sha256": "df502623c44255c95416f545d5db29257547c1741eebe5f0c5ffe5f50b783852",
+    "event_count": 1
+  },
+  "configuration": {
+    "source": "repository .env via current main.load_dotenv path",
+    "telegram_token": "PRESENT",
+    "telegram_chat_id": "PRESENT",
+    "definitions_singular": true,
+    "approved_destination": "Moti Stock Alerts",
+    "destination_match": "PO_CONFIRMED",
+    "destination_bound": "ONE_SCALAR"
+  },
+  "execution": {
+    "cycles": 1,
+    "coordinator_executions_exactly_one": true,
+    "second_cycle": false,
+    "waiter_calls": 0,
+    "api_attempts": 1,
+    "http_calls": 1,
+    "generated_messages": 1,
+    "successful_messages": 1,
+    "retry_count": 0,
+    "telegram_success": true,
+    "ambiguous": false,
+    "loop_returned_normally": true,
+    "post_return_external_activity": false
+  },
+  "history": {
+    "location": "OUTSIDE_REPOSITORY",
+    "durable_file_present": true,
+    "sha256": "870542d9fe965beb1dffe3504ab6a2840d896bc69ea52e74f5d90551d2a47f56",
+    "record_calls": 1,
+    "fresh_instance_reload": true
+  },
+  "isolation": {
+    "provider_calls": 0,
+    "wds_executions": 0,
+    "openai_calls": 0,
+    "railway_actions": 0,
+    "production_actions": 0,
+    "deployment_actions": 0,
+    "lifeguard_actions": 0
+  },
+  "subject_hashes": {
+    "main.py": "fc0697f38d8c9be1aff87aaa08129ffc2e90b1b1c3fa118d4fed77cbb1aa3b01",
+    "application/autonomous_acquisition_loop.py": "bcc8f84f8a97102f7983dcb31da56af301dd689048abb87c1424fcabece96675",
+    "engines/autonomous_acquisition_coordinator.py": "d7fb1c68dbd0b8cca71fb5465a6f83059695243ded0999295c19ee7511f5ae30",
+    "engines/runtime_engine.py": "16fd4bf5b4d7f678269de0dfb9dbe222b03bea42ec77b4816c4cda26b2fbea97",
+    "application/investor_notification_service.py": "2d1661084c05a9c89bf391fdfdfb34ca1edfc7617ffc2d86310375460a251745",
+    "presentation/telegram_intelligence_message_builder.py": "92e08d000a175e468bd027ea3d5102dc1603f88aa11fa78135c21ee39b0aa202",
+    "modules/telegram_sender.py": "3aa18686436e79db6041f6e6e96e5046f88ca0dc782509a5f236f6e597e017be",
+    "modules/notification_history.py": "f33c9870c8a925bb24660bf8e0a1161da69bc9d9dabe7ed66fd9c6f4a2cc4d62"
+  },
+  "limitations": [
+    "No claim of continuous Production operation.",
+    "No claim of exactly-once delivery under accepted-then-timeout ambiguity.",
+    "Destination identity relies on the exact PO out-of-band binding and the returned title when supplied."
+  ],
+  "secrets_persisted": false
+}

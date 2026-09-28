@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?><testsuites name="pytest tests"><testsuite name="pytest" errors="0" failures="1" skipped="0" tests="1" time="0.480" timestamp="2026-09-27T22:32:32.454309+03:00" hostname="DESKTOP-JHDV6C6"><testcase classname="tests.test_design_c_hardening" name="test_evolution_can_evolve_again_without_rewriting_first_contract" time="0.277"><failure message="AssertionError: [{'code': 'EVOLUTION_INVALID', 'subject': 'EVOLUTION'}, {'code': 'EVOLUTION_INVALID', 'subject': 'EVOLUTION-NEXT'}, {'...ABLE'}, {'code': 'DISPOSITION_INVALID', 'subject': 'O21'}, {'code': 'DISPOSITION_INVALID', 'subject': 'REUSABLE'}, ...]&#10;assert 'UNRESOLVED' == 'RESOLVED_CONTEXT'&#10;  &#10;  - RESOLVED_CONTEXT&#10;  + UNRESOLVED">case = &lt;tests.test_support.design_c_fixture.RepositoryCase object at 0x0000021F38048830&gt;
+
+    def test_evolution_can_evolve_again_without_rewriting_first_contract(case):
+        first = _evolved(case)
+        historical = deepcopy(first)
+        current = case.binding("B-REUSABLE")
+        latest = deepcopy(current)
+        latest["id"] = "B-LATEST"
+        case.bindings["bindings"].append(latest)
+        latest_contract = deepcopy(latest)
+        latest_contract["authority"].pop("digest")
+        current_obligation = case.obligation("REUSABLE")
+        latest_obligation = deepcopy(current_obligation)
+        latest_obligation.update(obligation_id="LATEST", binding_ref="B-LATEST")
+        case.obligations["obligations"].append(latest_obligation)
+        latest_obligation_contract = {k: v for k, v in latest_obligation.items()
+                                      if k not in {"status", "evidence_refs"}}
+        case.bindings["components"]["observation"]["consumers"].append("NEW")
+        second = deepcopy(first)
+        second.update(id="EVOLUTION-NEXT", **{"from": "B-REUSABLE", "to": "B-LATEST"},
+                      approval_ref="TEST-PO-ACTION1")
+        second["evolution"]["contracts"] = {
+            "B-REUSABLE": first["evolution"]["contracts"]["B-REUSABLE"],
+            "B-LATEST": _seal(latest_contract)}
+        second["evolution"]["consumers"] = {
+            "B-REUSABLE": first["evolution"]["consumers"]["B-REUSABLE"],
+            "B-LATEST": ["ClinicalTrials.gov", "FDA", "NEW", "SEC"]}
+        migration = second["evolution"]["obligations"][0]
+        migration.update({"from": "REUSABLE", "to": "LATEST", "contracts": {
+            "REUSABLE": first["evolution"]["obligations"][0]["contracts"]["REUSABLE"],
+            "LATEST": _seal(latest_obligation_contract)}})
+        case.approve("SUPERSESSION")
+        case.evidence["approvals"][-1]["disposition_sha256"] = _seal(second)
+        case.evidence["dispositions"].append(second)
+        current["supersession_ref"] = "EVOLUTION-NEXT"
+        current_obligation.update(status="SUPERSEDED", disposition_ref="EVOLUTION-NEXT")
+        report = case.run()
+&gt;       assert report["status"] == "RESOLVED_CONTEXT", report["diagnostics"]
+E       AssertionError: [{'code': 'EVOLUTION_INVALID', 'subject': 'EVOLUTION'}, {'code': 'EVOLUTION_INVALID', 'subject': 'EVOLUTION-NEXT'}, {'...ABLE'}, {'code': 'DISPOSITION_INVALID', 'subject': 'O21'}, {'code': 'DISPOSITION_INVALID', 'subject': 'REUSABLE'}, ...]
+E       assert 'UNRESOLVED' == 'RESOLVED_CONTEXT'
+E         
+E         - RESOLVED_CONTEXT
+E         + UNRESOLVED
+
+tests\test_design_c_hardening.py:112: AssertionError</failure></testcase></testsuite></testsuites>

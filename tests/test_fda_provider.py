@@ -1,4 +1,7 @@
 from unittest.mock import Mock
+from datetime import datetime, timezone
+
+import pytest
 
 import requests
 
@@ -7,6 +10,60 @@ from models.event import Event
 from modules.data_provider import DataProvider
 from modules.fda_provider import FDAProvider
 from modules.ticker_resolver import TickerResolver
+
+
+def _g1_fda(records, store):
+    resolver = Mock()
+    resolver.get_company_identity.return_value = CompanyIdentity(ticker="TEST", company_name="Test")
+    resolver.prepare_company_search_name.return_value = "Test"
+    client = Mock()
+    client.search_drug_enforcement.return_value = records
+    return FDAProvider(client=client, ticker_resolver=resolver,
+        source_observation_store=store,
+        time_zero_for=lambda symbol: datetime(2026, 7, 20, 12, tzinfo=timezone.utc))
+
+
+def _g1_recall(number="D-0001-2026", occurrence="20260721"):
+    return {"recall_number": number, "recalling_firm": "Test",
+        "reason_for_recall": "Contamination", "classification": "Class II",
+        "report_date": occurrence, "recall_initiation_date": occurrence}
+
+
+@pytest.mark.parametrize("occurrence,live", [
+    ("20260719", False), ("20260721", True), (None, False), ("invalid", False),
+])
+def test_g1_fda_late_discovery_uses_source_time_and_persists_observation(occurrence, live):
+    store = Mock()
+    store.load.return_value = None
+    events = _g1_fda([_g1_recall(occurrence=occurrence)], store).fetch_events("TEST")
+    assert len(events) == int(live), "Unseen historical/undated recalls are not NEW"
+    assert store.save.called, "Recall acquisition must reach Source Observation"
+    state = store.save.call_args.args[0]
+    assert state.objects
+    assert len(state.pending) == int(live)
+    if live:
+        assert events[0].event_id
+        assert state.pending[0]["event_id"] == events[0].event_id
+
+
+def test_g2_fda_distinct_recalls_have_distinct_stable_ids():
+    store = Mock()
+    store.load.return_value = None
+    events = _g1_fda([_g1_recall("D-0001-2026"), _g1_recall("D-0002-2026")], store).fetch_events("TEST")
+    assert len(events) == 2
+    assert all(event.event_id for event in events), "Source occurrence IDs must be explicit"
+    assert events[0].event_id != events[1].event_id
+
+
+def test_g2_fda_restart_preserves_same_recall_identity():
+    store = Mock()
+    store.load.return_value = None
+    first = _g1_fda([_g1_recall()], store).fetch_events("TEST")[0]
+    if store.save.called:
+        store.load.return_value = store.save.call_args.args[0]
+    replay = _g1_fda([_g1_recall()], store).fetch_events("TEST")[0]
+    assert first.event_id, "A replayable recall requires a source occurrence ID"
+    assert replay.event_id == first.event_id
 
 
 def build_provider(
@@ -204,7 +261,7 @@ def test_fetch_events_skips_unusable_records() -> None:
     assert events[0].summary == "Valid reason"
 
 
-def test_fetch_events_returns_empty_list_on_request_error() -> None:
+def test_fetch_events_propagates_request_error() -> None:
     identity = CompanyIdentity(
         ticker="LQDA",
         company_name="Liquidia Corp",
@@ -215,9 +272,8 @@ def test_fetch_events_returns_empty_list_on_request_error() -> None:
         requests.RequestException("Network failure")
     )
 
-    events = provider.fetch_events("LQDA")
-
-    assert events == []
+    with pytest.raises(requests.RequestException, match="Network failure"):
+        provider.fetch_events("LQDA")
 
 
 def test_fetch_events_passes_custom_max_events() -> None:
@@ -258,7 +314,7 @@ if __name__ == "__main__":
     test_fetch_events_converts_recall_record_to_event()
     test_fetch_events_uses_initiation_date_when_report_date_missing()
     test_fetch_events_skips_unusable_records()
-    test_fetch_events_returns_empty_list_on_request_error()
+    test_fetch_events_propagates_request_error()
     test_fetch_events_passes_custom_max_events()
     test_provider_rejects_invalid_max_events()
 

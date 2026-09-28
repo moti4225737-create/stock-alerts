@@ -12,3 +12,4 @@ class Event:
     importance: int
     sentiment: str
     url: Optional[str] = None
+    event_id: Optional[str] = None

@@ -33,6 +33,7 @@ from models.event import Event
 from models.portfolio import Portfolio
 from models.source_bootstrap_state import SourceBootstrapState
 from modules.file_source_bootstrap_store import FileSourceBootstrapStore
+from modules.file_source_observation_store import FileSourceObservationStore
 from modules.file_portfolio_truth_store import FilePortfolioTruthStore
 from modules.healthchecks_work_evidence_reporter import (
     HealthchecksWorkEvidenceReporter,
@@ -178,15 +179,6 @@ def run_live_preview(
                 f"{normalized_symbol}: {error}"
             )
 
-        events = pipeline.collect_events(normalized_symbol)
-
-        for event in events:
-            telegram_sender(
-                format_alert(
-                    _event_to_alert(event)
-                )
-            )
-
 
 def build_default_source_acquisition_policies(
 ) -> dict[str, SourceAcquisitionPolicy]:
@@ -284,7 +276,7 @@ def _build_opening_components(
         signal_extractor=SECSignalExtractor(),
     )
     verification = SECSourceBootstrapAcceptanceProducer(
-        official_event_discovery=providers["SEC"].fetch_events,
+        official_event_discovery=providers["SEC"].fetch_opening_evidence,
         document_reconstruction=document_provider.build,
         finding_discovery=finding_discoverer.discover,
     )
@@ -294,10 +286,38 @@ def main() -> None:
     """
     Configure Stock Sentinel and run autonomous source acquisition.
     """
+    autonomous_max_cycles = int(os.environ["AUTONOMOUS_MAX_CYCLES"])
+    if autonomous_max_cycles <= 0:
+        raise ValueError("AUTONOMOUS_MAX_CYCLES must be greater than zero")
+
     ticker_resolver = TickerResolver()
 
+    source_observation_store = FileSourceObservationStore(
+        os.environ.get(
+            "SOURCE_OBSERVATION_STATE_PATH",
+            "data/source_observation/",
+        )
+    )
+
+    opening_states: dict[str, SourceBootstrapState] = {}
+    portfolio_service: PortfolioTruthService | None = None
+
+    def time_zero_for(symbol: str) -> datetime | None:
+        """Read the current READY lifecycle boundary without snapshotting it."""
+        normalized_symbol = symbol.strip().upper()
+        authoritative = (
+            portfolio_service.portfolio if portfolio_service is not None else None
+        )
+        if authoritative is None or authoritative.get(normalized_symbol) is None:
+            return None
+        state = opening_states.get(normalized_symbol)
+        return state.time_zero if state is not None and state.is_ready else None
+
     provider_manager = ProviderManager(
+        time_zero_for=time_zero_for,
         ticker_resolver=ticker_resolver,
+        source_observation_store=source_observation_store,
+        clinical_trials_page_size=1000,
     )
 
     providers = provider_manager.build_named()
@@ -360,7 +380,8 @@ def main() -> None:
         lambda: datetime.now(timezone.utc),
     )
     portfolio_service.restore()
-    portfolio_service.refresh()
+    opening_store = FileSourceBootstrapStore("data/opening_state/")
+    portfolio_service.refresh(invalidate_opening=opening_store.invalidate)
 
     if portfolio_service.portfolio is None:
         raise RuntimeError("Portfolio Truth is unavailable")
@@ -369,9 +390,6 @@ def main() -> None:
     introduced_symbols = {
         holding.symbol for holding in introduced_holdings
     }
-    opening_states: dict[str, SourceBootstrapState] = {}
-
-    opening_store = FileSourceBootstrapStore("data/opening_state/")
     for holding in portfolio_service.portfolio.holdings:
         if holding.symbol in introduced_symbols:
             continue
@@ -379,7 +397,11 @@ def main() -> None:
         if restored is not None:
             opening_states[holding.symbol] = restored
 
-    if introduced_holdings:
+    pending_holdings = tuple(
+        holding for holding in portfolio_service.portfolio.holdings
+        if holding.symbol not in opening_states
+    )
+    if pending_holdings:
         (
             opening_application,
             opening_research,
@@ -390,36 +412,35 @@ def main() -> None:
             portfolio_service=portfolio_service,
             providers=providers,
         )
-        for holding in introduced_holdings:
+        for holding in pending_holdings:
             try:
+                initiation_options = (
+                    {} if holding.symbol in introduced_symbols else {
+                        "admission_reason": (
+                            "current authoritative holding missing Opening admission state"
+                        ),
+                    }
+                )
                 opening_states[holding.symbol] = opening_application.run(
                     target_holding=holding,
                     research=opening_research,
                     identity_resolver=opening_identity_resolver,
                     opening_verification=opening_verification,
+                    **initiation_options,
                 )
             except Exception:
                 continue
 
-    if introduced_symbols or opening_states:
-        def runtime_portfolio_provider() -> Portfolio | None:
-            authoritative = portfolio_service.portfolio
-            if authoritative is None:
-                return None
-            return Portfolio(
-                holding
-                for holding in authoritative.holdings
-                if (
-                    holding.symbol not in introduced_symbols
-                    and holding.symbol not in opening_states
-                )
-                or (
-                    holding.symbol in opening_states
-                    and opening_states[holding.symbol].is_ready
-                )
-            )
-    else:
-        runtime_portfolio_provider = lambda: portfolio_service.portfolio
+    def runtime_portfolio_provider() -> Portfolio | None:
+        authoritative = portfolio_service.portfolio
+        if authoritative is None:
+            return None
+        return Portfolio(
+            holding
+            for holding in authoritative.holdings
+            if holding.symbol in opening_states
+            and opening_states[holding.symbol].is_ready
+        )
 
     runtime_factory = SourceRuntimeFactory(
         portfolio_provider=runtime_portfolio_provider,
@@ -441,7 +462,7 @@ def main() -> None:
         work_evidence_reporter=work_evidence_reporter,
     )
 
-    autonomous_loop.run()
+    autonomous_loop.run(max_cycles=autonomous_max_cycles)
 
 
 if __name__ == "__main__":

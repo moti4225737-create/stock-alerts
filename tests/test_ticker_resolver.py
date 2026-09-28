@@ -230,6 +230,23 @@ def test_resolver_returns_none_when_profile_is_empty() -> None:
     assert identity is None
 
 
+def test_resolver_propagates_profile_acquisition_failure() -> None:
+    resolver = TickerResolver()
+
+    with patch(
+        "modules.ticker_resolver.get_company_profile",
+        side_effect=RuntimeError("Finnhub acquisition failure"),
+    ):
+        try:
+            resolver.get_company_identity("LQDA")
+        except RuntimeError as error:
+            assert str(error) == "Finnhub acquisition failure"
+        else:
+            raise AssertionError(
+                "Expected infrastructure acquisition failure to propagate."
+            )
+
+
 def test_clear_cache_forces_new_lookup() -> None:
     resolver = TickerResolver()
 

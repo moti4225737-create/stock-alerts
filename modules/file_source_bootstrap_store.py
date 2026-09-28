@@ -61,6 +61,15 @@ class FileSourceBootstrapStore:
             )
             raise SourceBootstrapStorageError(message) from exc
 
+    def invalidate(self, symbol: str) -> None:
+        """Remove prior-lifecycle admission before accepting an introduction."""
+        try:
+            self._state_path(symbol).unlink(missing_ok=True)
+        except OSError as exc:
+            raise SourceBootstrapStorageError(
+                "Unable to invalidate prior Source Bootstrap state"
+            ) from exc
+
     def save(self, state: SourceBootstrapState) -> None:
         temporary_path: Path | None = None
         try:

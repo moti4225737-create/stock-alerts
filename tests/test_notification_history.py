@@ -1,4 +1,5 @@
 from pathlib import Path
+from types import SimpleNamespace
 from unittest.mock import Mock
 
 from engines.runtime_engine import RuntimeEngine
@@ -47,6 +48,68 @@ def make_brief(event: Event) -> InvestorBrief:
         summary=event.summary,
         explanation=explanation,
     )
+
+
+def test_explicit_event_id_is_authoritative_despite_presentation_fields() -> None:
+    event_id = (
+        "ClinicalTrials.gov|NCT01234567|overall_status|"
+        "RECRUITING|COMPLETED"
+    )
+    event = Event(
+        symbol="LQDA",
+        source="ClinicalTrials.gov",
+        title="Changed presentation title",
+        summary="Changed presentation summary",
+        published_at="2026-09-04",
+        importance=2,
+        sentiment="neutral",
+        url="https://clinicaltrials.gov/study/NCT01234567?presentation=changed",
+        event_id=event_id,
+    )
+    runtime = object.__new__(RuntimeEngine)
+
+    assert runtime._get_event_id(SimpleNamespace(event=event)) == event_id
+
+
+def test_legacy_event_identity_preserves_exact_composite() -> None:
+    runtime = object.__new__(RuntimeEngine)
+    expected = (
+        "ClinicalTrials.gov|LQDA|Clinical Trial — Test Study|"
+        "2026-07-26|https://clinicaltrials.gov/study/NCT00000001"
+    )
+
+    for event in (
+        SimpleNamespace(
+            symbol="LQDA",
+            source="ClinicalTrials.gov",
+            title="Clinical Trial — Test Study",
+            published_at="2026-07-26",
+            url="https://clinicaltrials.gov/study/NCT00000001",
+        ),
+        Event(
+            symbol="LQDA",
+            source="ClinicalTrials.gov",
+            title="Clinical Trial — Test Study",
+            summary="Legacy event",
+            published_at="2026-07-26",
+            importance=2,
+            sentiment="neutral",
+            url="https://clinicaltrials.gov/study/NCT00000001",
+            event_id=None,
+        ),
+        Event(
+            symbol="LQDA",
+            source="ClinicalTrials.gov",
+            title="Clinical Trial — Test Study",
+            summary="Legacy event",
+            published_at="2026-07-26",
+            importance=2,
+            sentiment="neutral",
+            url="https://clinicaltrials.gov/study/NCT00000001",
+            event_id="",
+        ),
+    ):
+        assert runtime._get_event_id(SimpleNamespace(event=event)) == expected
 
 
 class FakePortfolioIntelligenceService:
@@ -162,3 +225,33 @@ def test_later_new_event_is_the_only_event_sent(tmp_path: Path) -> None:
 
     assert first_runtime._telegram_sender_transport._telegram_api.call_count == 1
     assert second_runtime._telegram_sender_transport._telegram_api.call_count == 1
+
+
+def test_failed_atomic_history_replacement_preserves_disk_and_memory(tmp_path, monkeypatch):
+    import pytest
+    import modules.notification_history as history_module
+
+    path = tmp_path / "history.txt"
+    history = NotificationHistory(path)
+    history.record("previous")
+    previous = path.read_bytes()
+    monkeypatch.setattr(history_module.os, "replace", Mock(side_effect=OSError("replace failed")))
+    with pytest.raises(OSError, match="replace failed"):
+        history.record("candidate")
+    assert path.read_bytes() == previous
+    assert history.has_delivered("previous")
+    assert not history.has_delivered("candidate")
+    assert not NotificationHistory(path).has_delivered("candidate")
+    assert list(tmp_path.iterdir()) == [path]
+
+
+def test_history_candidate_persistence_and_memory_only(tmp_path):
+    path = tmp_path / "history.txt"
+    history = NotificationHistory(path)
+    history.record("second")
+    history.record("first")
+    assert path.read_bytes() == b"first\nsecond\n"
+    assert NotificationHistory(path).has_delivered("second")
+    memory = NotificationHistory()
+    memory.record("memory")
+    assert memory.has_delivered("memory")

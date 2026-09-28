@@ -7,6 +7,7 @@ from models.portfolio import Portfolio
 def test_main_builds_lifeguard_reporter_from_environment(
     monkeypatch,
 ) -> None:
+    monkeypatch.setenv("AUTONOMOUS_MAX_CYCLES", "2")
     monkeypatch.setenv(
         "OPENAI_API_KEY",
         "test-openai-key",
@@ -105,4 +106,4 @@ def test_main_builds_lifeguard_reporter_from_environment(
         is reporter
     )
 
-    loop.run.assert_called_once_with()
+    loop.run.assert_called_once_with(max_cycles=2)

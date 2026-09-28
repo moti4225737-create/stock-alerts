@@ -1,0 +1,177 @@
+{
+    "schema_version":  1,
+    "obligations":  [
+                        {
+                            "obligation_id":  "O21",
+                            "binding_ref":  "B-O21",
+                            "origin_ref":  "docs/06-ניהול-הידע-ורציפות-התיעוד/chronicle/ספרינטים/2026-09-06-alpha-portfolio-initial-integration.md#Design C GREEN",
+                            "scope":  "R\u0026D 002",
+                            "status":  "CLOSED",
+                            "required_before":  [
+                                                    "PRE_CANARY",
+                                                    "PRE_PRODUCTION"
+                                                ],
+                            "evidence_refs":  ["E-O21"]
+                        },
+                        {
+                            "obligation_id":  "O22",
+                            "binding_ref":  "B-O22",
+                            "origin_ref":  "docs/06-ניהול-הידע-ורציפות-התיעוד/chronicle/ספרינטים/2026-09-06-alpha-portfolio-initial-integration.md#Design C GREEN",
+                            "scope":  "R\u0026D 002",
+                            "status":  "CLOSED",
+                            "required_before":  [
+                                                    "PRE_CANARY",
+                                                    "PRE_PRODUCTION"
+                                                ],
+                            "evidence_refs":  ["E-O22"]
+                        },
+                        {
+                            "obligation_id":  "O26",
+                            "binding_ref":  "B-O26",
+                            "origin_ref":  "docs/06-ניהול-הידע-ורציפות-התיעוד/chronicle/ספרינטים/2026-09-06-alpha-portfolio-initial-integration.md#Design C GREEN",
+                            "scope":  "R\u0026D 002",
+                            "status":  "CLOSED",
+                            "required_before":  [
+                                                    "PRE_CANARY",
+                                                    "PRE_PRODUCTION"
+                                                ],
+                            "evidence_refs":  ["E-O26"]
+                        },
+                        {
+                            "obligation_id":  "O28",
+                            "binding_ref":  "B-O28",
+                            "origin_ref":  "docs/06-ניהול-הידע-ורציפות-התיעוד/chronicle/ספרינטים/2026-09-06-alpha-portfolio-initial-integration.md#Design C GREEN",
+                            "scope":  "R\u0026D 002",
+                            "status":  "CLOSED",
+                            "required_before":  [
+                                                    "PRE_EXTERNAL_WORK"
+                                                ],
+                            "evidence_refs":  [
+                                                  "E-O28-CE-20260927"
+                                              ]
+                        },
+                        {
+                            "obligation_id":  "C2",
+                            "disposition_ref": "EV-C2-20260927",
+                            "binding_ref":  "B-C2",
+                            "origin_ref":  "docs/06-ניהול-הידע-ורציפות-התיעוד/chronicle/ספרינטים/2026-09-06-alpha-portfolio-initial-integration.md#Design C GREEN",
+                            "scope":  "R\u0026D 002",
+                            "status":  "SUPERSEDED",
+                            "required_before":  [
+                                                    "PRE_CANARY",
+                                                    "PRE_PRODUCTION"
+                                                ],
+                            "evidence_refs":  [
+                                                  "E-C2"
+                                              ]
+                        },
+                        {
+                            "obligation_id":  "X1",
+                            "disposition_ref": "EV-X1-20260927",
+                            "binding_ref":  "B-X1",
+                            "origin_ref":  "docs/06-ניהול-הידע-ורציפות-התיעוד/chronicle/ספרינטים/2026-09-06-alpha-portfolio-initial-integration.md#Design C GREEN",
+                            "scope":  "R\u0026D 002",
+                            "status":  "SUPERSEDED",
+                            "required_before":  [
+                                                    "PRE_CANARY",
+                                                    "PRE_PRODUCTION"
+                                                ],
+                            "evidence_refs":  [
+                                                  "E-X1"
+                                              ]
+                        },
+                        {
+                            "obligation_id":  "X2",
+                            "binding_ref":  "B-X2",
+                            "origin_ref":  "docs/06-ניהול-הידע-ורציפות-התיעוד/chronicle/ספרינטים/2026-09-06-alpha-portfolio-initial-integration.md#Design C GREEN",
+                            "scope":  "R\u0026D 002",
+                            "status":  "OPEN",
+                            "required_before":  [
+                                                    "PRE_PUSH_OR_PROMOTION"
+                                                ],
+                            "evidence_refs":  [
+
+                                              ]
+                        },
+                        {
+                            "obligation_id":  "X3",
+                            "disposition_ref": "EV-X3-20260927",
+                            "binding_ref":  "B-X3",
+                            "origin_ref":  "docs/06-ניהול-הידע-ורציפות-התיעוד/chronicle/ספרינטים/2026-09-06-alpha-portfolio-initial-integration.md#Design C GREEN",
+                            "scope":  "R\u0026D 002",
+                            "status":  "SUPERSEDED",
+                            "required_before":  [
+                                                    "PRE_CLOSURE"
+                                                ],
+                            "evidence_refs":  [
+                                                  "E-X3"
+                                              ]
+                        },
+                        {
+                            "obligation_id": "C2-REUSABLE",
+                            "binding_ref": "B-C2-REUSABLE",
+                            "origin_ref": "docs/06-ניהול-הידע-ורציפות-התיעוד/chronicle/ספרינטים/2026-09-06-alpha-portfolio-initial-integration.md#Component Evolution - 2026-09-27",
+                            "scope": "R&D 002", "status": "CLOSED",
+                            "required_before": ["PRE_CANARY", "PRE_PRODUCTION"],
+                            "evidence_refs": ["E-C2"]
+                        },
+                        {
+                            "obligation_id": "X1-REUSABLE",
+                            "binding_ref": "B-X1-REUSABLE",
+                            "origin_ref": "docs/06-ניהול-הידע-ורציפות-התיעוד/chronicle/ספרינטים/2026-09-06-alpha-portfolio-initial-integration.md#Component Evolution - 2026-09-27",
+                            "scope": "R&D 002", "status": "CLOSED",
+                            "required_before": ["PRE_CANARY", "PRE_PRODUCTION"],
+                            "evidence_refs": ["E-X1"]
+                        },
+                        {
+                            "obligation_id": "X3-REUSABLE",
+                            "binding_ref": "B-X3-REUSABLE",
+                            "origin_ref": "docs/06-ניהול-הידע-ורציפות-התיעוד/chronicle/ספרינטים/2026-09-06-alpha-portfolio-initial-integration.md#Component Evolution - 2026-09-27",
+                            "scope": "R&D 002", "status": "CLOSED",
+                            "required_before": ["PRE_CLOSURE"],
+                            "evidence_refs": ["E-X3-RENEWAL-20260925"]
+                        },
+                        {
+                            "obligation_id":  "DC-FOUNDATION",
+                            "binding_ref":  "B-DC-FOUNDATION",
+                            "origin_ref":  "docs/06-ניהול-הידע-ורציפות-התיעוד/chronicle/ספרינטים/2026-09-06-alpha-portfolio-initial-integration.md#Design C GREEN",
+                            "scope":  "R\u0026D 002",
+                            "status":  "CLOSED",
+                            "required_before":  [
+                                                    "FOUNDATION_GREEN",
+                                                    "PRE_COMMIT"
+                                                ],
+                            "evidence_refs":  [
+                                                  "E-DC-FOUNDATION-CE-20260928"
+                                              ]
+                        },
+                        {
+                            "obligation_id":  "DC-CONTINUITY",
+                            "binding_ref":  "B-DC-CONTINUITY",
+                            "origin_ref":  "docs/06-ניהול-הידע-ורציפות-התיעוד/chronicle/ספרינטים/2026-09-06-alpha-portfolio-initial-integration.md#Design C GREEN",
+                            "scope":  "R\u0026D 002",
+                            "status":  "CLOSED",
+                            "required_before":  [
+                                                    "FOUNDATION_GREEN",
+                                                    "PRE_COMMIT"
+                                                ],
+                            "evidence_refs":  [
+                                                  "E-DC-CONTINUITY-CE-20260928"
+                                              ]
+                        },
+                        {
+                            "obligation_id":  "DC-REGRESSION",
+                            "binding_ref":  "B-DC-REGRESSION",
+                            "origin_ref":  "docs/06-ניהול-הידע-ורציפות-התיעוד/chronicle/ספרינטים/2026-09-06-alpha-portfolio-initial-integration.md#Design C GREEN",
+                            "scope":  "R\u0026D 002",
+                            "status":  "CLOSED",
+                            "required_before":  [
+                                                    "FOUNDATION_GREEN",
+                                                    "PRE_COMMIT"
+                                                ],
+                            "evidence_refs":  [
+                                                  "E-DC-REGRESSION-CE-20260928"
+                                              ]
+                        }
+                    ]
+}

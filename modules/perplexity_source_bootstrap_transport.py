@@ -1,4 +1,4 @@
-from collections.abc import Callable
+from collections.abc import Callable, Mapping
 
 from application.source_bootstrap_researcher import GroundedResearchContext
 from modules.perplexity_api_request_client import PerplexityAPIRequestError
@@ -41,7 +41,15 @@ class PerplexitySourceBootstrapTransport:
 
     def __call__(self, context: GroundedResearchContext) -> object:
         try:
-            return self._provider_request(context)
+            result = self._provider_request(context)
+            if isinstance(result, Mapping):
+                # Keep the client response intact for operational consumers;
+                # only its domain payload crosses into bounded research.
+                return {
+                    key: value for key, value in result.items()
+                    if key not in {"_operational_evidence", "_provider_metadata"}
+                }
+            return result
         except PerplexityAPIRequestError as exc:
             raise PerplexityResearchError(
                 "Perplexity research request failed",

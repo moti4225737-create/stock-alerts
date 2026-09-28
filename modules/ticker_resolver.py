@@ -135,7 +135,7 @@ class TickerResolver:
         try:
             profile = get_company_profile(normalized_symbol)
         except (RuntimeError, ValueError, OSError):
-            return None
+            raise
 
         if not isinstance(profile, dict) or not profile:
             return None

@@ -15,6 +15,7 @@ def _prepare_main(
     restore_result=False,
     refresh_result=True,
 ):
+    monkeypatch.setenv("AUTONOMOUS_MAX_CYCLES", "2")
     monkeypatch.setenv("OPENAI_API_KEY", "test-openai-key")
     monkeypatch.setenv("OPENAI_MODEL", "test-semantic-model")
     monkeypatch.setenv(
@@ -67,7 +68,8 @@ def _prepare_main(
     monkeypatch.setattr(main, "SourceRuntimeFactory", runtime_factory)
     monkeypatch.setattr(main, "build_autonomous_loop", loop_factory)
     opening_store = Mock()
-    opening_store.load.return_value = None
+    # These tests exercise membership wiring with already-admitted holdings.
+    opening_store.load.return_value = Mock(is_ready=True)
     monkeypatch.setattr(
         main,
         "FileSourceBootstrapStore",
@@ -131,7 +133,7 @@ def test_main_restores_then_refreshes_before_runtime_start(monkeypatch) -> None:
     calls = []
     context = _prepare_main(monkeypatch, portfolio=Portfolio([]))
     context["service"].restore.side_effect = lambda: calls.append("restore")
-    context["service"].refresh.side_effect = lambda: calls.append("refresh")
+    context["service"].refresh.side_effect = lambda **kwargs: calls.append("refresh")
     context["runtime_factory"].side_effect = lambda **_kwargs: (
         calls.append("runtime_factory") or Mock()
     )
@@ -139,7 +141,7 @@ def test_main_restores_then_refreshes_before_runtime_start(monkeypatch) -> None:
     main.main()
 
     assert calls == ["restore", "refresh", "runtime_factory"]
-    context["loop"].run.assert_called_once_with()
+    context["loop"].run.assert_called_once_with(max_cycles=2)
 
 
 def test_restored_truth_starts_when_first_refresh_has_no_change(
@@ -158,8 +160,9 @@ def test_restored_truth_starts_when_first_refresh_has_no_change(
     kwargs = context["runtime_factory"].call_args.kwargs
     assert "portfolio_provider" in kwargs
     portfolio_provider = kwargs["portfolio_provider"]
-    assert portfolio_provider() is restored
-    context["loop"].run.assert_called_once_with()
+    assert portfolio_provider().holdings == restored.holdings
+    assert context["service"].portfolio is restored
+    context["loop"].run.assert_called_once_with(max_cycles=2)
 
 
 def test_missing_truth_after_refresh_fails_before_loop(monkeypatch) -> None:
@@ -188,7 +191,7 @@ def test_missing_truth_then_complete_refresh_starts(monkeypatch) -> None:
 
     main.main()
 
-    context["loop"].run.assert_called_once_with()
+    context["loop"].run.assert_called_once_with(max_cycles=2)
 
 
 def test_authoritative_empty_portfolio_starts_without_watchlist_fallback(
@@ -202,9 +205,9 @@ def test_authoritative_empty_portfolio_starts_without_watchlist_fallback(
     kwargs = context["runtime_factory"].call_args.kwargs
     assert "portfolio_provider" in kwargs
     portfolio_provider = kwargs["portfolio_provider"]
-    assert portfolio_provider() is empty
+    assert context["service"].portfolio is empty
     assert portfolio_provider().holdings == []
-    context["loop"].run.assert_called_once_with()
+    context["loop"].run.assert_called_once_with(max_cycles=2)
 
 
 def test_malformed_state_stops_before_refresh_or_loop(monkeypatch) -> None:
@@ -234,10 +237,12 @@ def test_runtime_factory_receives_dynamic_service_portfolio_provider(
     assert "portfolio_provider" in kwargs
     provider = kwargs["portfolio_provider"]
     assert "watchlist" not in kwargs
-    assert provider() is first
+    assert provider().holdings == first.holdings
 
     context["service"].portfolio = second
-    assert provider() is second
+    # Removed AAPL is excluded; replacement MSFT has no Opening admission.
+    assert provider().holdings == []
+    assert context["service"].portfolio is second
 
 
 def test_main_has_no_static_watchlist_production_import(monkeypatch) -> None:

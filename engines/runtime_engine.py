@@ -94,6 +94,10 @@ class RuntimeEngine:
         if event is None:
             return ""
 
+        event_id = getattr(event, "event_id", None)
+        if event_id:
+            return event_id
+
         source = getattr(event, "source", "") or ""
         symbol = getattr(event, "symbol", "") or ""
         title = getattr(event, "title", "") or ""

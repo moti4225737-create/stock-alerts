@@ -1,5 +1,7 @@
 from unittest.mock import Mock, patch
 
+import pytest
+
 import requests
 
 from modules.openfda_client import OpenFDAClient
@@ -119,7 +121,7 @@ def test_search_returns_empty_list_for_404() -> None:
     mock_response.raise_for_status.assert_not_called()
 
 
-def test_search_filters_invalid_results() -> None:
+def test_search_rejects_malformed_result_instead_of_accepting_subset() -> None:
     client = OpenFDAClient()
 
     mock_response = Mock()
@@ -137,13 +139,8 @@ def test_search_filters_invalid_results() -> None:
         "modules.openfda_client.requests.get",
         return_value=mock_response,
     ):
-        results = client.search_drug_enforcement(
-            'recalling_firm:"Liquidia"'
-        )
-
-    assert results == [
-        {"recalling_firm": "Liquidia"}
-    ]
+        with pytest.raises(ValueError, match="malformed result row"):
+            client.search_drug_enforcement('recalling_firm:"Liquidia"')
 
 
 def test_search_rejects_non_dictionary_payload() -> None:

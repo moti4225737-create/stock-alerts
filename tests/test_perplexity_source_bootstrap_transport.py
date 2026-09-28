@@ -1,4 +1,5 @@
 from dataclasses import fields
+import json
 from datetime import datetime, timezone
 from decimal import Decimal
 from unittest.mock import Mock
@@ -143,3 +144,41 @@ def test_perplexity_provider_failure_is_explicit_and_has_no_retry() -> None:
         )
 
     provider_request.assert_called_once()
+
+
+def test_real_client_metadata_crosses_transport_without_entering_domain():
+    from modules.perplexity_api_request_client import PerplexityAPIRequestClient
+
+    payload = _provider_result(evidence_text="Official evidence")
+    response = Mock(status_code=200)
+    response.json.return_value = {
+        "choices": [{"message": {"content": json.dumps(payload)}}],
+        "usage": {"total_tokens": 100},
+        "citations": ["https://example.test/evidence"],
+        "search_results": [],
+    }
+    http = Mock(return_value=response)
+    client = PerplexityAPIRequestClient(
+        api_key="unit-test", http_request=http,
+        timeout_seconds=60, max_output_tokens=2000,
+    )
+    received = []
+
+    def request(context):
+        result = client(context)
+        received.append(result)
+        return result
+
+    result = _researcher(request)(_request(), known_identity=_identity())
+    assert result.completed_successfully
+    assert len(result.candidates) == 1
+    assert received[0]["_operational_evidence"] == {"usage": {"total_tokens": 100}}
+    assert "_provider_metadata" in received[0]
+    http.assert_called_once()
+
+
+def test_transport_does_not_hide_unknown_domain_fields_with_metadata():
+    payload = _provider_result(evidence_text="evidence")
+    payload.update(_operational_evidence={}, _provider_metadata={}, ready=True)
+    with pytest.raises(ValueError, match="candidate conversion invalid"):
+        _researcher(Mock(return_value=payload))(_request(), known_identity=_identity())

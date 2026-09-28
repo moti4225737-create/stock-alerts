@@ -15,8 +15,15 @@ class AutonomousAcquisitionLoop:
         self._waiter = waiter
         self._tick_seconds = tick_seconds
 
-    def run(self) -> None:
-        while True:
+    def run(self, max_cycles: int | None = None) -> None:
+        cycles = 0
+
+        while max_cycles is None or cycles < max_cycles:
             now = self._clock()
             self._coordinator.run_due(now)
+            cycles += 1
+
+            if max_cycles is not None and cycles >= max_cycles:
+                return
+
             self._waiter(self._tick_seconds)

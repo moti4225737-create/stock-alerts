@@ -1,5 +1,19 @@
 # Stock Sentinel — Engineering Entry Point
 
+## Design C bootstrap
+
+At opening/re-grounding (including `הפסקה`), before diagnosis/change, and before
+a station or consequential transition, invoke `tools/resolve_authority.py`.
+Read the applicable authority and `docs/03-ניהול-הפיתוח-ההנדסי/open-obligations.json`
+through its result. Use an independently approved baseline digest; never refresh
+the baseline merely to silence a failure. The invocation contract is owned by
+`docs/03-ניהול-הפיתוח-ההנדסי/החלטות-הנדסיות.md`.
+RESOLVED_CONTEXT is not authorization. TRANSITION_ALLOWED is not Closure PASS.
+Do not execute a blocked/unresolved transition. Persist known material outcomes
+at their existing Natural Homes before completing the station. Future obligations
+do not alone block earlier legitimate local work. Invocation remains an agent
+instruction, not a host interceptor; disclose that enforcement limit.
+
 This file is an operational entry point for contributors and engineering tools.
 
 The authoritative product documentation is maintained under `docs/`.
@@ -159,8 +173,20 @@ The procedures themselves remain owned by their Natural Homes in
 `docs/06-ניהול-הידע-ורציפות-התיעוד/נהלי-העבודה-המחייבים.md`; this section
 only enforces Codex triggers.
 
+The following two controls are owned exclusively by
+`docs/03-ניהול-הפיתוח-ההנדסי/פרוטוקול-השינוי-האימות-המסירה-והסגירה-הסמכותי.md`:
+§3, `Exceptional Generated Replacement Mutation`, and §19,
+`Continuous Convergence Control`. This file enforces their application only.
+
 Codex must:
 
+- apply §3's exceptional generated-replacement trigger before expanding or
+  building that execution path; obtain the required explicit PO decision and
+  enforce the complete-candidate validity invariant independently of approval;
+- apply §19's Continuous Convergence Control at every material step during
+  active Gate work, visibly report `התכנסות: PASS/FAIL | התבדרות: FALSE/TRUE`
+  without a user reminder, and explicitly handle any state other than
+  `התכנסות: PASS | התבדרות: FALSE` as required by that section;
 - perform the applicable authoritative reload and re-grounding at R&D Opening,
   on manual `הפסקה`, on detected material grounding loss or drift, and before
   finalizing an authoritative Handoff;

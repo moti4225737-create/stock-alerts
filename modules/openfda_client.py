@@ -94,10 +94,19 @@ class OpenFDAClient:
                 "openFDA results field is not a list."
             )
 
+        metadata = payload.get("meta")
+        if isinstance(metadata, dict):
+            result_metadata = metadata.get("results")
+            if isinstance(result_metadata, dict):
+                total = result_metadata.get("total")
+                if isinstance(total, int) and total > len(results):
+                    raise ValueError("openFDA acquisition returned a truncated result set")
+
         valid_results: list[dict[str, Any]] = []
 
         for result in results:
-            if isinstance(result, dict):
-                valid_results.append(result)
+            if not isinstance(result, dict):
+                raise ValueError("openFDA acquisition contains a malformed result row")
+            valid_results.append(result)
 
         return valid_results

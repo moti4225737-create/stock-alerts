@@ -13,6 +13,7 @@ class IntelligencePipeline:
         providers: list[DataProvider],
         scoring_engine: ScoringEngine | None = None,
     ):
+        self._collection_failures: list[Exception] = []
         self.providers = providers
         self.scoring_engine = scoring_engine or ScoringEngine()
 
@@ -40,9 +41,16 @@ class IntelligencePipeline:
                     events.extend(provider_events)
 
             except Exception as error:
+                self._collection_failures.append(error)
                 print(
                     f"[WARNING] Provider "
                     f"{provider.__class__.__name__} failed: {error}"
                 )
 
         return events
+
+    def raise_if_collection_failed(self) -> None:
+        if self._collection_failures:
+            raise RuntimeError(
+                f"{len(self._collection_failures)} collection failure(s) in source attempt"
+            ) from self._collection_failures[0]

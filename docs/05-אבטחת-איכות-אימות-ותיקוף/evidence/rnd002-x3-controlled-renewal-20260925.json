@@ -1,0 +1,51 @@
+{
+  "schema": "rnd002-x3-controlled-renewal-v1",
+  "evidence_level": "LEVEL_3_REAL_END_TO_END_PRODUCT_PROOF",
+  "status": "PASS",
+  "action_id": "rnd002-x3-controlled-renewal-20260925",
+  "event_id": "X3CANARY-RENEWAL-20260925",
+  "timestamp_utc": "2026-09-25T05:21:16.405173+00:00",
+  "claim": "Real bounded RuntimeEngine to message generation to TelegramSender/API to durable NotificationHistory to final approved Telegram destination.",
+  "execution": {
+    "external_attempts": 1,
+    "telegram_http_status": 200,
+    "telegram_ok": true,
+    "telegram_success": true,
+    "durable_history": true,
+    "final_destination_confirmed_by_product_owner": true,
+    "final_destination": "Moti Stock Alerts",
+    "runtime_error": null,
+    "history_location": "temporary_outside_repository",
+    "railway_activated": false,
+    "production_activated": false,
+    "continuous_loop_started": false,
+    "automatic_retry": false
+  },
+  "repository_context": {
+    "branch": "main",
+    "head_sha": "f3857814cc9c55191e21e4c6a4811e02bf6fa412",
+    "worktree_dirty": true,
+    "worktree_fingerprint": "bf51ae41b910aa9a82a0414c71565f0e1dbad7289ca17cdc417dde5ebcdd2c5f",
+    "fingerprint_algorithm": "sha256(utf8 ordinal-sorted lowercase-sha256-two-spaces-path-LF manifest)"
+  },
+  "subject_hashes": {
+    "application/investor_notification_service.py": "2d1661084c05a9c89bf391fdfdfb34ca1edfc7617ffc2d86310375460a251745",
+    "engines/runtime_engine.py": "16fd4bf5b4d7f678269de0dfb9dbe222b03bea42ec77b4816c4cda26b2fbea97",
+    "models/event.py": "c93ebe972e2f5458dbe1d9ee2b1bfe25f7b781b9dbdfd25492a4826ca472d692",
+    "models/portfolio.py": "d5955f44ee6f35759dc4a18dc7fe869944146edf2c6a89c34bda0ce75d235a6e",
+    "models/portfolio_holding.py": "c228bf025c5f3cbba4e1d9b607403ae037b29f217d59d4a91bc5bb3f93a41ebb",
+    "modules/notification_history.py": "f33c9870c8a925bb24660bf8e0a1161da69bc9d9dabe7ed66fd9c6f4a2cc4d62",
+    "modules/telegram_sender.py": "3aa18686436e79db6041f6e6e96e5046f88ca0dc782509a5f236f6e597e017be"
+  },
+  "provenance": {
+    "product_owner_authorized_bounded_renewal": true,
+    "product_owner_visual_final_destination_confirmation": true,
+    "historical_e_x3_preserved": true,
+    "future_applicability_rule": "Determine applicability from substantive subject/context relevance; do not require renewal solely because an action_id, commit SHA, or unrelated repository state changed."
+  },
+  "limitations": [
+    "Does not prove full live Production operation.",
+    "Does not prove exactly-once semantics.",
+    "Does not resolve the separate accepted-then-timeout ambiguity recorded as limitation #38."
+  ]
+}
