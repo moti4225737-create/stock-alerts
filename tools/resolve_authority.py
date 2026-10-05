@@ -25,10 +25,11 @@ BOUNDARIES = {
     "STATION_COMPLETE": set(), "FOUNDATION_GREEN": {"FOUNDATION_GREEN"},
     "PRE_COMMIT": {"PRE_COMMIT"},
     "PRE_PUSH_OR_PROMOTION": {"PRE_COMMIT", "PRE_PUSH_OR_PROMOTION"},
+    "POST_PUSH": {"PRE_COMMIT", "PRE_PUSH_OR_PROMOTION", "POST_PUSH"},
     "PRE_EXTERNAL_WORK": {"PRE_EXTERNAL_WORK"},
     "PRE_CANARY": {"PRE_CANARY", "PRE_PRODUCTION", "PRE_EXTERNAL_WORK", "PRE_PUSH_OR_PROMOTION"},
     "PRE_PRODUCTION": {"PRE_PRODUCTION", "PRE_CANARY", "PRE_EXTERNAL_WORK", "PRE_PUSH_OR_PROMOTION"},
-    "PRE_CLOSURE": {"PRE_COMMIT", "PRE_PUSH_OR_PROMOTION", "PRE_CANARY",
+    "PRE_CLOSURE": {"PRE_COMMIT", "PRE_PUSH_OR_PROMOTION", "POST_PUSH", "PRE_CANARY",
                     "PRE_PRODUCTION", "PRE_EXTERNAL_WORK", "PRE_CLOSURE"},
 }
 PO_ACTIONS = {"PRE_COMMIT", "PRE_PUSH_OR_PROMOTION", "PRE_EXTERNAL_WORK",
@@ -239,13 +240,26 @@ class Resolver:
 
     def approved(self, ref, action):
         approval = self.approvals.get(ref, {})
-        return (approval.get("issuer") == "PRODUCT_OWNER"
+        approved = (approval.get("issuer") == "PRODUCT_OWNER"
             and approval.get("action") == action
             and approval.get("scope") == self.request.get("scope")
             and approval.get("candidate_sha") == self.request.get("candidate_sha")
             and approval.get("action_id") == self.request.get("action_id")
             and bool(approval.get("provenance"))
             and ref in self.station.get("approval_refs", []))
+
+        if not approved:
+            return False
+
+        if action == "PRE_PUSH_OR_PROMOTION":
+            action_target = self.request.get("action_target")
+            delivery_coupling = self.request.get("delivery_coupling")
+            return (bool(action_target)
+                and bool(delivery_coupling)
+                and approval.get("action_target") == action_target
+                and approval.get("delivery_coupling") == delivery_coupling)
+
+        return True
 
     def disposition(self, ref, source, records, seen=None):
         seen = set() if seen is None else seen
@@ -342,14 +356,10 @@ class Resolver:
             return
         for oid, subjects in self.stale_proofs.items():
             obligation = obligations[oid]
-            binding = bindings.get(obligation.get("binding_ref"), {})
-            bound_components = binding.get("applies_to", {}).get("components", [])
+            # proof_valid supplies only changed, declared dependencies from
+            # otherwise valid proof. Ownership is not renewal-entry coverage.
             if (obligation.get("scope") != self.request.get("scope")
-                    or not subjects.issubset(station_scope)
-                    or not all(any(fnmatch(subject, pattern)
-                        for name in bound_components
-                        for pattern in components.get(name, {}).get("paths", []))
-                        for subject in subjects)):
+                    or not subjects.issubset(station_scope)):
                 continue
             for ref in self.station.get("approval_refs", []):
                 approved_scope = self.approvals.get(ref, {}).get("change_scope_paths")
@@ -389,7 +399,7 @@ class Resolver:
             if (self.approved(ref, action)
                     and isinstance(approved_paths, list)
                     and all(isinstance(p, str) for p in approved_paths)
-                    and paths.issubset(approved_paths)):
+                    and set(requested).issubset(approved_paths)):
                 return ref
         self.problem("APPROVAL_INVALID", action)
         return None
@@ -577,6 +587,50 @@ class Resolver:
                 self.problem("OBLIGATION_DUE", oid)
         self.continuity(obligations)
         self.persistence(obligations, paths)
+        if self.request.get("mode") == "transition" and action == "PRE_CLOSURE":
+            release_subject_sha = self.request.get("release_subject_sha")
+            governance_revision_sha = self.request.get("governance_revision_sha")
+            station_release_subject_sha = self.station.get("release_subject_sha")
+            station_governance_revision_sha = self.station.get("governance_revision_sha")
+
+            if (
+                not release_subject_sha
+                or not governance_revision_sha
+                or not station_release_subject_sha
+                or not station_governance_revision_sha
+                or release_subject_sha != station_release_subject_sha
+                or governance_revision_sha != station_governance_revision_sha
+                or release_subject_sha == governance_revision_sha
+            ):
+                self.problem("RELEASE_GOVERNANCE_IDENTITY_REQUIRED", action)
+
+            governance_sync_proof = self.request.get("governance_sync_proof")
+            if (
+                not isinstance(governance_sync_proof, dict)
+                or governance_sync_proof.get("synchronized") is not True
+                or governance_sync_proof.get("governance_revision_sha")
+                    != governance_revision_sha
+            ):
+                self.problem("GOVERNANCE_SYNCHRONIZATION_REQUIRED", action)
+
+            governance_terminal_observation = self.request.get(
+                "governance_terminal_observation"
+            )
+            if (
+                not isinstance(governance_terminal_observation, dict)
+                or governance_terminal_observation.get(
+                    "governance_revision_sha"
+                ) != governance_revision_sha
+                or governance_terminal_observation.get("terminal") is not True
+                or governance_terminal_observation.get(
+                    "creates_governance_revision"
+                ) is not False
+            ):
+                self.problem(
+                    "TERMINAL_GOVERNANCE_OBSERVATION_REQUIRED",
+                    action,
+                )
+
         if self.request.get("mode") == "transition" and action in PO_ACTIONS:
             refs = self.station.get("approval_refs", [])
             if not refs:
@@ -601,9 +655,52 @@ class Resolver:
             permission = {"action": action, "action_id": self.request.get("action_id"),
                           "permission": "PERMITTED" if permitted else "BLOCKED",
                           "approval_ref": approval_ref}
+        x2_rows = [
+            obligation
+            for obligation in obligations.values()
+            if obligation.get("obligation_id") == "X2"
+        ]
+        if len(x2_rows) > 1:
+            self.problem(
+                "X2_LINEAGE_INVALID",
+                f"expected at most one X2 obligation, found {len(x2_rows)}",
+            )
+            status = (
+                "TRANSITION_BLOCKED"
+                if self.request.get("mode") == "transition"
+                else "UNRESOLVED"
+            )
+            x2 = None
+        else:
+            x2 = x2_rows[0] if x2_rows else None
+            seen = set()
+            while x2 is not None and x2.get("status") == "SUPERSEDED":
+                oid = x2["obligation_id"]
+                ref = x2.get("disposition_ref")
+                evolution = self.evolutions.get(ref)
+                migrations = (evolution["evolution"]["obligations"]
+                              if evolution is not None else [])
+                targets = [m["to"] for m in migrations if m["from"] == oid]
+                if (oid in seen or len(targets) != 1
+                        or targets[0] not in obligations
+                        or not self.disposition(ref, oid, obligations)):
+                    self.problem("X2_LINEAGE_INVALID", oid)
+                    status = ("TRANSITION_BLOCKED"
+                              if self.request.get("mode") == "transition"
+                              else "UNRESOLVED")
+                    x2 = None
+                    break
+                seen.add(oid)
+                x2 = obligations[targets[0]]
+
         result = {"status": status, "diagnostics": self.diagnostics, "controls": controls,
             "obligations": list(obligations.values()), "station": {**self.station,
                 "alignment": "VERIFIED" if not self.diagnostics else "NOT VERIFIED"},
+            "release_subject_sha": self.station.get("release_subject_sha"),
+            "governance_revision_sha": self.station.get("governance_revision_sha"),
+            "governance_revision_pending":
+                self.station.get("governance_revision_pending") is True,
+            "x2": x2,
             "material_outcomes": self.station.get("material_outcomes", []),
             "checkpoint_outcomes": self.checkpoint_accounting.get("outcomes", []),
             "snapshot": snapshot,

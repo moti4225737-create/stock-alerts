@@ -241,7 +241,7 @@
       "authority": {
         "path": "docs/03-ניהול-הפיתוח-ההנדסי/החלטות-הנדסיות.md",
         "anchor": "## Required-before transitions",
-        "digest": "75ba60805c5356cbb1a0b087e6c2d83513fd359b2abbebdc070efc1854d6a56f"
+        "digest": "5cf422185b73a41014630cd758c0d1533c3963268160ac93e37d350600fffb3e"
       },
       "applies_to": {
         "components": [
@@ -344,10 +344,11 @@
     },
     {
       "id": "B-X2",
+      "supersession_ref": "EV-X2-POST-PUSH-20261004",
       "authority": {
         "path": "docs/03-ניהול-הפיתוח-ההנדסי/פרוטוקול-השינוי-האימות-המסירה-והסגירה-הסמכותי.md",
         "anchor": "### Forward Consequence Check",
-        "digest": "f4a06c65464375e287b816cb5fd9a189e2bea5d87ebee728a04704858a4310d1"
+        "digest": "017c3fe4efabdac1b3f4a1be6f0d3b81c46cb339ee9537f684ba31f160aff7d9"
       },
       "applies_to": {
         "components": [
@@ -376,6 +377,27 @@
           "candidate_match_required": true
         }
       ]
+    },
+    {
+      "id": "B-X2-POST-PUSH",
+      "authority": {
+        "path": "docs/03-ניהול-הפיתוח-ההנדסי/החלטות-הנדסיות.md",
+        "anchor": "## Required-before transitions",
+        "digest": "5cf422185b73a41014630cd758c0d1533c3963268160ac93e37d350600fffb3e"
+      },
+      "applies_to": {"components": ["runtime"], "operations": ["diagnosis", "transition"], "always": false},
+      "obligations": [{
+        "id": "proof-X2-POST-PUSH", "required_follow_up": true, "scope": "R&D 002",
+        "required_before": ["POST_PUSH"], "proof_class": "LEVEL_2", "enforcement": "HARD",
+        "required_assertions": [
+          "Authorized Push of Release Subject R",
+          "Authoritative remote SHA equals Release Subject R",
+          "Required CI runs on exact Release Subject R",
+          "Required CI completes with PASS on exact Release Subject R",
+          "Validated POST_PUSH release-delivery evidence for Release Subject R"
+        ],
+        "fresh_for_action": true, "candidate_match_required": true
+      }]
     },
     {
       "id": "B-X3",
@@ -417,7 +439,7 @@
       "authority": {
         "path": "docs/03-ניהול-הפיתוח-ההנדסי/החלטות-הנדסיות.md",
         "anchor": "## Material Contract Evolution",
-        "digest": "75ba60805c5356cbb1a0b087e6c2d83513fd359b2abbebdc070efc1854d6a56f"
+        "digest": "5cf422185b73a41014630cd758c0d1533c3963268160ac93e37d350600fffb3e"
       },
       "applies_to": {"components": ["runtime"], "operations": ["diagnosis", "transition"], "always": false},
       "obligations": [{
@@ -433,7 +455,7 @@
       "authority": {
         "path": "docs/03-ניהול-הפיתוח-ההנדסי/החלטות-הנדסיות.md",
         "anchor": "## Material Contract Evolution",
-        "digest": "75ba60805c5356cbb1a0b087e6c2d83513fd359b2abbebdc070efc1854d6a56f"
+        "digest": "5cf422185b73a41014630cd758c0d1533c3963268160ac93e37d350600fffb3e"
       },
       "applies_to": {"components": ["runtime"], "operations": ["diagnosis", "transition"], "always": false},
       "obligations": [{
@@ -449,7 +471,7 @@
       "authority": {
         "path": "docs/03-ניהול-הפיתוח-ההנדסי/החלטות-הנדסיות.md",
         "anchor": "## Material Contract Evolution",
-        "digest": "75ba60805c5356cbb1a0b087e6c2d83513fd359b2abbebdc070efc1854d6a56f"
+        "digest": "5cf422185b73a41014630cd758c0d1533c3963268160ac93e37d350600fffb3e"
       },
       "applies_to": {"components": ["runtime"], "operations": ["diagnosis", "transition"], "always": false},
       "obligations": [{
@@ -464,7 +486,7 @@
       "authority": {
         "path": "docs/03-ניהול-הפיתוח-ההנדסי/החלטות-הנדסיות.md",
         "anchor": "## Lean Design C — binding and transition support",
-        "digest": "75ba60805c5356cbb1a0b087e6c2d83513fd359b2abbebdc070efc1854d6a56f"
+        "digest": "5cf422185b73a41014630cd758c0d1533c3963268160ac93e37d350600fffb3e"
       },
       "applies_to": {
         "components": [
@@ -499,7 +521,7 @@
       "authority": {
         "path": "docs/03-ניהול-הפיתוח-ההנדסי/החלטות-הנדסיות.md",
         "anchor": "## Same-Station Decision Persistence",
-        "digest": "75ba60805c5356cbb1a0b087e6c2d83513fd359b2abbebdc070efc1854d6a56f"
+        "digest": "5cf422185b73a41014630cd758c0d1533c3963268160ac93e37d350600fffb3e"
       },
       "applies_to": {
         "components": [
@@ -534,7 +556,7 @@
       "authority": {
         "path": "docs/03-ניהול-הפיתוח-ההנדסי/פרוטוקול-השינוי-האימות-המסירה-והסגירה-הסמכותי.md",
         "anchor": "## 6 — Full Regression",
-        "digest": "f4a06c65464375e287b816cb5fd9a189e2bea5d87ebee728a04704858a4310d1"
+        "digest": "017c3fe4efabdac1b3f4a1be6f0d3b81c46cb339ee9537f684ba31f160aff7d9"
       },
       "applies_to": {
         "components": [

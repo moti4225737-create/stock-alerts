@@ -557,6 +557,9 @@ to perform consequential operations is manufactured from that prose.
   "objective_ref": "docs/06-ניהול-הידע-ורציפות-התיעוד/chronicle/ספרינטים/2026-09-06-alpha-portfolio-initial-integration.md#WDS resolver GREEN — 2026-09-09",
   "scope": "R&D 002",
   "approval_refs": [
+    "PO-EV-X2-POST-PUSH-20261004",
+    "PO-RND002-X2-PO1-GREEN-2026-10-03",
+    "PO-RND002-CONTROLLED-RENEWAL-2026-09-30",
     "PO-COMPONENT-EVOLUTION-PRECOMMIT-20260927",
     "PO-RND002-STAGE-COMMIT-2026-09-23",
     "PO-WDS-RECOVERY-2026-09-08",
@@ -570,6 +573,7 @@ to perform consequential operations is manufactured from that prose.
   ],
   "next_action": "Complete authorized Component Evolution local verification through PRE_COMMIT only. X2 remains OPEN for separately authorized release proof. No Stage, Commit, Push, external action or R&D003.",
   "repository_snapshot": "f3857814cc9c55191e21e4c6a4811e02bf6fa412",
+  "release_subject_sha": "781f0c3d7bf289d4c350120df18483583571a13b",
   "change_scope_paths": [
     "docs/06-ניהול-הידע-ורציפות-התיעוד/documentation-checkpoint.md",
     "tests/test_sec_company_identity_resolver.py",
@@ -590,6 +594,12 @@ to perform consequential operations is manufactured from that prose.
     "tests/test_design_c_repository.py"
   ],
   "material_outcomes": [
+    {
+      "id": "RND002-X2-POST-PUSH-LOCAL-COMPLETION",
+      "kind": "AUTHORITATIVE_DECISION", "classification": "CLASSIFIED_AND_PERSISTED",
+      "authority_ref": "docs/03-ניהול-הפיתוח-ההנדסי/החלטות-הנדסיות.md#Required-before transitions",
+      "traceability_ref": "docs/06-ניהול-הידע-ורציפות-התיעוד/traceability.md#R&D002 X2 POST_PUSH local supersession - 2026-10-04"
+    },
     {
       "id": "RND002-COMPONENT-EVOLUTION",
       "kind": "AUTHORITATIVE_DECISION", "classification": "CLASSIFIED_AND_PERSISTED",
@@ -730,27 +740,27 @@ to perform consequential operations is manufactured from that prose.
       "kind": "PROOF_EVIDENCE",
       "classification": "CLASSIFIED_AND_PERSISTED",
       "obligation_ref": "DC-FOUNDATION",
-      "evidence_ref": "E-DC-FOUNDATION-CE-20260928",
-      "traceability_ref": "docs/06-ניהול-הידע-ורציפות-התיעוד/traceability.md#Design C controlled renewal receipt verification - 2026-09-13",
-      "artifact_ref": "docs/05-אבטחת-איכות-אימות-ותיקוף/evidence/component-evolution-20260927/full.xml"
+      "evidence_ref": "E-DC-FOUNDATION-X2-20261004",
+      "traceability_ref": "docs/06-ניהול-הידע-ורציפות-התיעוד/traceability.md#R&D002 X2 POST_PUSH local supersession - 2026-10-04",
+      "artifact_ref": "tests/evidence/rnd002-x2-resume-full-20261004.xml"
     },
     {
       "id": "WDS-RECOVERY-CONTINUITY-PROOF",
       "kind": "PROOF_EVIDENCE",
       "classification": "CLASSIFIED_AND_PERSISTED",
       "obligation_ref": "DC-CONTINUITY",
-      "evidence_ref": "E-DC-CONTINUITY-CE-20260928",
-      "traceability_ref": "docs/06-ניהול-הידע-ורציפות-התיעוד/traceability.md#Design C controlled renewal receipt verification - 2026-09-13",
-      "artifact_ref": "docs/05-אבטחת-איכות-אימות-ותיקוף/evidence/component-evolution-20260927/full.xml"
+      "evidence_ref": "E-DC-CONTINUITY-X2-20261004",
+      "traceability_ref": "docs/06-ניהול-הידע-ורציפות-התיעוד/traceability.md#R&D002 X2 POST_PUSH local supersession - 2026-10-04",
+      "artifact_ref": "tests/evidence/rnd002-x2-resume-full-20261004.xml"
     },
     {
       "id": "WDS-RECOVERY-REGRESSION-PROOF",
       "kind": "PROOF_EVIDENCE",
       "classification": "CLASSIFIED_AND_PERSISTED",
       "obligation_ref": "DC-REGRESSION",
-      "evidence_ref": "E-DC-REGRESSION-CE-20260928",
-      "traceability_ref": "docs/06-ניהול-הידע-ורציפות-התיעוד/traceability.md#Design C controlled renewal receipt verification - 2026-09-13",
-      "artifact_ref": "docs/05-אבטחת-איכות-אימות-ותיקוף/evidence/component-evolution-20260927/full.xml"
+      "evidence_ref": "E-DC-REGRESSION-X2-20261004",
+      "traceability_ref": "docs/06-ניהול-הידע-ורציפות-התיעוד/traceability.md#R&D002 X2 POST_PUSH local supersession - 2026-10-04",
+      "artifact_ref": "tests/evidence/rnd002-x2-resume-full-20261004.xml"
     },
     {
       "id": "WDS-GREEN-OUTCOME",
@@ -902,97 +912,23 @@ to perform consequential operations is manufactured from that prose.
     "docs/05-אבטחת-איכות-אימות-ותיקוף/evidence/design-c-refresh-20260909/focused.xml": "HISTORICAL_PROVENANCE_PROVEN_NOT_ACTIVE_PERSISTENCE",
     "docs/05-אבטחת-איכות-אימות-ותיקוף/evidence/rnd002-final-reconciliation-20260920/design-c-focused.xml": "HISTORICAL_PROVENANCE_PROVEN_NOT_ACTIVE_PERSISTENCE",
     "docs/05-אבטחת-איכות-אימות-ותיקוף/evidence/design-c-refresh-20260909/full.xml": "HISTORICAL_PROVENANCE_PROVEN_NOT_ACTIVE_PERSISTENCE",
+    "docs/05-אבטחת-איכות-אימות-ותיקוף/evidence/design-c-final-20260909-195344/focused-complete.xml": "HISTORICAL_PROVENANCE_PROVEN_NOT_ACTIVE_PERSISTENCE",
+    "docs/05-אבטחת-איכות-אימות-ותיקוף/evidence/rnd002-resolver-correction-20260922/full-regression.xml": "HISTORICAL_PROVENANCE_PROVEN_NOT_ACTIVE_PERSISTENCE",
+    "docs/05-אבטחת-איכות-אימות-ותיקוף/evidence/design-c-final-20260909-195344/full.xml": "HISTORICAL_PROVENANCE_PROVEN_NOT_ACTIVE_PERSISTENCE",
     "docs/05-אבטחת-איכות-אימות-ותיקוף/evidence/design-c-full.xml": "HISTORICAL_PROVENANCE_PROVEN_NOT_ACTIVE_PERSISTENCE"
   },
   "resolver_request": {
     "mode": "resolve",
-    "task": "X2 PRE_COMMIT classification reconciliation: exact 33 component mappings, Group A 16 historical dispositions, Group B 6 explicit active persistence relationships and 10 historical dispositions. Local read-only validation only; no Stage, Commit, Push, external action or Closure claim.",
-    "action": "PRE_COMMIT",
+    "task": "X2 PO-1 bounded GREEN authorization: reconcile the approved X2 delivery boundary from PRE_PUSH_OR_PROMOTION to POST_PUSH while preserving Forward Consequence at PRE_PUSH. Local bounded GREEN only; no Stage, Commit, Push, external action, Deployment, Railway, Production or Closure claim.",
+    "action": "BOUNDED_INTERMEDIATE_GREEN",
     "scope": "R&D 002",
     "paths": [
-      "docs/05-אבטחת-איכות-אימות-ותיקוף/evidence/component-evolution-20260927/red.xml",
-      "docs/05-אבטחת-איכות-אימות-ותיקוף/evidence/component-evolution-20260927/green.xml",
-      "docs/05-אבטחת-איכות-אימות-ותיקוף/evidence/component-evolution-20260927/focused.xml",
-      "docs/05-אבטחת-איכות-אימות-ותיקוף/evidence/component-evolution-20260927/continuity.xml",
-      "docs/05-אבטחת-איכות-אימות-ותיקוף/evidence/component-evolution-20260927/continuity-correction.xml",
-      "docs/05-אבטחת-איכות-אימות-ותיקוף/evidence/component-evolution-20260927/repeated-evolution-red.xml",
-      "docs/05-אבטחת-איכות-אימות-ותיקוף/evidence/component-evolution-20260927/repeated-evolution-green.xml",
-      "docs/05-אבטחת-איכות-אימות-ותיקוף/evidence/component-evolution-20260927/focused-final.xml",
-      "docs/05-אבטחת-איכות-אימות-ותיקוף/evidence/component-evolution-20260927/history-red.xml",
-      "docs/05-אבטחת-איכות-אימות-ותיקוף/evidence/component-evolution-20260927/history-green.xml",
-      "docs/05-אבטחת-איכות-אימות-ותיקוף/evidence/component-evolution-20260927/full.xml",
-      "docs/05-אבטחת-איכות-אימות-ותיקוף/evidence/rnd002-x3-controlled-renewal-20260925.json",
-      "tests/test_main_autonomous_runtime.py",
-      "tests/evidence/rnd002-local-fault-proof-20260915-01/run.txt",
-      "modules/file_source_bootstrap_store.py",
-      "tests/test_portfolio_truth_service.py",
-      "modules/ticker_resolver.py",
-      "tests/test_design_c_hardening.py",
-      "tests/test_autonomous_acquisition_loop.py",
-      "tests/evidence/governance-procedural-safety.xml",
-      "tests/test_openfda_client.py",
-      "modules/openfda_client.py",
-      "tests/test_main_portfolio_truth_wiring.py",
-      "tests/test_source_runtime_runner.py",
-      "tests/evidence/o22-bounded-red-20260915.xml",
-      "models/event.py",
-      "tests/evidence/governance-technical-focused-green.xml",
-      "tests/evidence/rnd002-local-fault-proof-20260915-01/proof.xml",
-      "tests/test_clinical_trials_client.py",
-      "modules/notification_history.py",
-      "tests/test_rnd002_fault_injection_proof.py",
-      "tests/test_ticker_resolver.py",
-      "tests/test_notification_history.py",
-      "modules/source_observation_lifecycle.py",
-      "application/portfolio_truth_service.py",
-      "tests/evidence/rnd002-local-fault-proof-20260915-02/run.txt",
-      "tests/evidence/governance-technical-safety-green.xml",
-      "tests/evidence/rnd002-local-fault-proof-20260915-02/proof.xml",
-      "tests/evidence/governance-procedural-focused.xml",
-      "tests/test_main_lifeguard_runtime_wiring.py",
-      "tests/test_live_preview.py",
-      "tests/evidence/governance-technical-expanded-red.xml",
-      "modules/documentation_checkpoint_accountability.py",
-      "tests/evidence/governance-intermediate-red.xml",
-      "tests/test_documentation_checkpoint_accountability.py",
-      "docs/05-אבטחת-איכות-אימות-ותיקוף/evidence/rnd002-final-renewal-20260914-000006471/o28.xml",
-      "docs/05-אבטחת-איכות-אימות-ותיקוף/evidence/rnd002-final-renewal-20260914-000006471/O28.log",
-      "docs/05-אבטחת-איכות-אימות-ותיקוף/evidence/rnd002-final-renewal-20260914-000006471/DESIGN_C_FOCUSED.log",
-      "docs/05-אבטחת-איכות-אימות-ותיקוף/evidence/rnd002-final-renewal-20260914-000255397/o28.xml",
-      "docs/05-אבטחת-איכות-אימות-ותיקוף/evidence/rnd002-final-renewal-20260914-000255397/O28.log",
-      "docs/05-אבטחת-איכות-אימות-ותיקוף/evidence/rnd002-final-renewal-20260914-000255397/DESIGN_C_FOCUSED.log",
-      "docs/05-אבטחת-איכות-אימות-ותיקוף/evidence/design-c-final-20260909-195344/focused.xml",
-      "docs/05-אבטחת-איכות-אימות-ותיקוף/evidence/design-c-refresh-20260911/focused.xml",
-      "docs/05-אבטחת-איכות-אימות-ותיקוף/evidence/design-c-renewal-20260909-191707/focused.xml",
-      "docs/05-אבטחת-איכות-אימות-ותיקוף/evidence/design-c-renewal-20260909-191707/full.xml",
-      "docs/05-אבטחת-איכות-אימות-ותיקוף/evidence/design-c-renewal-20260914-002735/focused.xml",
-      "docs/05-אבטחת-איכות-אימות-ותיקוף/evidence/design-c-renewal-20260914-002735/full.xml",
-      "docs/05-אבטחת-איכות-אימות-ותיקוף/evidence/o28-renewal-20260914-001918.xml",
-      "docs/05-אבטחת-איכות-אימות-ותיקוף/evidence/rnd002-final-renewal-20260913-235645111/focused.xml",
-      "docs/05-אבטחת-איכות-אימות-ותיקוף/evidence/rnd002-final-renewal-20260913-235645111/full.xml",
-      "docs/05-אבטחת-איכות-אימות-ותיקוף/evidence/rnd002-final-renewal-20260913-235645111/o28.xml",
-      "docs/05-אבטחת-איכות-אימות-ותיקוף/evidence/wds-recovery-20260908-213248/full.xml",
-      "docs/05-אבטחת-איכות-אימות-ותיקוף/evidence/wds-recovery-20260908-213248/focused.xml",
-      "docs/05-אבטחת-איכות-אימות-ותיקוף/evidence/rnd002-final-reconciliation-20260920/o21.xml",
-      "docs/05-אבטחת-איכות-אימות-ותיקוף/evidence/o28-green-20260909-fresh.xml",
-      "docs/05-אבטחת-איכות-אימות-ותיקוף/evidence/o28-green-20260909-080726/focused.xml",
-      "docs/05-אבטחת-איכות-אימות-ותיקוף/evidence/rnd002-final-reconciliation-20260920/o28.xml",
-      "docs/05-אבטחת-איכות-אימות-ותיקוף/evidence/design-c-final-20260909-195344/focused-complete.xml",
-      "docs/05-אבטחת-איכות-אימות-ותיקוף/evidence/rnd002-final-reconciliation-20260920/full-regression.xml",
-      "docs/05-אבטחת-איכות-אימות-ותיקוף/evidence/design-c-focused.xml",
-      "docs/05-אבטחת-איכות-אימות-ותיקוף/evidence/design-c-refresh-20260909/focused.xml",
-      "docs/05-אבטחת-איכות-אימות-ותיקוף/evidence/rnd002-resolver-correction-20260922/full-regression.xml",
-      "docs/05-אבטחת-איכות-אימות-ותיקוף/evidence/rnd002-final-reconciliation-20260920/design-c-focused.xml",
-      "docs/05-אבטחת-איכות-אימות-ותיקוף/evidence/design-c-refresh-20260909/full.xml",
-      "docs/05-אבטחת-איכות-אימות-ותיקוף/evidence/design-c-full.xml",
-      "docs/05-אבטחת-איכות-אימות-ותיקוף/evidence/design-c-final-20260909-195344/full.xml",
-      "docs/05-אבטחת-איכות-אימות-ותיקוף/evidence/rnd002-o22-o26-local-recovery-20260922.xml",
+      "docs/03-ניהול-הפיתוח-ההנדסי/החלטות-הנדסיות.md",
       "docs/03-ניהול-הפיתוח-ההנדסי/decision-bindings.json",
-      "docs/06-ניהול-הידע-ורציפות-התיעוד/chronicle/ספרינטים/2026-09-06-alpha-portfolio-initial-integration.md",
-      "docs/06-ניהול-הידע-ורציפות-התיעוד/traceability.md"
+      "docs/03-ניהול-הפיתוח-ההנדסי/open-obligations.json"
     ],
     "candidate_sha": null,
-    "action_id": "rnd002-component-evolution-20260927",
+    "action_id": "rnd002-x2-po1-green-20261003",
     "station_ref": "docs/06-ניהול-הידע-ורציפות-התיעוד/chronicle/ספרינטים/2026-09-06-alpha-portfolio-initial-integration.md",
     "traceability_ref": "docs/06-ניהול-הידע-ורציפות-התיעוד/traceability.md",
     "register_ref": "docs/03-ניהול-הפיתוח-ההנדסי/ניהול-ספרינטים.md",
@@ -1694,3 +1630,44 @@ Invocation is an agent instruction, not a host interceptor or hard enforcement.
 R&D002 remains ACTIVE, X2 reconciliation awaits host validation and Closure
 remains OPEN. No full regression, Stage, Commit, Push or external action occurred.
 FINAL / HANDOFF COMMIT: PENDING.
+
+### R&D002 historical artifact classification evolution finding
+
+The current Resolver uses UNCLASSIFIED_CHANGE for a docs path in station scope that is neither active persisted material outcome nor explicitly historically dispositioned. This reconciliation proved that a pre-existing scoped historical artifact can satisfy that condition without being a current byte change.
+
+Evolution finding only: a future Resolver evolution should consider distinguishing CURRENT/OBSERVED CHANGE from PRE-EXISTING SCOPED HISTORICAL ARTIFACT. This finding is not a current blocker, does not alter the existing Controlled Renewal lifecycle, and does not authorize reinterpretation, reuse, renewal, deletion, or mutation of historical evidence.
+
+The three artifacts classified in this reconciliation have independently established provenance, are unchanged from HEAD, and are not active persistence of the current Controlled Renewal action. Their disposition is HISTORICAL_PROVENANCE_PROVEN_NOT_ACTIVE_PERSISTENCE.
+
+### R&D002 X2 POST_PUSH local supersession - 2026-10-04
+
+The earlier Python-unavailable checkpoint is historical. The PO supplied the exact
+existing Python313 executable; the current session used it locally after the
+technical sandbox approval. No installation, network or environment change.
+The approved local package is COMPLETE through the existing SUPERSESSION mechanism:
+B-X2 → B-X2-POST-PUSH; X2 → X2-POST-PUSH. Predecessor historical
+PRE_PUSH_OR_PROMOTION is restored and sealed; one logical lineage is retained.
+Successor authority is Engineering Decisions / Required-before transitions,
+with all five authorized release-delivery assertions. Successor remains OPEN,
+required_before=[POST_PUSH], evidence_refs=[], candidate_match_required=true.
+No predecessor evidence reuse. Forward Consequence remains PRE_PUSH.
+R remains 781f0c3d7bf289d4c350120df18483583571a13b; baseline and pin unchanged.
+
+LEVEL 1 — LOCAL / CONTRACT PROOF: initial native RED 45 PASS / 3 FAIL;
+focused authority suite 169 PASS; full local regression 1130 PASS;
+post-renewal native/checkpoint 65 PASS. Fresh DC foundation/continuity/regression
+receipts preserve historical receipts and original claims/dependency keys.
+Station proof links now refer to the active receipts and full regression artifact.
+Resolver RESOLVED_CONTEXT and STATION_COMPLETE TRANSITION_ALLOWED, no diagnostics;
+POST_PUSH still TRANSITION_BLOCKED by OPEN X2-POST-PUSH. No blocked transition
+was executed. Invocation is agent-driven, not a host interceptor.
+Current Truth → Chronicle → Traceability persistence is complete for this local
+package; Repository History awaits separate Commit authorization. This is not
+whole Documentation Checkpoint completion or R&D002 Closure PASS.
+Raw diff/integrity, accumulated delta sweep and genericity validation PASS.
+Pre-existing unrelated changes retained; no runtime/parallel mechanism added.
+Future X2 delivery proof, O28 invalid proof and release/governance closure
+requirements remain carried, not local completion blockers.
+No Commit, Push, network, Deployment or Production action was performed.
+Next authority boundary: separately authorized Commit/Push and external exact-R
+POST_PUSH evidence. FINAL / HANDOFF COMMIT: PENDING.

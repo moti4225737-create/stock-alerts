@@ -53,3 +53,27 @@ def test_current_ci_collects_the_foundation_contracts_without_production_calls()
     for name in ("test_authority_resolution.py", "test_transition_guard.py",
                  "test_authority_continuity.py", "test_authority_workflow_contract.py"):
         assert (ROOT / "tests" / name).is_file()
+
+def test_r4_x2_rejects_local_level_1_delivery_evidence(case):
+    case.satisfy_all()
+    x2_ref = case.obligation("X2")["evidence_refs"][0]
+    x2_evidence = next(
+        evidence for evidence in case.evidence["evidence"]
+        if evidence["id"] == x2_ref
+    )
+    x2_evidence["proof_class"] = "LEVEL_1"
+    case.transition("POST_PUSH")
+    case.request["action_target"] = "origin/main"
+    case.request["delivery_coupling"] = "EXACT_RELEASE_SUBJECT"
+    approval = case.evidence["approvals"][-1]
+    approval["action_target"] = "origin/main"
+    approval["delivery_coupling"] = "EXACT_RELEASE_SUBJECT"
+
+    report = case.run()
+
+    assert report["status"] == "TRANSITION_BLOCKED", report
+    assert any(
+        diagnostic.get("code") == "EVIDENCE_INVALID"
+        and diagnostic.get("subject") == "X2"
+        for diagnostic in report["diagnostics"]
+    ), report["diagnostics"]

@@ -8,7 +8,7 @@ from tests.test_support.design_c_fixture import OBLIGATION_IDS, case, rejected
 @pytest.mark.parametrize("oid,boundary", [
     ("O21", "PRE_CANARY"), ("O22", "PRE_CANARY"), ("O26", "PRE_CANARY"),
     ("O28", "PRE_EXTERNAL_WORK"), ("C2", "PRE_CANARY"), ("X1", "PRE_CANARY"),
-    ("X2", "PRE_PUSH_OR_PROMOTION"), ("X3", "PRE_CLOSURE"),
+    ("X2", "POST_PUSH"), ("X3", "PRE_CLOSURE"),
 ])
 def test_red_a_h_i_j_each_required_open_obligation_blocks(case, oid, boundary):
     case.satisfy_all()
@@ -111,7 +111,7 @@ def test_red_m_direct_production_does_not_skip_canary_prerequisites(case):
 
 def test_red_n_prior_action_evidence_does_not_authorize_new_action(case):
     case.satisfy_all()
-    case.transition("PRE_PUSH_OR_PROMOTION")
+    case.transition("POST_PUSH")
     case.request["action_id"] = "test-action-2"
     case.evidence["approvals"][0]["action_id"] = "test-action-2"
     rejected(case.run(), "EVIDENCE_INVALID", "X2")
@@ -155,9 +155,25 @@ def test_red_q_orphaned_obligation_fails(case):
 def test_red_s_valid_proof_and_approval_allow_transition_not_closure(case):
     case.satisfy_all()
     case.transition("PRE_CLOSURE")
+    # TEST ONLY identities: no real Governance Revision is established.
+    release_subject = "a" * 40
+    governance_revision = "b" * 40
+    for context in (case.request, case.station):
+        context["release_subject_sha"] = release_subject
+        context["governance_revision_sha"] = governance_revision
+    case.request["governance_sync_proof"] = {
+        "governance_revision_sha": governance_revision,
+        "synchronized": True,
+    }
+    case.request["governance_terminal_observation"] = {
+        "governance_revision_sha": governance_revision,
+        "terminal": True,
+        "creates_governance_revision": False,
+    }
     report = case.run()
     assert report["status"] == "TRANSITION_ALLOWED"
     assert all(o["status"] == "CLOSED" for o in report["obligations"])
+    assert "closure_pass" not in report
 
 
 def test_red_t_prior_allowed_snapshot_cannot_be_reused_after_change(case):
@@ -283,3 +299,66 @@ def test_candidate_policy_preserves_context_subject_and_authorization(tmp_path, 
         rejected(report, "APPROVAL_INVALID")
     else:
         rejected(report, "EVIDENCE_INVALID", oid)
+
+def test_r1_x2_post_push_proof_does_not_block_authorized_push(case):
+    case.satisfy_all()
+    case.obligation("X2").update(status="OPEN", evidence_refs=[])
+    case.transition("PRE_PUSH_OR_PROMOTION")
+    case.request["action_target"] = "origin/main"
+    case.request["delivery_coupling"] = "EXACT_RELEASE_SUBJECT"
+    approval = case.evidence["approvals"][-1]
+    approval["action_target"] = "origin/main"
+    approval["delivery_coupling"] = "EXACT_RELEASE_SUBJECT"
+
+    report = case.run()
+
+    assert report["status"] == "TRANSITION_ALLOWED", report["diagnostics"]
+
+def test_r3_push_requires_explicit_target_and_delivery_coupling(case):
+    case.satisfy_all()
+    case.transition("PRE_PUSH_OR_PROMOTION")
+
+    assert "action_target" not in case.request
+    assert "delivery_coupling" not in case.request
+
+    report = case.run()
+
+    assert report["status"] == "TRANSITION_BLOCKED", (
+        "PRE_PUSH_OR_PROMOTION must fail closed when exact action target "
+        "and delivery coupling are absent",
+        report,
+    )
+
+    case.request["action_target"] = "origin/main"
+    case.request["delivery_coupling"] = "EXACT_RELEASE_SUBJECT"
+    approval = case.evidence["approvals"][-1]
+    approval["action_target"] = "origin/main"
+    approval["delivery_coupling"] = "EXACT_RELEASE_SUBJECT"
+
+    report = case.run()
+
+    assert report["status"] == "TRANSITION_ALLOWED", report["diagnostics"]
+
+    approval["action_target"] = "different-target"
+
+    report = case.run()
+
+    assert report["status"] == "TRANSITION_BLOCKED", (
+        "PRE_PUSH_OR_PROMOTION must fail closed when approval target "
+        "does not match the exact requested action target",
+        report,
+    )
+
+def test_r6_governance_push_requires_its_own_authorization(case):
+    case.satisfy_all()
+    case.transition("PRE_PUSH_OR_PROMOTION")
+
+    case.request["action_id"] = "governance-push-action"
+
+    report = case.run()
+
+    assert report["status"] == "TRANSITION_BLOCKED", report
+    assert any(
+        diagnostic.get("code") in {"APPROVAL_INVALID", "APPROVAL_REQUIRED"}
+        for diagnostic in report["diagnostics"]
+    ), report["diagnostics"]

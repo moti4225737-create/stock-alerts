@@ -672,3 +672,26 @@ is authorized. The current recorded Railway/Production state remains OFF; this
 unit has made no live external observation. The completed scope/classification
 reconciliation is retained. See Engineering Decisions, Material Contract Evolution,
 and the matching Chronicle/Traceability records.
+
+## R&D002 X2 POST_PUSH local supersession - 2026-10-04
+
+The PO-authorized local migration is B-X2 → B-X2-POST-PUSH and
+X2 → X2-POST-PUSH, using the existing sealed SUPERSESSION mechanism.
+One logical X2 lineage is retained. The predecessor is SUPERSEDED with historical
+PRE_PUSH_OR_PROMOTION requirements preserved. The active successor is OPEN,
+required_before=[POST_PUSH], evidence_refs=[], candidate_match_required=true
+and fresh_for_action=true. No predecessor X2 evidence is reused.
+Successor authority is Engineering Decisions, Required-before transitions;
+its five assertions require authorized Push, authoritative remote SHA, exact-R
+CI execution, exact-R CI PASS and validated POST_PUSH delivery evidence.
+Release Subject R remains 781f0c3d7bf289d4c350120df18483583571a13b.
+Forward Consequence remains PRE_PUSH. Baseline and independent pin are unchanged.
+Authorized local work package COMPLETE: focused 169 PASS, full regression 1130
+PASS, post-renewal native/checkpoint 65 PASS. Foundation/continuity/regression
+receipts are renewed with fresh local proof; historical receipts remain preserved.
+Resolver RESOLVED_CONTEXT and STATION_COMPLETE TRANSITION_ALLOWED, no diagnostics.
+Diff/integrity, accumulated delta sweep and genericity validation PASS.
+This is LEVEL 1 — LOCAL / CONTRACT PROOF; X2 remains OPEN, not Closure PASS.
+Future POST_PUSH proof and O28/closure governance requirements remain carried.
+No Commit, Push, network, Deployment or Production action is authorized here.
+FINAL / HANDOFF COMMIT: PENDING.

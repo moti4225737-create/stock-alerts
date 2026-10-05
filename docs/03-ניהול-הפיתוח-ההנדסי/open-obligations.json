@@ -47,7 +47,7 @@
                                                     "PRE_EXTERNAL_WORK"
                                                 ],
                             "evidence_refs":  [
-                                                  "E-O28-CE-20260927"
+                                                  "E-O28-RENEWAL-20260930"
                                               ]
                         },
                         {
@@ -82,16 +82,24 @@
                         },
                         {
                             "obligation_id":  "X2",
+                            "disposition_ref": "EV-X2-POST-PUSH-20261004",
                             "binding_ref":  "B-X2",
                             "origin_ref":  "docs/06-ניהול-הידע-ורציפות-התיעוד/chronicle/ספרינטים/2026-09-06-alpha-portfolio-initial-integration.md#Design C GREEN",
                             "scope":  "R\u0026D 002",
-                            "status":  "OPEN",
+                            "status":  "SUPERSEDED",
                             "required_before":  [
                                                     "PRE_PUSH_OR_PROMOTION"
                                                 ],
                             "evidence_refs":  [
 
                                               ]
+                        },
+                        {
+                            "obligation_id": "X2-POST-PUSH",
+                            "binding_ref": "B-X2-POST-PUSH",
+                            "origin_ref": "docs/06-ניהול-הידע-ורציפות-התיעוד/chronicle/ספרינטים/2026-09-06-alpha-portfolio-initial-integration.md#Design C GREEN",
+                            "scope": "R&D 002", "status": "OPEN",
+                            "required_before": ["POST_PUSH"], "evidence_refs": []
                         },
                         {
                             "obligation_id":  "X3",
@@ -142,7 +150,7 @@
                                                     "PRE_COMMIT"
                                                 ],
                             "evidence_refs":  [
-                                                  "E-DC-FOUNDATION-CE-20260928"
+                                                  "E-DC-FOUNDATION-X2-20261004"
                                               ]
                         },
                         {
@@ -156,7 +164,7 @@
                                                     "PRE_COMMIT"
                                                 ],
                             "evidence_refs":  [
-                                                  "E-DC-CONTINUITY-CE-20260928"
+                                                  "E-DC-CONTINUITY-X2-20261004"
                                               ]
                         },
                         {
@@ -170,7 +178,7 @@
                                                     "PRE_COMMIT"
                                                 ],
                             "evidence_refs":  [
-                                                  "E-DC-REGRESSION-CE-20260928"
+                                                  "E-DC-REGRESSION-X2-20261004"
                                               ]
                         }
                     ]

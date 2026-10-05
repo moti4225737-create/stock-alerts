@@ -94,7 +94,7 @@ class RepositoryCase:
             if oid == "O28":
                 boundaries = ["PRE_EXTERNAL_WORK"]
             elif oid == "X2":
-                boundaries = ["PRE_PUSH_OR_PROMOTION"]
+                boundaries = ["POST_PUSH"]
             elif oid == "X3":
                 boundaries = ["PRE_CLOSURE"]
             path = f"{ENGINEERING}/fixture-{oid}.md"

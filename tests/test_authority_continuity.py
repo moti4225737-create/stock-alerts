@@ -336,3 +336,84 @@ def test_checkpoint_accounting_survives_station_state_replacement(case):
     assert second["checkpoint_outcomes"][0]["outcome_id"] == "KMO-1"
     assert second["checkpoint_outcomes"][0]["status"] == "PENDING"
     assert second["material_outcomes"] == []
+
+def test_r8_closure_requires_terminal_non_recursive_governance_observation(case):
+    case.satisfy_all()
+    case.transition("PRE_CLOSURE")
+
+    release_subject = "a" * 40
+    governance_revision = "b" * 40
+
+    case.station["release_subject_sha"] = release_subject
+    case.station["governance_revision_sha"] = governance_revision
+    case.request["release_subject_sha"] = release_subject
+    case.request["governance_revision_sha"] = governance_revision
+    case.request["governance_sync_proof"] = {
+        "governance_revision_sha": governance_revision,
+        "synchronized": True,
+    }
+
+    assert "governance_terminal_observation" not in case.request
+
+    report = case.run()
+
+    assert report["status"] == "TRANSITION_BLOCKED", (
+        "Final Closure must fail closed without terminal governance observation",
+        report,
+    )
+
+    case.request["governance_terminal_observation"] = {
+        "governance_revision_sha": governance_revision,
+        "terminal": True,
+        "creates_governance_revision": False,
+    }
+
+    report = case.run()
+
+    assert report["status"] == "TRANSITION_ALLOWED", report["diagnostics"]
+
+    case.request["governance_terminal_observation"][
+        "creates_governance_revision"
+    ] = True
+
+    report = case.run()
+
+    assert report["status"] == "TRANSITION_BLOCKED", (
+        "Terminal governance observation must not create another "
+        "governance revision requiring recursive proof",
+        report,
+    )
+def test_r10_fresh_process_reconstructs_release_governance_x2_and_restrictions(case):
+    case.satisfy_all()
+
+    release_subject = "b" * 40
+    case.station["release_subject_sha"] = release_subject
+    case.station["governance_revision_pending"] = True
+    case.station.pop("governance_revision_sha", None)
+    case.flush()
+
+    report = case.run()
+
+    assert report["status"] == "RESOLVED_CONTEXT", report["diagnostics"]
+    assert report["station"]["restriction_refs"] == case.station["restriction_refs"]
+    assert report["release_subject_sha"] == release_subject
+    assert report["governance_revision_sha"] is None
+    assert report["governance_revision_pending"] is True
+
+    x2 = report["x2"]
+    assert x2 is not None
+    assert x2["obligation_id"] == "X2"
+    assert x2["status"] == "CLOSED"
+    assert x2["required_before"] == ["POST_PUSH"]
+
+    # Recovery reconstructs durable identity; repository_snapshot is not R.
+    case.station.pop("release_subject_sha", None)
+    case.flush()
+
+    report = case.run()
+
+    assert report.get("release_subject_sha") is None, (
+        "Recovery must not silently substitute repository_snapshot "
+        "for missing Release Subject R",
+        report,
+    )

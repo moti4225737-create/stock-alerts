@@ -108,3 +108,18 @@ def test_missing_independently_pinned_baseline_is_unresolved(case):
 def test_modified_pinned_baseline_fails_integrity_check(case):
     case.baseline.write_text("{}", encoding="utf-8")
     rejected(case.run(), "BASELINE_INTEGRITY")
+
+def test_r11_x2_has_one_authoritative_lineage(case):
+    x2 = next(
+        obligation
+        for obligation in case.obligations["obligations"]
+        if obligation["obligation_id"] == "X2"
+    )
+    case.obligations["obligations"].append(deepcopy(x2))
+
+    report = case.run()
+
+    assert report["status"] not in {"RESOLVED_CONTEXT", "TRANSITION_ALLOWED"}, (
+        "A duplicated X2 obligation must fail closed; X2 has one authoritative lineage",
+        report,
+    )

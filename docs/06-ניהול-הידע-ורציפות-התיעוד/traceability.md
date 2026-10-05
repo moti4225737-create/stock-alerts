@@ -392,10 +392,178 @@ existing CLI --mode transition --action STATION_COMPLETE overrides prepare
 the effective persistence-boundary request without changing tested semantics.
 RED NOT RUN. GREEN HAS NOT STARTED. No external WDS retry or Git delivery.
 
+## R&D002 X2 POST_PUSH local supersession - 2026-10-04
+
+PO-authorized local completion uses the existing SUPERSESSION mechanism:
+B-X2 → B-X2-POST-PUSH; X2 → X2-POST-PUSH. Historical predecessor contracts retain
+PRE_PUSH_OR_PROMOTION. Successor authority is Engineering Decisions, Required-before
+transitions; the five approved exact-R delivery assertions are sealed in its binding.
+X2-POST-PUSH remains OPEN, required_before=[POST_PUSH], evidence_refs=[];
+candidate matching and action freshness remain required. No predecessor evidence
+reuse. Forward Consequence remains PRE_PUSH. R is unchanged:
+781f0c3d7bf289d4c350120df18483583571a13b. Baseline pin is unchanged:
+872509619f0e55fec4901c0a2a29e369302bff4e2e81553ea3ab9367603cced2.
+
+Impact Map: existing authority → B-X2 coverage → carried X2 register → existing
+sealed disposition/PO approval → active-terminal resolver consumer → native
+PRE_PUSH/POST_PUSH/PRE_CLOSURE checks → station outcomes and knowledge homes.
+No missing mechanism or linking layer was found; no parallel mechanism was added.
+The initial native RED run was 45 PASS / 3 FAIL for the in-place coverage mutation.
+After supersession, focused authority validation: 169 PASS; full local regression:
+1130 PASS, zero failures/errors/skips. Proof boundary: LEVEL 1 — LOCAL / CONTRACT
+PROOF only. Fresh foundation/continuity/regression receipts preserve their claims,
+proof class and dependency keys; previous receipts remain immutable history.
+They do not constitute POST_PUSH X2 evidence.
+
+Durable copies:
+- [Initial native RED](../../tests/evidence/rnd002-x2-resume-red-20261004.xml);
+  SHA256 01aaeceb0d0d84c093b7e24a1226f785cc7d8ead0680b8289e2c82a494edec33.
+- [Focused authority validation](../../tests/evidence/rnd002-x2-resume-focused-20261004.xml);
+  SHA256 4fee82ca322ce77e53418172a20b5f3d4fd99d37906ea2988bd6a029795b259d.
+- [Full local regression](../../tests/evidence/rnd002-x2-resume-full-20261004.xml);
+  SHA256 81c887a21f8793e1a2fba0c33f10a406fa72150c357a3bb54926f16f28d5826c.
+- [Post-renewal native and checkpoint validation](../../tests/evidence/rnd002-x2-resume-checkpoint-20261004.xml);
+  SHA256 93c8a6baac181c56affc5cf74e34499b5f4f841de3e1668f9db34ac05c285dff.
+
+Resolver invocation uses the approved independent baseline pin and the exact
+supplied Python313 runtime. Invocation is agent-driven, not a host interceptor.
+Post-renewal native/checkpoint validation: 65 PASS, zero failures/errors/skips.
+Resolver: RESOLVED_CONTEXT, diagnostics=[]; STATION_COMPLETE:
+TRANSITION_ALLOWED, diagnostics=[]. PRE_PUSH remains blocked by prohibition and
+missing current Push authorization; no X2 obligation is due there. POST_PUSH is
+blocked solely by OPEN X2-POST-PUSH. PRE_CLOSURE also retains O28 invalid proof,
+release/governance identity, synchronization and terminal observation requirements.
+The earlier working-tree git diff --check passed. The staged raw check is FAIL;
+the artifact-specific reconciliation below does not make that raw check PASS.
+Independent baseline and historical-contract comparison,
+approval/disposition/endpoint seals, R, no X2 evidence reuse and active dependency
+hashes PASS. Accumulated Delta Sweep and Genericity / Instance-Leak validation PASS:
+only the approved X2 migration, necessary local receipt renewal and persistence
+were changed here; pre-existing unrelated work remains retained. No new runtime
+branch, Resolver mechanism, Gate or closure authority. Local package COMPLETE;
+R&D002 remains ACTIVE and X2 remains OPEN. Repository History completion remains
+at the explicitly unauthorized Commit boundary.
+No Commit, Push, network, Deployment or Production action was performed.
+Future POST_PUSH evidence and the independent O28/closure governance requirements
+remain outside this local package; no closure claim or external observation.
+FINAL / HANDOFF COMMIT: PENDING.
+
+Artifact-specific Protocol §5 integrity reconciliation — PO-authorized 2026-10-04:
+tests/evidence/rnd002-x2-resume-red-20261004.xml is intentionally preserved as
+immutable historical RED evidence at exact SHA256
+01aaeceb0d0d84c093b7e24a1226f785cc7d8ead0680b8289e2c82a494edec33.
+The six pre-existing true trailing-space findings are lines 5, 16, 25, 36, 44, 55;
+424 other staged findings are CRLF-only. Raw git diff --cached --check remains
+FAIL (exit 2), not PASS. Exact-byte preservation is required by the PO's bounded
+§5 reconciliation authorization in attachment
+5b956af6-6432-433e-93dc-f0ef62a0a5b8/Pasted text.txt and existing Protocol §5.
+Normalization is prohibited: it would change this approved evidence identity,
+its recorded hash and the candidate fingerprint. Removing only the trailing
+spaces in memory yields SHA256
+3fa4008693164f6b63984cc692f3e35069f31de09b4493b278d92f5f7b04b900.
+The six artifact findings are reconciled under §5 with unchanged-byte verification;
+the 424 CRLF-only findings remain classified as line-ending check artifacts.
+This is an artifact-specific disposition, not a policy or blanket evidence exception.
+It establishes neither X2 closure nor POST_PUSH/external evidence. X2-POST-PUSH
+remains OPEN with evidence_refs=[]; baseline/pin and Release Subject R are unchanged.
+
 ```json evidence
 {
     "schema_version":  1,
     "evidence":  [
+{
+  "id": "E-DC-FOUNDATION-X2-20261004",
+  "obligation_id": "DC-FOUNDATION",
+  "path": "tests/evidence/rnd002-x2-resume-full-20261004.xml",
+  "sha256": "81c887a21f8793e1a2fba0c33f10a406fa72150c357a3bb54926f16f28d5826c",
+  "proof_class": "LEVEL_1",
+  "scope": "R&D 002",
+  "assertions": [
+    "Foundation focused and negative-control acceptance suite"
+  ],
+  "validation": {
+    "status": "VERIFIED",
+    "kind": "pytest-junit",
+    "minimum_tests": 1110,
+    "validator_ref": "PO-authorized X2 local completion 2026-10-04. Fresh full local regression: 1130 PASS, zero failures/errors/skips. Applicability: approved X2 binding/register migration and native lineage/transition checks affect the existing foundation, continuity and synchronized-regression claims; focused authority suite 169 PASS and full regression cover those boundaries. Existing claims, proof class and dependency keys preserved; actual current bytes fingerprinted. Historical receipts immutable. LEVEL 1 only; no X2 delivery evidence or external proof.",
+    "evidence_sha256": "81c887a21f8793e1a2fba0c33f10a406fa72150c357a3bb54926f16f28d5826c"
+  },
+  "subject_hashes": {
+    "tools/resolve_authority.py": "a764785e40488ad7be9d4326c6e050189f48146a032c8f643fef30d1b35cee05",
+    "AGENTS.md": "09da5795bb5e2fb9b687a657735d423c84619273a5b717275e1318c22d2452af",
+    "tests/test_authority_resolution.py": "1628da8e89171d1709ee5f8e0d015f0a5b4b7a2e59f9a82bb3645cdccb5718fa",
+    "tests/test_transition_guard.py": "163eb6c46265053bd938364b1818a7181a4ec37a05021cb753729a1c37bf15c5",
+    "tests/test_authority_continuity.py": "3802dba5b568a51cae5c0c52e50163f6d3b32dfa668d18fb5bdcae979ac1d821",
+    "tests/test_authority_workflow_contract.py": "853b9cad52d586dc9738ce15bd24f12b669d8506883cc408d4baee63c7d25607",
+    "tests/test_support/design_c_fixture.py": "5e694b5c6fc530173fbe0f265172d4a72cfdf8769d70a696d7d3881857e8ffe1",
+    "tests/test_design_c_repository.py": "652cd18527d11fa42fa09128cc98d6e0bc3ce779ef654166f5be3c74412b59e1",
+    "tests/test_design_c_hardening.py": "68a5791f0401f6f36103bcb0705c40dedc316fcc26aaf40d34c9df36e3b76114",
+    "docs/03-ניהול-הפיתוח-ההנדסי/decision-bindings.json": "478d5ea0d4938b8f8d37221b249e9c64d2c52ee404b4ee8120f1b4f9d2d739a4",
+    "docs/03-ניהול-הפיתוח-ההנדסי/obligation-coverage-baseline.json": "872509619f0e55fec4901c0a2a29e369302bff4e2e81553ea3ab9367603cced2"
+  }
+},
+{
+  "id": "E-DC-CONTINUITY-X2-20261004",
+  "obligation_id": "DC-CONTINUITY",
+  "path": "tests/evidence/rnd002-x2-resume-full-20261004.xml",
+  "sha256": "81c887a21f8793e1a2fba0c33f10a406fa72150c357a3bb54926f16f28d5826c",
+  "proof_class": "LEVEL_1",
+  "scope": "R&D 002",
+  "assertions": [
+    "Native repository continuity and same-station persistence replay"
+  ],
+  "validation": {
+    "status": "VERIFIED",
+    "kind": "pytest-junit",
+    "minimum_tests": 1110,
+    "validator_ref": "PO-authorized X2 local completion 2026-10-04. Fresh full local regression: 1130 PASS, zero failures/errors/skips. Applicability: approved X2 binding/register migration and native lineage/transition checks affect the existing foundation, continuity and synchronized-regression claims; focused authority suite 169 PASS and full regression cover those boundaries. Existing claims, proof class and dependency keys preserved; actual current bytes fingerprinted. Historical receipts immutable. LEVEL 1 only; no X2 delivery evidence or external proof.",
+    "evidence_sha256": "81c887a21f8793e1a2fba0c33f10a406fa72150c357a3bb54926f16f28d5826c"
+  },
+  "subject_hashes": {
+    "tools/resolve_authority.py": "a764785e40488ad7be9d4326c6e050189f48146a032c8f643fef30d1b35cee05",
+    "AGENTS.md": "09da5795bb5e2fb9b687a657735d423c84619273a5b717275e1318c22d2452af",
+    "tests/test_authority_resolution.py": "1628da8e89171d1709ee5f8e0d015f0a5b4b7a2e59f9a82bb3645cdccb5718fa",
+    "tests/test_transition_guard.py": "163eb6c46265053bd938364b1818a7181a4ec37a05021cb753729a1c37bf15c5",
+    "tests/test_authority_continuity.py": "3802dba5b568a51cae5c0c52e50163f6d3b32dfa668d18fb5bdcae979ac1d821",
+    "tests/test_authority_workflow_contract.py": "853b9cad52d586dc9738ce15bd24f12b669d8506883cc408d4baee63c7d25607",
+    "tests/test_support/design_c_fixture.py": "5e694b5c6fc530173fbe0f265172d4a72cfdf8769d70a696d7d3881857e8ffe1",
+    "tests/test_design_c_repository.py": "652cd18527d11fa42fa09128cc98d6e0bc3ce779ef654166f5be3c74412b59e1",
+    "tests/test_design_c_hardening.py": "68a5791f0401f6f36103bcb0705c40dedc316fcc26aaf40d34c9df36e3b76114",
+    "docs/03-ניהול-הפיתוח-ההנדסי/decision-bindings.json": "478d5ea0d4938b8f8d37221b249e9c64d2c52ee404b4ee8120f1b4f9d2d739a4",
+    "docs/03-ניהול-הפיתוח-ההנדסי/obligation-coverage-baseline.json": "872509619f0e55fec4901c0a2a29e369302bff4e2e81553ea3ab9367603cced2"
+  }
+},
+{
+  "id": "E-DC-REGRESSION-X2-20261004",
+  "obligation_id": "DC-REGRESSION",
+  "path": "tests/evidence/rnd002-x2-resume-full-20261004.xml",
+  "sha256": "81c887a21f8793e1a2fba0c33f10a406fa72150c357a3bb54926f16f28d5826c",
+  "proof_class": "LEVEL_1",
+  "scope": "R&D 002",
+  "assertions": [
+    "Full local regression on synchronized foundation"
+  ],
+  "validation": {
+    "status": "VERIFIED",
+    "kind": "pytest-junit",
+    "minimum_tests": 1110,
+    "validator_ref": "PO-authorized X2 local completion 2026-10-04. Fresh full local regression: 1130 PASS, zero failures/errors/skips. Applicability: approved X2 binding/register migration and native lineage/transition checks affect the existing foundation, continuity and synchronized-regression claims; focused authority suite 169 PASS and full regression cover those boundaries. Existing claims, proof class and dependency keys preserved; actual current bytes fingerprinted. Historical receipts immutable. LEVEL 1 only; no X2 delivery evidence or external proof.",
+    "evidence_sha256": "81c887a21f8793e1a2fba0c33f10a406fa72150c357a3bb54926f16f28d5826c"
+  },
+  "subject_hashes": {
+    "tools/resolve_authority.py": "a764785e40488ad7be9d4326c6e050189f48146a032c8f643fef30d1b35cee05",
+    "AGENTS.md": "09da5795bb5e2fb9b687a657735d423c84619273a5b717275e1318c22d2452af",
+    "tests/test_authority_resolution.py": "1628da8e89171d1709ee5f8e0d015f0a5b4b7a2e59f9a82bb3645cdccb5718fa",
+    "tests/test_transition_guard.py": "163eb6c46265053bd938364b1818a7181a4ec37a05021cb753729a1c37bf15c5",
+    "tests/test_authority_continuity.py": "3802dba5b568a51cae5c0c52e50163f6d3b32dfa668d18fb5bdcae979ac1d821",
+    "tests/test_authority_workflow_contract.py": "853b9cad52d586dc9738ce15bd24f12b669d8506883cc408d4baee63c7d25607",
+    "tests/test_support/design_c_fixture.py": "5e694b5c6fc530173fbe0f265172d4a72cfdf8769d70a696d7d3881857e8ffe1",
+    "tests/test_design_c_repository.py": "652cd18527d11fa42fa09128cc98d6e0bc3ce779ef654166f5be3c74412b59e1",
+    "tests/test_design_c_hardening.py": "68a5791f0401f6f36103bcb0705c40dedc316fcc26aaf40d34c9df36e3b76114",
+    "docs/03-ניהול-הפיתוח-ההנדסי/decision-bindings.json": "478d5ea0d4938b8f8d37221b249e9c64d2c52ee404b4ee8120f1b4f9d2d739a4",
+    "docs/03-ניהול-הפיתוח-ההנדסי/obligation-coverage-baseline.json": "872509619f0e55fec4901c0a2a29e369302bff4e2e81553ea3ab9367603cced2"
+  }
+},
                      {
                          "id":  "E-DC-FOUNDATION",
                          "obligation_id":  "DC-FOUNDATION",
@@ -803,8 +971,146 @@ RED NOT RUN. GREEN HAS NOT STARTED. No external WDS retry or Git delivery.
                          "modules/telegram_sender.py": "3aa18686436e79db6041f6e6e96e5046f88ca0dc782509a5f236f6e597e017be"
                        }
                      }
+                     ,
+                     {
+                       "id": "E-O28-RENEWAL-20260930",
+                       "obligation_id": "O28",
+                       "path": "docs/05-אבטחת-איכות-אימות-ותיקוף/evidence/component-evolution-20260927/focused.xml",
+                       "sha256": "805f2a74d7450b5dd7b758b7aa5354dc00af8b84c147e9ca784a4f9b79251521",
+                       "proof_class": "LEVEL_1",
+                       "scope": "R&D 002",
+                       "assertions": [
+                         "Missing or invalid bounds reject with zero prior external consequence"
+                       ],
+                       "validation": {
+                         "status": "VERIFIED",
+                         "kind": "pytest-junit",
+                         "minimum_tests": 98,
+                         "validator_ref": "R&D002 Controlled Renewal candidate preparation, 2026-09-30; PO authorization rnd002-controlled-renewal-20260930. Existing O28 focused artifact retained; applicability established by the PO instruction. Artifact SHA-256 verified; existing JUnit parsed: 98 cases, zero failures/errors/skips. Original claim, acceptance boundary, proof class and dependency keys retained; current dependency bytes fingerprinted. LEVEL 1 only; no test rerun or external proof.",
+                         "evidence_sha256": "805f2a74d7450b5dd7b758b7aa5354dc00af8b84c147e9ca784a4f9b79251521"
+                       },
+                       "subject_hashes": {
+                         "main.py": "fc0697f38d8c9be1aff87aaa08129ffc2e90b1b1c3fa118d4fed77cbb1aa3b01",
+                         "tests/test_main_opening_runtime_integration.py": "27fc1f3f4d76c2fed53a38cf334afc6000bc1290d0e530ac1f8e1fc5d65b58df",
+                         "docs/03-ניהול-הפיתוח-ההנדסי/decision-bindings.json": "8f94c3e5d73dd53ba2f065f92c46b3e6bc43ba2c527d8a6ac856122dcf479e5a",
+                         "docs/03-ניהול-הפיתוח-ההנדסי/obligation-coverage-baseline.json": "872509619f0e55fec4901c0a2a29e369302bff4e2e81553ea3ab9367603cced2"
+                       }
+                     },
+                     {
+                       "id": "E-DC-FOUNDATION-RENEWAL-20260930",
+                       "obligation_id": "DC-FOUNDATION",
+                       "path": "docs/05-אבטחת-איכות-אימות-ותיקוף/evidence/rnd002-post-green-full-regression-20260930-8b346c27.xml",
+                       "sha256": "a54ef44c6193664b68f1266a85b4c8d0ca235660bb49a4f93b60e323f9400560",
+                       "proof_class": "LEVEL_1",
+                       "scope": "R&D 002",
+                       "assertions": [
+                         "Foundation focused and negative-control acceptance suite"
+                       ],
+                       "validation": {
+                         "status": "VERIFIED",
+                         "kind": "pytest-junit",
+                         "minimum_tests": 1110,
+                         "validator_ref": "R&D002 Controlled Renewal candidate preparation, 2026-09-30; PO authorization rnd002-controlled-renewal-20260930. Specified validated post-GREEN full-regression artifact; existing target coverage/applicability affirmed by the PO instruction. Artifact SHA-256 verified; existing JUnit parsed: 1116 cases, zero failures/errors/skips. Original claim, acceptance boundary, proof class and dependency keys retained; current dependency bytes fingerprinted. LEVEL 1 only; no test rerun or external proof.",
+                         "evidence_sha256": "a54ef44c6193664b68f1266a85b4c8d0ca235660bb49a4f93b60e323f9400560"
+                       },
+                       "subject_hashes": {
+                         "tools/resolve_authority.py": "6ef6ede03cfb5c4b0ddac28e1897c65ebb4694a70f912624c0635101c7e96e4f",
+                         "AGENTS.md": "09da5795bb5e2fb9b687a657735d423c84619273a5b717275e1318c22d2452af",
+                         "tests/test_authority_resolution.py": "fa091cc0bd69de5acac72f231a6722b13cfdb6f316ccb4be2a59936709dc851d",
+                         "tests/test_transition_guard.py": "0542db53dcedf96a140741051bdd03c7497040aef480434e0a42b44f1a4f8dda",
+                         "tests/test_authority_continuity.py": "c513acb48d0a4f7de1623dc441a50749eb7c536c88c105c7ef8ec97e517b21b2",
+                         "tests/test_authority_workflow_contract.py": "f87e774612370b6197ace8c2780b3cc9b8415470e7335820edb5e1c6aca7b158",
+                         "tests/test_support/design_c_fixture.py": "f71c9c45d6707de5734246b273a840d0853a7a1492800057180e93963d060e1a",
+                         "tests/test_design_c_repository.py": "a9fff143694a6915f98034a0f863590b83376cd581a4489ce73ed4460bf6fe26",
+                         "tests/test_design_c_hardening.py": "68a5791f0401f6f36103bcb0705c40dedc316fcc26aaf40d34c9df36e3b76114",
+                         "docs/03-ניהול-הפיתוח-ההנדסי/decision-bindings.json": "8f94c3e5d73dd53ba2f065f92c46b3e6bc43ba2c527d8a6ac856122dcf479e5a",
+                         "docs/03-ניהול-הפיתוח-ההנדסי/obligation-coverage-baseline.json": "872509619f0e55fec4901c0a2a29e369302bff4e2e81553ea3ab9367603cced2"
+                       }
+                     },
+                     {
+                       "id": "E-DC-CONTINUITY-RENEWAL-20260930",
+                       "obligation_id": "DC-CONTINUITY",
+                       "path": "docs/05-אבטחת-איכות-אימות-ותיקוף/evidence/rnd002-post-green-full-regression-20260930-8b346c27.xml",
+                       "sha256": "a54ef44c6193664b68f1266a85b4c8d0ca235660bb49a4f93b60e323f9400560",
+                       "proof_class": "LEVEL_1",
+                       "scope": "R&D 002",
+                       "assertions": [
+                         "Native repository continuity and same-station persistence replay"
+                       ],
+                       "validation": {
+                         "status": "VERIFIED",
+                         "kind": "pytest-junit",
+                         "minimum_tests": 1110,
+                         "validator_ref": "R&D002 Controlled Renewal candidate preparation, 2026-09-30; PO authorization rnd002-controlled-renewal-20260930. Specified validated post-GREEN full-regression artifact; existing target coverage/applicability affirmed by the PO instruction. Artifact SHA-256 verified; existing JUnit parsed: 1116 cases, zero failures/errors/skips. Original claim, acceptance boundary, proof class and dependency keys retained; current dependency bytes fingerprinted. LEVEL 1 only; no test rerun or external proof.",
+                         "evidence_sha256": "a54ef44c6193664b68f1266a85b4c8d0ca235660bb49a4f93b60e323f9400560"
+                       },
+                       "subject_hashes": {
+                         "tools/resolve_authority.py": "6ef6ede03cfb5c4b0ddac28e1897c65ebb4694a70f912624c0635101c7e96e4f",
+                         "AGENTS.md": "09da5795bb5e2fb9b687a657735d423c84619273a5b717275e1318c22d2452af",
+                         "tests/test_authority_resolution.py": "fa091cc0bd69de5acac72f231a6722b13cfdb6f316ccb4be2a59936709dc851d",
+                         "tests/test_transition_guard.py": "0542db53dcedf96a140741051bdd03c7497040aef480434e0a42b44f1a4f8dda",
+                         "tests/test_authority_continuity.py": "c513acb48d0a4f7de1623dc441a50749eb7c536c88c105c7ef8ec97e517b21b2",
+                         "tests/test_authority_workflow_contract.py": "f87e774612370b6197ace8c2780b3cc9b8415470e7335820edb5e1c6aca7b158",
+                         "tests/test_support/design_c_fixture.py": "f71c9c45d6707de5734246b273a840d0853a7a1492800057180e93963d060e1a",
+                         "tests/test_design_c_repository.py": "a9fff143694a6915f98034a0f863590b83376cd581a4489ce73ed4460bf6fe26",
+                         "tests/test_design_c_hardening.py": "68a5791f0401f6f36103bcb0705c40dedc316fcc26aaf40d34c9df36e3b76114",
+                         "docs/03-ניהול-הפיתוח-ההנדסי/decision-bindings.json": "8f94c3e5d73dd53ba2f065f92c46b3e6bc43ba2c527d8a6ac856122dcf479e5a",
+                         "docs/03-ניהול-הפיתוח-ההנדסי/obligation-coverage-baseline.json": "872509619f0e55fec4901c0a2a29e369302bff4e2e81553ea3ab9367603cced2"
+                       }
+                     },
+                     {
+                       "id": "E-DC-REGRESSION-RENEWAL-20260930",
+                       "obligation_id": "DC-REGRESSION",
+                       "path": "docs/05-אבטחת-איכות-אימות-ותיקוף/evidence/rnd002-post-green-full-regression-20260930-8b346c27.xml",
+                       "sha256": "a54ef44c6193664b68f1266a85b4c8d0ca235660bb49a4f93b60e323f9400560",
+                       "proof_class": "LEVEL_1",
+                       "scope": "R&D 002",
+                       "assertions": [
+                         "Full local regression on synchronized foundation"
+                       ],
+                       "validation": {
+                         "status": "VERIFIED",
+                         "kind": "pytest-junit",
+                         "minimum_tests": 1110,
+                         "validator_ref": "R&D002 Controlled Renewal candidate preparation, 2026-09-30; PO authorization rnd002-controlled-renewal-20260930. Specified validated post-GREEN full-regression artifact; existing target coverage/applicability affirmed by the PO instruction. Artifact SHA-256 verified; existing JUnit parsed: 1116 cases, zero failures/errors/skips. Original claim, acceptance boundary, proof class and dependency keys retained; current dependency bytes fingerprinted. LEVEL 1 only; no test rerun or external proof.",
+                         "evidence_sha256": "a54ef44c6193664b68f1266a85b4c8d0ca235660bb49a4f93b60e323f9400560"
+                       },
+                       "subject_hashes": {
+                         "tools/resolve_authority.py": "6ef6ede03cfb5c4b0ddac28e1897c65ebb4694a70f912624c0635101c7e96e4f",
+                         "AGENTS.md": "09da5795bb5e2fb9b687a657735d423c84619273a5b717275e1318c22d2452af",
+                         "tests/test_authority_resolution.py": "fa091cc0bd69de5acac72f231a6722b13cfdb6f316ccb4be2a59936709dc851d",
+                         "tests/test_transition_guard.py": "0542db53dcedf96a140741051bdd03c7497040aef480434e0a42b44f1a4f8dda",
+                         "tests/test_authority_continuity.py": "c513acb48d0a4f7de1623dc441a50749eb7c536c88c105c7ef8ec97e517b21b2",
+                         "tests/test_authority_workflow_contract.py": "f87e774612370b6197ace8c2780b3cc9b8415470e7335820edb5e1c6aca7b158",
+                         "tests/test_support/design_c_fixture.py": "f71c9c45d6707de5734246b273a840d0853a7a1492800057180e93963d060e1a",
+                         "tests/test_design_c_repository.py": "a9fff143694a6915f98034a0f863590b83376cd581a4489ce73ed4460bf6fe26",
+                         "tests/test_design_c_hardening.py": "68a5791f0401f6f36103bcb0705c40dedc316fcc26aaf40d34c9df36e3b76114",
+                         "docs/03-ניהול-הפיתוח-ההנדסי/decision-bindings.json": "8f94c3e5d73dd53ba2f065f92c46b3e6bc43ba2c527d8a6ac856122dcf479e5a",
+                         "docs/03-ניהול-הפיתוח-ההנדסי/obligation-coverage-baseline.json": "872509619f0e55fec4901c0a2a29e369302bff4e2e81553ea3ab9367603cced2"
+                       }
+                     }
                  ],
     "approvals":  [
+      {
+        "id": "PO-EV-X2-POST-PUSH-20261004", "issuer": "PRODUCT_OWNER", "action": "SUPERSESSION",
+        "scope": "R&D 002", "action_id": "rnd002-x2-local-completion-20261004",
+        "provenance": "PO explicitly authorized R&D002/X2 RESUME AUTHORIZED LOCAL COMPLETION in the current conversation: B-X2 to B-X2-POST-PUSH and X2 to X2-POST-PUSH using existing SUPERSESSION, preserving historical PRE_PUSH_OR_PROMOTION, successor OPEN with empty evidence, exact candidate matching, unchanged baseline/pin and R=781f0c3d7bf289d4c350120df18483583571a13b. Local operations only; no Commit, Push, network, Deployment or Production. Seal records this concrete authorized migration; it is not an authenticated PO signature.",
+        "disposition_sha256": "94e37e4575f810596c701df1a36ac1afbb0fc539db971a08676ab11ddeb7a3f6"
+      },
+      {
+        "id": "PO-RND002-X2-PO1-GREEN-2026-10-03",
+        "issuer": "PRODUCT_OWNER",
+        "action": "BOUNDED_INTERMEDIATE_GREEN",
+        "scope": "R&D 002",
+        "candidate_sha": null,
+        "action_id": "rnd002-x2-po1-green-20261003",
+        "change_scope_paths": [
+          "docs/03-ניהול-הפיתוח-ההנדסי/החלטות-הנדסיות.md",
+          "docs/03-ניהול-הפיתוח-ההנדסי/decision-bindings.json",
+          "docs/03-ניהול-הפיתוח-ההנדסי/open-obligations.json"
+        ],
+        "provenance": "Product Owner explicitly approved bounded X2 PO-1 GREEN and action identity rnd002-x2-po1-green-20261003 in attachment 1473894b-9268-4c67-8bed-5dc2c6eb2141/Pasted text.txt. Authorization is limited to local bounded GREEN; no Stage, Commit, Push, external action, Deployment, Railway, Production or Closure authorization."
+      },
       {
         "id": "PO-EV-C2-20260927", "issuer": "PRODUCT_OWNER", "action": "SUPERSESSION",
         "scope": "R&D 002", "action_id": "rnd002-component-evolution-20260927",
@@ -822,6 +1128,20 @@ RED NOT RUN. GREEN HAS NOT STARTED. No external WDS retry or Git delivery.
         "scope": "R&D 002", "action_id": "rnd002-component-evolution-20260927",
         "provenance": "PO process-wide continuation attachment 0bacba86-bd03-430c-be24-df6bcef825f9/Pasted text.txt sections C/E/F authorizes explicit X3 migration and lawful association of the preserved 2026-09-25 renewal artifact, with historical E-X3 unchanged and no external replay. This seal records the concrete authorized bounded migration, not a separate PO signature or external approval.",
         "disposition_sha256": "b3137555f801b11204e8d9b05b5c3a68d868f33c506a00863da17786b176fa8d"
+      },
+      {
+        "id": "PO-RND002-CONTROLLED-RENEWAL-2026-09-30",
+        "issuer": "PRODUCT_OWNER",
+        "action": "LOCAL_DIAGNOSIS",
+        "scope": "R&D 002",
+        "candidate_sha": null,
+        "action_id": "rnd002-controlled-renewal-20260930",
+        "provenance": "Explicit Product Owner instruction R&D002 — RECORD PO CONTROLLED RENEWAL AUTHORIZATION, supplied in-session on 2026-09-30, approves Controlled Renewal authorization for exactly O28, DC-FOUNDATION, DC-CONTINUITY and DC-REGRESSION, limited to the three change_scope_paths below. This instruction authorizes recording this approval and linking it from the current R&D002 station only; it does not authorize executing Controlled Renewal in this task, modifying the subject files, issuing/renewing/activating/validating receipts, or claiming artifact reuse, applicability or RENEWAL_REQUIRED. Historical approvals and evidence remain unchanged. No tests, bootstrap, R1-R12, Stage, Commit, Push, external, Railway or Production actions are authorized.",
+        "change_scope_paths": [
+          "docs/03-ניהול-הפיתוח-ההנדסי/decision-bindings.json",
+          "tools/resolve_authority.py",
+          "tests/test_design_c_repository.py"
+        ]
       },
       {
         "id": "PO-COMPONENT-EVOLUTION-PRECOMMIT-20260927", "issuer": "PRODUCT_OWNER",
@@ -910,6 +1230,32 @@ RED NOT RUN. GREEN HAS NOT STARTED. No external WDS retry or Git delivery.
                   ],
     "dispositions": [
       {
+        "id": "EV-X2-POST-PUSH-20261004", "kind": "SUPERSESSION",
+        "from": "B-X2", "to": "B-X2-POST-PUSH", "scope": "R&D 002",
+        "authority_ref": "docs/03-ניהול-הפיתוח-ההנדסי/החלטות-הנדסיות.md#Required-before transitions",
+        "approval_ref": "PO-EV-X2-POST-PUSH-20261004",
+        "evolution": {
+          "contracts": {
+            "B-X2": "50d52aaa903b746350bdae6825567067907a92367ed5098934e7761595152b2d",
+            "B-X2-POST-PUSH": "6fde41c0d825f91060f23c4cd72ba57698884ab6fc1be0532ce35ed6101b66a4"
+          },
+          "consumers": {
+            "B-X2": ["Acquisition", "Opening", "Telegram", "WorkEvidence"],
+            "B-X2-POST-PUSH": ["Acquisition", "Opening", "Telegram", "WorkEvidence"]
+          },
+          "obligations": [{
+            "from": "X2", "to": "X2-POST-PUSH",
+            "contracts": {
+              "X2": "f45a1aa15b98e37924749228774a975cb911d26c401f4f37d66e533a5ca14e88",
+              "X2-POST-PUSH": "f79f8f2eff775491fc96971dd427dd2845a19ef460b0540c1463a186e8f3732d"
+            },
+            "historical_status": "OPEN", "historical_evidence_refs": [],
+            "evidence_policy": "RENEWAL_REQUIRED", "reusable_evidence": {},
+            "reason": "PO-authorized POST_PUSH release-delivery supersession for R=781f0c3d7bf289d4c350120df18483583571a13b; historical PRE_PUSH_OR_PROMOTION retained; no predecessor evidence reuse; Forward Consequence remains PRE_PUSH."
+          }]
+        }
+      },
+      {
         "id": "EV-C2-20260927", "kind": "SUPERSESSION",
         "from": "B-C2", "to": "B-C2-REUSABLE", "scope": "R&D 002",
         "authority_ref": "docs/03-ניהול-הפיתוח-ההנדסי/החלטות-הנדסיות.md#Material Contract Evolution",
@@ -993,6 +1339,39 @@ RED NOT RUN. GREEN HAS NOT STARTED. No external WDS retry or Git delivery.
     ]
 }
 ```
+
+
+## Controlled Renewal issuance - 2026-09-30
+
+PO authorization: rnd002-controlled-renewal-20260930; explicit in-session
+instruction R&D002 — ISSUE FOUR CONTROLLED RENEWAL RECEIPTS.
+Exactly four new receipts are issued in the existing evidence registry:
+E-O28-RENEWAL-20260930, E-DC-FOUNDATION-RENEWAL-20260930,
+E-DC-CONTINUITY-RENEWAL-20260930 and E-DC-REGRESSION-RENEWAL-20260930.
+Their predecessor receipts remain immutable historical records.
+
+Pre-write canonical LOCAL_DIAGNOSIS with the matched approval classified all
+four targets RENEWAL_REQUIRED, with no independent blocker or AUTHORITY_STALE.
+Each reconstructed candidate passed canonical proof_valid() in memory against
+current dependency bytes. Claims, acceptance boundaries, proof classes,
+obligation/scope identities and dependency-key sets are unchanged.
+The PO-established artifact applicability is retained; no tests were rerun.
+O28 uses the existing focused artifact (98 cases); the three DC receipts use
+the specified post-GREEN full-regression artifact (1116 cases). Both existing
+JUnit artifacts were parsed with zero failures, errors or skips.
+
+Durable copies:
+- [O28 focused artifact](../05-אבטחת-איכות-אימות-ותיקוף/evidence/component-evolution-20260927/focused.xml);
+  SHA256 805f2a74d7450b5dd7b758b7aa5354dc00af8b84c147e9ca784a4f9b79251521.
+- [Post-GREEN full regression](../05-אבטחת-איכות-אימות-ותיקוף/evidence/rnd002-post-green-full-regression-20260930-8b346c27.xml);
+  SHA256 a54ef44c6193664b68f1266a85b4c8d0ca235660bb49a4f93b60e323f9400560.
+
+The four active obligation evidence references and the three authorized current
+Chronicle proof references point to this issuance. Baseline remains unchanged:
+872509619f0e55fec4901c0a2a29e369302bff4e2e81553ea3ab9367603cced2.
+Post-write canonical consumption verification is pending.
+LEVEL 1 — LOCAL / CONTRACT PROOF only. No WDS execution, external action,
+Production change, bootstrap, R1-R12, Git delivery or R&D002 Closure is claimed.
 
 
 ## Component Evolution - 2026-09-27
