@@ -35,6 +35,9 @@ BOUNDARIES = {
 PO_ACTIONS = {"PRE_COMMIT", "PRE_PUSH_OR_PROMOTION", "PRE_EXTERNAL_WORK",
               "PRE_CANARY", "PRE_PRODUCTION"}
 INTERMEDIATE_GREEN = "BOUNDED_INTERMEDIATE_GREEN"
+GOVERNANCE_APPLICABILITY = "GOVERNANCE-REVISION-APPLICABILITY"
+APPLICABILITY_ASSESSMENT = "Governance Revision applicability assessment"
+APPLICABILITY_VERDICT = "Governance Revision applicability: "
 
 
 def hashed(data):
@@ -343,6 +346,59 @@ class Resolver:
             self.problem("EVIDENCE_INVALID", oid)
         return valid
 
+    def governance_applicability(self, obligations):
+        """Consume representation A; invalid applicability never becomes permission.
+
+        Receipt validity/provenance uses the existing trusted review boundary.
+        This checks declared review-basis coverage, not the reviewer's reasoning.
+        """
+        try:
+            obligation = obligations[GOVERNANCE_APPLICABILITY]
+            binding = self.bindings[obligation["binding_ref"]]
+            require(obligation["scope"] == self.request.get("scope"))
+            require(obligation["status"] == "CLOSED")
+            require(obligation["required_before"] == ["PRE_CLOSURE"])
+            require(len(binding["obligations"]) == 1)
+            requirement = binding["obligations"][0]
+            require(APPLICABILITY_ASSESSMENT in requirement["required_assertions"])
+            require(requirement.get("candidate_match_required") is True)
+            require(requirement.get("fresh_for_action") is True)
+            require(len(obligation["evidence_refs"]) == 1)
+            require(self.proof_valid(obligation, requirement))
+            receipt = self.evidence[obligation["evidence_refs"][0]]
+            require(receipt.get("candidate_sha") == self.request.get("release_subject_sha"))
+            require(bool(receipt.get("candidate_sha")) and bool(receipt.get("action_id")))
+            verdicts = [assertion[len(APPLICABILITY_VERDICT):]
+                        for assertion in receipt["assertions"]
+                        if assertion.startswith(APPLICABILITY_VERDICT)]
+            require(len(verdicts) == 1 and verdicts[0] in {"REQUIRED", "NOT_REQUIRED"})
+            links = [outcome for outcome in self.station.get("material_outcomes", [])
+                     if outcome.get("kind") == "PROOF_EVIDENCE"
+                     and outcome.get("obligation_ref") == GOVERNANCE_APPLICABILITY]
+            require(len(links) == 1)
+            link = links[0]
+            require(link.get("classification") == "CLASSIFIED_AND_PERSISTED")
+            require(link.get("evidence_ref") == receipt["id"])
+            require(link.get("artifact_ref") == receipt["path"])
+            require(self.reference_exists(link.get("traceability_ref", "")))
+            review = self.read(receipt["path"])
+            basis = re.findall(r"^Assessed basis: (\S+)\s*$", review, re.M)
+            require(bool(basis) and len(basis) == len(set(basis)))
+            require(re.findall(r"^Closure target: (\S+)\s*$", review, re.M)
+                    == [receipt["candidate_sha"]])
+            require(re.findall(r"^Action: (\S+)\s*$", review, re.M)
+                    == [receipt["action_id"]])
+            assessed_paths = {self.path(path) for path in
+                              (OBLIGATIONS, self.request["station_ref"], *basis)}
+            dependency_paths = {self.path(path)
+                                for path in receipt.get("subject_hashes", {})}
+            require(assessed_paths.issubset(dependency_paths))
+            require(self.station.get("governance_revision_pending") in (None, False))
+            return verdicts[0]
+        except (OSError, KeyError, TypeError, ValueError, AttributeError):
+            self.problem("GOVERNANCE_REVISION_APPLICABILITY_UNKNOWN", GOVERNANCE_APPLICABILITY)
+            return "UNKNOWN"
+
     def classify_renewal(self, bindings, obligations, components):
         """Classify eligible staleness only; proof_valid still returns False."""
         if any(d["code"] not in {"EVIDENCE_INVALID", "OBLIGATION_DUE"}
@@ -588,19 +644,24 @@ class Resolver:
         self.continuity(obligations)
         self.persistence(obligations, paths)
         if self.request.get("mode") == "transition" and action == "PRE_CLOSURE":
+            applicability = self.governance_applicability(obligations)
             release_subject_sha = self.request.get("release_subject_sha")
             governance_revision_sha = self.request.get("governance_revision_sha")
             station_release_subject_sha = self.station.get("release_subject_sha")
             station_governance_revision_sha = self.station.get("governance_revision_sha")
 
+            separate_revision = (applicability != "NOT_REQUIRED"
+                                 or bool(governance_revision_sha)
+                                 or bool(station_governance_revision_sha))
             if (
                 not release_subject_sha
-                or not governance_revision_sha
                 or not station_release_subject_sha
-                or not station_governance_revision_sha
                 or release_subject_sha != station_release_subject_sha
-                or governance_revision_sha != station_governance_revision_sha
-                or release_subject_sha == governance_revision_sha
+                or (separate_revision and (
+                    not governance_revision_sha
+                    or not station_governance_revision_sha
+                    or governance_revision_sha != station_governance_revision_sha
+                    or release_subject_sha == governance_revision_sha))
             ):
                 self.problem("RELEASE_GOVERNANCE_IDENTITY_REQUIRED", action)
 

@@ -152,9 +152,11 @@ def test_red_q_orphaned_obligation_fails(case):
     rejected(case.run(), "ORPHANED_OBLIGATION", "O21")
 
 
-def test_red_s_valid_proof_and_approval_allow_transition_not_closure(case):
-    case.satisfy_all()
-    case.transition("PRE_CLOSURE")
+def test_red_s_valid_proof_and_approval_allow_transition_not_closure(tmp_path):
+    from tests.test_design_c_repository import _governance_applicability_red_case
+
+    case, _ = _governance_applicability_red_case(
+        tmp_path, verdict="REQUIRED", separate_revision=True, selected_proof=True)
     # TEST ONLY identities: no real Governance Revision is established.
     release_subject = "a" * 40
     governance_revision = "b" * 40

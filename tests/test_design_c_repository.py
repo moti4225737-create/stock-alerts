@@ -526,11 +526,42 @@ def test_native_x2_approved_supersession_preserves_history_and_release_contract(
         "Validated POST_PUSH release-delivery evidence for Release Subject R",
     ]
     assert requirement["required_before"] == ["POST_PUSH"]
-    assert by_obligation["X2-POST-PUSH"]["status"] == "OPEN"
+    assert by_obligation["X2-POST-PUSH"]["status"] == "SUPERSEDED"
     assert by_obligation["X2-POST-PUSH"]["evidence_refs"] == []
+    assert requirement["fresh_for_action"] is True
+    blocks = re.findall(r"```json evidence\s*\n(.*?)\n```",
+                        (ROOT / TRACE).read_text(encoding="utf-8-sig"), re.S)
+    assert len(blocks) == 1
+    by_evolution = {d["id"]: d for d in json.loads(blocks[0])["dispositions"]}
+    initial = by_evolution[old["supersession_ref"]]
+    corrective = by_evolution[new["supersession_ref"]]
+    predecessor = by_obligation["X2-POST-PUSH"]
+    successor = by_obligation["X2-POST-PUSH-CORRECTIVE"]
+    assert new["supersession_ref"] == predecessor["disposition_ref"]
+    assert corrective["kind"] == "SUPERSESSION"
+    assert corrective["from"] == new["id"] == predecessor["binding_ref"]
+    assert corrective["to"] == "B-X2-POST-PUSH-CORRECTIVE" == successor["binding_ref"]
+    migrations = [m for m in corrective["evolution"]["obligations"]
+                  if m["from"] == predecessor["obligation_id"]]
+    assert len(migrations) == 1
+    migration = migrations[0]
+    assert migration["to"] == successor["obligation_id"]
+    assert migration["historical_status"] == "OPEN"
+    assert migration["historical_evidence_refs"] == predecessor["evidence_refs"] == []
+    previous_migrations = [m for m in initial["evolution"]["obligations"]
+                           if m["to"] == predecessor["obligation_id"]]
+    assert len(previous_migrations) == 1
+    assert (initial["evolution"]["contracts"][new["id"]]
+            == corrective["evolution"]["contracts"][new["id"]])
+    assert (previous_migrations[0]["contracts"][predecessor["obligation_id"]]
+            == migration["contracts"][predecessor["obligation_id"]])
+    assert successor["status"] == "OPEN"
+    assert successor["evidence_refs"] == []
+    assert migration["evidence_policy"] == "RENEWAL_REQUIRED"
+    assert migration["reusable_evidence"] == {}
     report = native("POST_PUSH")
-    assert report["x2"]["obligation_id"] == "X2-POST-PUSH"
-    assert {"code": "OBLIGATION_DUE", "subject": "X2-POST-PUSH"} in report["diagnostics"]
+    assert report["x2"]["obligation_id"] == "X2-POST-PUSH-CORRECTIVE"
+    assert {"code": "OBLIGATION_DUE", "subject": "X2-POST-PUSH-CORRECTIVE"} in report["diagnostics"]
     assert not any(d["code"] in {"BASELINE_COVERAGE", "EVOLUTION_INVALID"} for d in report["diagnostics"])
 
 
@@ -560,7 +591,8 @@ def test_native_context_reconstructs_current_station_with_honest_evidence_status
             "WDS-RECOVERY-DIAGNOSIS", "WDS-RECOVERY-REVALIDATION-PENDING"}.issubset(
         {outcome["id"] for outcome in report["material_outcomes"]})
     assert {control["id"] for control in report["controls"]} == {
-        "B-DC-FOUNDATION", "B-DC-CONTINUITY", "B-DC-REGRESSION"}
+        "B-DC-FOUNDATION", "B-DC-CONTINUITY", "B-DC-REGRESSION",
+        "B-GOVERNANCE-REVISION-APPLICABILITY"}
 
 
 @pytest.mark.parametrize("action,x2_required", [
@@ -785,9 +817,12 @@ def test_controlled_renewal_required_never_satisfies_foundation_green(controlled
         "DC-FOUNDATION", "DC-CONTINUITY", "DC-REGRESSION"}
 
 def test_r5_release_subject_identity_is_independent_of_governance_revision(tmp_path):
-    case = RepositoryCase(tmp_path)
-    case.satisfy_all()
-    case.transition("PRE_CLOSURE")
+    case, _ = _governance_applicability_red_case(tmp_path, verdict="REQUIRED")
+    for context in (case.station, case.request):
+        context.pop("release_subject_sha")
+        context.pop("governance_revision_sha")
+    case.request.pop("governance_sync_proof")
+    case.request.pop("governance_terminal_observation")
 
     assert "release_subject_sha" not in case.request
     assert "governance_revision_sha" not in case.request
@@ -799,6 +834,8 @@ def test_r5_release_subject_identity_is_independent_of_governance_revision(tmp_p
         "and Governance Revision G have separate explicit identities",
         report,
     )
+    assert any(d["code"] == "RELEASE_GOVERNANCE_IDENTITY_REQUIRED"
+               for d in report["diagnostics"])
 
     release_subject = "a" * 40
     governance_revision = "b" * 40
@@ -831,10 +868,12 @@ def test_r5_release_subject_identity_is_independent_of_governance_revision(tmp_p
         "separate explicit identities",
         report,
     )
+    assert any(d["code"] == "RELEASE_GOVERNANCE_IDENTITY_REQUIRED"
+               for d in report["diagnostics"])
 def test_r7_closure_requires_final_governance_synchronization(tmp_path):
-    case = RepositoryCase(tmp_path)
-    case.satisfy_all()
-    case.transition("PRE_CLOSURE")
+    case, _ = _governance_applicability_red_case(tmp_path, verdict="REQUIRED")
+    case.request.pop("governance_sync_proof")
+    case.request.pop("governance_terminal_observation")
 
     release_subject = "a" * 40
     governance_revision = "b" * 40
@@ -853,6 +892,8 @@ def test_r7_closure_requires_final_governance_synchronization(tmp_path):
         "Revision synchronization proof",
         report,
     )
+    assert any(d["code"] == "GOVERNANCE_SYNCHRONIZATION_REQUIRED"
+               for d in report["diagnostics"])
 
     case.request["governance_sync_proof"] = {
         "governance_revision_sha": governance_revision,
@@ -877,6 +918,8 @@ def test_r7_closure_requires_final_governance_synchronization(tmp_path):
         "Governance Revision G",
         report,
     )
+    assert any(d["code"] == "GOVERNANCE_SYNCHRONIZATION_REQUIRED"
+               for d in report["diagnostics"])
 
 def test_x2_supersession_returns_open_active_terminal(tmp_path):
     """TEST ONLY accepted evolution must return the active X2 revision."""
@@ -962,4 +1005,167 @@ def test_x2_is_not_due_at_pre_push_after_po1_boundary_separation():
         "PO-1 separates PRE_PUSH authorization from X2 POST_PUSH delivery proof; "
         "X2 must not be due at PRE_PUSH_OR_PROMOTION",
         report,
+    )
+
+
+def _governance_applicability_red_case(tmp_path, *, verdict="REQUIRED",
+                                     separate_revision=True, selected_proof=True):
+    """TEST ONLY representation A; no new request/station/schema fields.
+
+    Contract identity: GOVERNANCE-REVISION-APPLICABILITY. Its required assertion
+    establishes a completed assessment; one additional REQUIRED/NOT_REQUIRED
+    assertion establishes applicability, independently of fulfillment.
+    """
+    oid = "GOVERNANCE-REVISION-APPLICABILITY"
+    base = ("O21", "O22", "O26", "O28", "C2", "X1", "X2", "X3")
+    case = RepositoryCase(tmp_path, obligation_ids=base + ((oid,) if selected_proof else ()))
+    assessment = "Governance Revision applicability assessment"
+    if selected_proof:
+        requirement = case.binding("B-" + oid)["obligations"][0]
+        requirement.update(required_before=["PRE_CLOSURE"],
+                           required_assertions=[assessment],
+                           candidate_match_required=True, fresh_for_action=True)
+        case.binding("B-" + oid)["applies_to"]["always"] = True
+        case.obligation(oid)["required_before"] = ["PRE_CLOSURE"]
+        # Establish the synthetic approved contract once, before proof issuance.
+        case.pin_baseline()
+    case.satisfy_all()
+    case.transition("PRE_CLOSURE")
+    release = case.request["candidate_sha"]
+    case.station["release_subject_sha"] = release
+    case.request["release_subject_sha"] = release
+    if separate_revision:
+        governance = "b" * 40
+        for context in (case.station, case.request):
+            context["governance_revision_sha"] = governance
+        case.request["governance_sync_proof"] = {
+            "governance_revision_sha": governance, "synchronized": True,
+        }
+        case.request["governance_terminal_observation"] = {
+            "governance_revision_sha": governance,
+            "terminal": True, "creates_governance_revision": False,
+        }
+    if not selected_proof:
+        return case, None
+    case.satisfy(oid)
+    receipt = case.evidence["evidence"][-1]
+    receipt["assertions"] = [assessment,
+                             "Governance Revision applicability: " + verdict]
+    basis = "evidence/governance-persistence-basis.txt"
+    case.write(basis, "TEST ONLY complete assessed substantive facts and persistence basis.\n")
+    review = (
+        "TEST ONLY trusted affirmative applicability review: " + verdict + "\n"
+        "Closure target: " + release + "\n"
+        "Action: " + case.request["action_id"] + "\n"
+        "Assessed basis: " + basis + "\n"
+        "Required governance work remains separate from this assessment.\n"
+        if verdict == "REQUIRED" else
+        "TEST ONLY trusted affirmative applicability review: NOT_REQUIRED\n"
+        "Closure target: " + release + "\n"
+        "Action: " + case.request["action_id"] + "\n"
+        "Assessed basis: " + basis + "\n"
+        "Reviewed substantive governance facts are durably accounted for.\n"
+        "No separate governance revision is required or pending for this basis.\n"
+    )
+    case.write(receipt["path"], review)
+    receipt["sha256"] = digest(review)
+    receipt["validation"]["evidence_sha256"] = digest(review)
+    receipt["validation"]["validator_ref"] = "TEST ONLY authorized applicability reviewer"
+    case.outcome("PROOF_EVIDENCE", classification="CLASSIFIED_AND_PERSISTED",
+                 obligation_ref=oid, evidence_ref=receipt["id"],
+                 traceability_ref=case.request["traceability_ref"] + "#TEST ONLY Traceability",
+                 artifact_ref=receipt["path"])
+    case.flush()
+    # References are stable before fingerprinting. Never hash the Traceability
+    # container that carries this receipt: that would introduce a self-hash.
+    receipt["subject_hashes"] = {
+        path: sha256((case.root / path).read_bytes()).hexdigest()
+        for path in (case.request["station_ref"],
+                     str(Path(BASELINE).with_name("open-obligations.json")), basis)
+    }
+    return case, receipt
+
+
+@pytest.mark.parametrize("verdict,separate_revision", [
+    ("NOT_REQUIRED", False), ("REQUIRED", True),
+])
+def test_governance_applicability_red_valid_selected_proof(
+        tmp_path, verdict, separate_revision):
+    """R1/R2/R9: affirmative proof, independent fulfillment, no self-hash."""
+    case, receipt = _governance_applicability_red_case(
+        tmp_path, verdict=verdict, separate_revision=separate_revision)
+    original = deepcopy(receipt)
+    baseline = case.baseline.read_bytes()
+    assert case.request["traceability_ref"] not in receipt["subject_hashes"]
+    report = case.run()
+    if verdict == "NOT_REQUIRED":
+        oid = "GOVERNANCE-REVISION-APPLICABILITY"
+        assert not any(d["subject"] == oid for d in report["diagnostics"]), (
+            "The selected affirmative applicability proof must remain valid/current",
+            report["diagnostics"],
+        )
+        assert receipt == original and case.baseline.read_bytes() == baseline
+        assert not any(d["code"] == "RELEASE_GOVERNANCE_IDENTITY_REQUIRED"
+                       for d in report["diagnostics"]), (
+            "Valid NOT_REQUIRED must accept applicability without demanding an absent revision",
+            report["diagnostics"],
+        )
+        # This fixture deliberately supplies no independent synchronization or
+        # terminal observation. Accepting applicability must not waive either.
+        assert {"GOVERNANCE_SYNCHRONIZATION_REQUIRED",
+                "TERMINAL_GOVERNANCE_OBSERVATION_REQUIRED"}.issubset(
+                    {d["code"] for d in report["diagnostics"]})
+        assert report["status"] == "TRANSITION_BLOCKED"
+    else:
+        assert report["status"] == "TRANSITION_ALLOWED", (
+            "Valid selected applicability proof must not manufacture a governance revision",
+            report["diagnostics"],
+        )
+        assert report["diagnostics"] == []
+    assert receipt == original and case.baseline.read_bytes() == baseline
+
+
+@pytest.mark.parametrize("fault", [
+    "conflicting_verdicts", "missing_verdict", "pending_required_work",
+    "omitted_assessed_dependency", "missing_station_link",
+])
+def test_governance_applicability_red_invalid_semantic_proof(tmp_path, fault):
+    """R3/R5/R6/R8: ordinary proof validity is not semantic applicability."""
+    case, receipt = _governance_applicability_red_case(tmp_path)
+    control = case.run()
+    assert control["status"] == "TRANSITION_ALLOWED", control["diagnostics"]
+    if fault == "conflicting_verdicts":
+        receipt["assertions"].append("Governance Revision applicability: NOT_REQUIRED")
+    elif fault == "missing_verdict":
+        receipt["assertions"] = ["Governance Revision applicability assessment"]
+    elif fault == "pending_required_work":
+        case.station["governance_revision_pending"] = True
+        case.flush()
+        # Current-byte proof does not excuse contradictory pending fulfillment.
+        path = case.request["station_ref"]
+        receipt["subject_hashes"][path] = sha256((case.root / path).read_bytes()).hexdigest()
+    elif fault == "omitted_assessed_dependency":
+        receipt["subject_hashes"].pop("evidence/governance-persistence-basis.txt")
+    else:
+        case.station["material_outcomes"] = []
+        case.station["outcome_classification"] = "NO_MATERIAL_OUTCOME"
+        case.flush()
+        path = case.request["station_ref"]
+        receipt["subject_hashes"][path] = sha256((case.root / path).read_bytes()).hexdigest()
+    report = case.run()
+    assert report["status"] == "TRANSITION_BLOCKED", (
+        "Applicability must fail closed for " + fault, report["diagnostics"],
+    )
+
+
+@pytest.mark.parametrize("request_claim", [False, True])
+def test_governance_applicability_red_requires_durable_selected_proof(tmp_path, request_claim):
+    """R4/R8: even otherwise fulfilled Closure requires durable applicability."""
+    case, _ = _governance_applicability_red_case(tmp_path, selected_proof=False)
+    if request_claim:
+        case.request["task"] += " TEST ONLY request claim: Governance Revision applicability: NOT_REQUIRED"
+    report = case.run()
+    assert report["status"] == "TRANSITION_BLOCKED", (
+        "No durable selected applicability proof; request prose is not authority",
+        report["diagnostics"],
     )

@@ -241,7 +241,7 @@
       "authority": {
         "path": "docs/03-ניהול-הפיתוח-ההנדסי/החלטות-הנדסיות.md",
         "anchor": "## Required-before transitions",
-        "digest": "5cf422185b73a41014630cd758c0d1533c3963268160ac93e37d350600fffb3e"
+        "digest": "67d8a70ce03f42d823d7edba801ffc8816dc4d9bc4cb409c65a9396026ae2909"
       },
       "applies_to": {
         "components": [
@@ -383,21 +383,79 @@
       "authority": {
         "path": "docs/03-ניהול-הפיתוח-ההנדסי/החלטות-הנדסיות.md",
         "anchor": "## Required-before transitions",
-        "digest": "5cf422185b73a41014630cd758c0d1533c3963268160ac93e37d350600fffb3e"
+        "digest": "9cc56e1ad52f66b7bceda6ff6f8614f1f693c790c8fa5baf90f1a36da7d64e49"
       },
-      "applies_to": {"components": ["runtime"], "operations": ["diagnosis", "transition"], "always": false},
-      "obligations": [{
-        "id": "proof-X2-POST-PUSH", "required_follow_up": true, "scope": "R&D 002",
-        "required_before": ["POST_PUSH"], "proof_class": "LEVEL_2", "enforcement": "HARD",
-        "required_assertions": [
-          "Authorized Push of Release Subject R",
-          "Authoritative remote SHA equals Release Subject R",
-          "Required CI runs on exact Release Subject R",
-          "Required CI completes with PASS on exact Release Subject R",
-          "Validated POST_PUSH release-delivery evidence for Release Subject R"
+      "applies_to": {
+        "components": [
+          "runtime"
         ],
-        "fresh_for_action": true, "candidate_match_required": true
-      }]
+        "operations": [
+          "diagnosis",
+          "transition"
+        ],
+        "always": false
+      },
+      "obligations": [
+        {
+          "id": "proof-X2-POST-PUSH",
+          "required_follow_up": true,
+          "scope": "R&D 002",
+          "required_before": [
+            "POST_PUSH"
+          ],
+          "proof_class": "LEVEL_2",
+          "enforcement": "HARD",
+          "required_assertions": [
+            "Authorized Push of Release Subject R",
+            "Authoritative remote SHA equals Release Subject R",
+            "Required CI runs on exact Release Subject R",
+            "Required CI completes with PASS on exact Release Subject R",
+            "Validated POST_PUSH release-delivery evidence for Release Subject R"
+          ],
+          "fresh_for_action": true,
+          "candidate_match_required": true
+        }
+      ],
+      "supersession_ref": "EV-X2-POST-PUSH-CORRECTIVE-20261005"
+    },
+    {
+      "id": "B-X2-POST-PUSH-CORRECTIVE",
+      "authority": {
+        "path": "docs/03-ניהול-הפיתוח-ההנדסי/החלטות-הנדסיות.md",
+        "anchor": "### R&D002 — X2 Corrective Same-Lineage Successor Disposition",
+        "digest": "67d8a70ce03f42d823d7edba801ffc8816dc4d9bc4cb409c65a9396026ae2909"
+      },
+      "applies_to": {
+        "components": [
+          "runtime"
+        ],
+        "operations": [
+          "diagnosis",
+          "transition"
+        ],
+        "always": false
+      },
+      "obligations": [
+        {
+          "id": "proof-X2-POST-PUSH-CORRECTIVE",
+          "required_follow_up": true,
+          "scope": "R&D 002",
+          "required_before": [
+            "POST_PUSH"
+          ],
+          "proof_class": "LEVEL_2",
+          "enforcement": "HARD",
+          "required_assertions": [
+            "Authorized Push of Release Subject S",
+            "Authoritative remote SHA equals Release Subject S",
+            "Required CI runs on exact Release Subject S",
+            "Required CI completes with PASS on exact Release Subject S",
+            "Validated POST_PUSH release-delivery evidence for Release Subject S"
+          ],
+          "fresh_for_action": true,
+          "candidate_match_required": true
+        }
+      ]
     },
     {
       "id": "B-X3",
@@ -439,7 +497,7 @@
       "authority": {
         "path": "docs/03-ניהול-הפיתוח-ההנדסי/החלטות-הנדסיות.md",
         "anchor": "## Material Contract Evolution",
-        "digest": "5cf422185b73a41014630cd758c0d1533c3963268160ac93e37d350600fffb3e"
+        "digest": "67d8a70ce03f42d823d7edba801ffc8816dc4d9bc4cb409c65a9396026ae2909"
       },
       "applies_to": {"components": ["runtime"], "operations": ["diagnosis", "transition"], "always": false},
       "obligations": [{
@@ -455,7 +513,7 @@
       "authority": {
         "path": "docs/03-ניהול-הפיתוח-ההנדסי/החלטות-הנדסיות.md",
         "anchor": "## Material Contract Evolution",
-        "digest": "5cf422185b73a41014630cd758c0d1533c3963268160ac93e37d350600fffb3e"
+        "digest": "67d8a70ce03f42d823d7edba801ffc8816dc4d9bc4cb409c65a9396026ae2909"
       },
       "applies_to": {"components": ["runtime"], "operations": ["diagnosis", "transition"], "always": false},
       "obligations": [{
@@ -471,7 +529,7 @@
       "authority": {
         "path": "docs/03-ניהול-הפיתוח-ההנדסי/החלטות-הנדסיות.md",
         "anchor": "## Material Contract Evolution",
-        "digest": "5cf422185b73a41014630cd758c0d1533c3963268160ac93e37d350600fffb3e"
+        "digest": "67d8a70ce03f42d823d7edba801ffc8816dc4d9bc4cb409c65a9396026ae2909"
       },
       "applies_to": {"components": ["runtime"], "operations": ["diagnosis", "transition"], "always": false},
       "obligations": [{
@@ -486,7 +544,7 @@
       "authority": {
         "path": "docs/03-ניהול-הפיתוח-ההנדסי/החלטות-הנדסיות.md",
         "anchor": "## Lean Design C — binding and transition support",
-        "digest": "5cf422185b73a41014630cd758c0d1533c3963268160ac93e37d350600fffb3e"
+        "digest": "67d8a70ce03f42d823d7edba801ffc8816dc4d9bc4cb409c65a9396026ae2909"
       },
       "applies_to": {
         "components": [
@@ -521,7 +579,7 @@
       "authority": {
         "path": "docs/03-ניהול-הפיתוח-ההנדסי/החלטות-הנדסיות.md",
         "anchor": "## Same-Station Decision Persistence",
-        "digest": "5cf422185b73a41014630cd758c0d1533c3963268160ac93e37d350600fffb3e"
+        "digest": "67d8a70ce03f42d823d7edba801ffc8816dc4d9bc4cb409c65a9396026ae2909"
       },
       "applies_to": {
         "components": [
@@ -585,6 +643,31 @@
           "fresh_for_action": false
         }
       ]
+    }
+    ,
+    {
+      "id": "B-GOVERNANCE-REVISION-APPLICABILITY",
+      "authority": {
+        "path": "docs/03-ניהול-הפיתוח-ההנדסי/החלטות-הנדסיות.md",
+        "anchor": "### Governance Revision applicability proof",
+        "digest": "67d8a70ce03f42d823d7edba801ffc8816dc4d9bc4cb409c65a9396026ae2909"
+      },
+      "applies_to": {
+        "components": ["governance"],
+        "operations": ["diagnosis", "transition"],
+        "always": true
+      },
+      "obligations": [{
+        "id": "proof-GOVERNANCE-REVISION-APPLICABILITY",
+        "required_follow_up": true,
+        "scope": "R&D 002",
+        "required_before": ["PRE_CLOSURE"],
+        "proof_class": "LEVEL_1",
+        "enforcement": "HARD",
+        "required_assertions": ["Governance Revision applicability assessment"],
+        "fresh_for_action": true,
+        "candidate_match_required": true
+      }]
     }
   ]
 }

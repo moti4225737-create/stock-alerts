@@ -337,9 +337,11 @@ def test_checkpoint_accounting_survives_station_state_replacement(case):
     assert second["checkpoint_outcomes"][0]["status"] == "PENDING"
     assert second["material_outcomes"] == []
 
-def test_r8_closure_requires_terminal_non_recursive_governance_observation(case):
-    case.satisfy_all()
-    case.transition("PRE_CLOSURE")
+def test_r8_closure_requires_terminal_non_recursive_governance_observation(tmp_path):
+    from tests.test_design_c_repository import _governance_applicability_red_case
+
+    case, _ = _governance_applicability_red_case(tmp_path, verdict="REQUIRED")
+    case.request.pop("governance_terminal_observation")
 
     release_subject = "a" * 40
     governance_revision = "b" * 40
@@ -361,6 +363,8 @@ def test_r8_closure_requires_terminal_non_recursive_governance_observation(case)
         "Final Closure must fail closed without terminal governance observation",
         report,
     )
+    assert any(d["code"] == "TERMINAL_GOVERNANCE_OBSERVATION_REQUIRED"
+               for d in report["diagnostics"])
 
     case.request["governance_terminal_observation"] = {
         "governance_revision_sha": governance_revision,
@@ -383,6 +387,8 @@ def test_r8_closure_requires_terminal_non_recursive_governance_observation(case)
         "governance revision requiring recursive proof",
         report,
     )
+    assert any(d["code"] == "TERMINAL_GOVERNANCE_OBSERVATION_REQUIRED"
+               for d in report["diagnostics"])
 def test_r10_fresh_process_reconstructs_release_governance_x2_and_restrictions(case):
     case.satisfy_all()
 

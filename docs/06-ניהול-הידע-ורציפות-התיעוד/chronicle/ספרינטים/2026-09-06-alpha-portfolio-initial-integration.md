@@ -571,7 +571,7 @@ to perform consequential operations is manufactured from that prose.
   "restriction_refs": [
     "docs/06-ניהול-הידע-ורציפות-התיעוד/chronicle/ספרינטים/2026-09-06-alpha-portfolio-initial-integration.md#Product Owner approval and restrictions"
   ],
-  "next_action": "Complete authorized Component Evolution local verification through PRE_COMMIT only. X2 remains OPEN for separately authorized release proof. No Stage, Commit, Push, external action or R&D003.",
+  "next_action": "Exact corrective S candidate validation, integrity, fingerprint and candidate freeze proof, followed by separate Commit authorization. S has no SHA; candidate freeze has not occurred. No Stage, Commit, Push or external action is authorized by this documentation synchronization.",
   "repository_snapshot": "f3857814cc9c55191e21e4c6a4811e02bf6fa412",
   "release_subject_sha": "781f0c3d7bf289d4c350120df18483583571a13b",
   "change_scope_paths": [
@@ -740,27 +740,27 @@ to perform consequential operations is manufactured from that prose.
       "kind": "PROOF_EVIDENCE",
       "classification": "CLASSIFIED_AND_PERSISTED",
       "obligation_ref": "DC-FOUNDATION",
-      "evidence_ref": "E-DC-FOUNDATION-X2-20261004",
-      "traceability_ref": "docs/06-ניהול-הידע-ורציפות-התיעוד/traceability.md#R&D002 X2 POST_PUSH local supersession - 2026-10-04",
-      "artifact_ref": "tests/evidence/rnd002-x2-resume-full-20261004.xml"
+      "evidence_ref": "E-DC-FOUNDATION-RENEWAL-GOVERNANCE-APPLICABILITY-20261006",
+      "traceability_ref": "docs/06-ניהול-הידע-ורציפות-התיעוד/traceability.md#Controlled Renewal issuance - 2026-10-06",
+      "artifact_ref": "tests/evidence/rnd002-corrective-governance-applicability-full-pass-20261006.xml"
     },
     {
       "id": "WDS-RECOVERY-CONTINUITY-PROOF",
       "kind": "PROOF_EVIDENCE",
       "classification": "CLASSIFIED_AND_PERSISTED",
       "obligation_ref": "DC-CONTINUITY",
-      "evidence_ref": "E-DC-CONTINUITY-X2-20261004",
-      "traceability_ref": "docs/06-ניהול-הידע-ורציפות-התיעוד/traceability.md#R&D002 X2 POST_PUSH local supersession - 2026-10-04",
-      "artifact_ref": "tests/evidence/rnd002-x2-resume-full-20261004.xml"
+      "evidence_ref": "E-DC-CONTINUITY-RENEWAL-GOVERNANCE-APPLICABILITY-20261006",
+      "traceability_ref": "docs/06-ניהול-הידע-ורציפות-התיעוד/traceability.md#Controlled Renewal issuance - 2026-10-06",
+      "artifact_ref": "tests/evidence/rnd002-corrective-governance-applicability-full-pass-20261006.xml"
     },
     {
       "id": "WDS-RECOVERY-REGRESSION-PROOF",
       "kind": "PROOF_EVIDENCE",
       "classification": "CLASSIFIED_AND_PERSISTED",
       "obligation_ref": "DC-REGRESSION",
-      "evidence_ref": "E-DC-REGRESSION-X2-20261004",
-      "traceability_ref": "docs/06-ניהול-הידע-ורציפות-התיעוד/traceability.md#R&D002 X2 POST_PUSH local supersession - 2026-10-04",
-      "artifact_ref": "tests/evidence/rnd002-x2-resume-full-20261004.xml"
+      "evidence_ref": "E-DC-REGRESSION-RENEWAL-GOVERNANCE-APPLICABILITY-20261006",
+      "traceability_ref": "docs/06-ניהול-הידע-ורציפות-התיעוד/traceability.md#Controlled Renewal issuance - 2026-10-06",
+      "artifact_ref": "tests/evidence/rnd002-corrective-governance-applicability-full-pass-20261006.xml"
     },
     {
       "id": "WDS-GREEN-OUTCOME",
@@ -1671,3 +1671,65 @@ requirements remain carried, not local completion blockers.
 No Commit, Push, network, Deployment or Production action was performed.
 Next authority boundary: separately authorized Commit/Push and external exact-R
 POST_PUSH evidence. FINAL / HANDOFF COMMIT: PENDING.
+
+### R&D002 corrective S — forward recovery synchronization, 2026-10-06
+
+The earlier exact-R continuation above is historical, not the current next action.
+R = `781f0c3d7bf289d4c350120df18483583571a13b` was pushed successfully to
+authoritative remote main; required exact-R CI ran and FAILED from deterministic
+governance/CI-contract inconsistency. R remains immutable failed history.
+Recovery continues from unchanged G = `1abaf4c9f347bd18900d3a5ca72e3da85b3862e5`
+to prospective corrective S, which has no SHA and no Commit/Push/CI yet.
+Approved supersession preserves X2 → X2-POST-PUSH → X2-POST-PUSH-CORRECTIVE.
+The corrective successor alone is the active OPEN terminal, evidence_refs=[];
+predecessor contracts/history are preserved and no evidence is transferred.
+
+Approved Governance Revision Applicability Representation A separates the
+affirmative applicability assessment from independent fulfillment. Bounded RED
+oracle correction isolated NOT_REQUIRED from whole-transition permission.
+GREEN and the path-equivalence correction were locally validated; subsequent
+PRE_CLOSURE fixture adaptations and stale-test corrections preserved the
+identity, synchronization, terminal observation and evidence protections.
+GOVERNANCE-REVISION-APPLICABILITY remains OPEN, PRE_CLOSURE, evidence_refs=[];
+no real-candidate applicability verdict or receipt is issued.
+
+Current canonical regression: 1139 collected/passed, 0 failures/errors/skips,
+26 warnings, exit 0; LEVEL 1 — LOCAL / CONTRACT PROOF only.
+Artifact: `tests/evidence/rnd002-corrective-governance-applicability-full-pass-20261006.xml`.
+SHA256: `acbf4f280e1d54d340feafe4cb7e52626af835f93f764ad0e6b8e85a73564471`.
+Current Controlled Renewal selections, with the complete eleven-key dependency basis:
+- E-DC-FOUNDATION-RENEWAL-GOVERNANCE-APPLICABILITY-20261006
+- E-DC-CONTINUITY-RENEWAL-GOVERNANCE-APPLICABILITY-20261006
+- E-DC-REGRESSION-RENEWAL-GOVERNANCE-APPLICABILITY-20261006
+
+Completed post-renewal Resolver: RESOLVED_CONTEXT, exit 0, diagnostics NONE;
+all three receipts consumable YES. Earlier pending observations remain history.
+O28 is NOT_CURRENTLY_APPLICABLE at this boundary; its stale historical receipt
+is non-consumable, renewal deferred to PRE_EXTERNAL_WORK consumption.
+
+PO APPROVED_AND_LOCKED bounded artifact disposition after provenance,
+Natural-Home, consumer, subject/claim/boundary, capability-fit and process review:
+- tests/evidence/rnd002-post-rc1-rc3-rc4-rc2-full-regression-20261004.xml:
+  historical local pytest output, 1127 tests, 6 failures, 0 errors, 2026-10-04.
+- tests/evidence/rnd002-shared-full-regression-20261003-b22774cf.xml:
+  historical local pytest output, 1127 tests, 8 failures, 0 errors, 2026-10-03.
+
+Both are HISTORICAL_PROVENANCE_UNRESOLVED. Authoritative source action, exact
+subject and acceptance boundary remain unresolved, not reconstructed.
+Raw XML is excluded from S, preserved unchanged locally, and not accepted,
+current or Closure evidence. No receipt is created; no general retention rule.
+
+Explicit next-sprint work item — Minimum Closure Steps / Maximum Assurance:
+evaluate prospective orphan-artifact prevention at completion of validation and
+output registration, while purpose/action/subject context is available.
+Meaningful durable output must have sufficient provenance/disposition or surface
+an immediate actionable fail-closed condition; failed output may still be
+physically preserved. CURRENT_ORPHAN_PREVENTION=C: existing capabilities require
+extension at that early boundary. PRE_COMMIT/Closure detection is recovery,
+not prevention. This future work is not implemented or required before S and
+introduces no new Gate, Closure protocol or retention policy.
+
+Next: exact corrective S candidate validation/integrity/fingerprint and candidate
+freeze proof, then separate Commit authorization. Freeze has not occurred.
+No Closure PASS, S Commit/Push/CI, Railway activation or Production action.
+Production remains OFF; baseline/pin and WDS transfer to R&D003 remain unchanged.

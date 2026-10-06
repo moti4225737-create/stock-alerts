@@ -1089,8 +1089,205 @@ remains OPEN with evidence_refs=[]; baseline/pin and Release Subject R are uncha
                          "docs/03-ניהול-הפיתוח-ההנדסי/obligation-coverage-baseline.json": "872509619f0e55fec4901c0a2a29e369302bff4e2e81553ea3ab9367603cced2"
                        }
                      }
-                 ],
+                 ,
+{
+    "id":  "E-DC-FOUNDATION-RENEWAL-20261006",
+    "obligation_id":  "DC-FOUNDATION",
+    "path":  "tests/evidence/rnd002-corrective-design-c-full-pass-20261006.xml",
+    "sha256":  "754e057c28d860e1c9cb969ff688e6c997734cd00563a0165047c1c05f48095c",
+    "proof_class":  "LEVEL_1",
+    "scope":  "R\u0026D 002",
+    "assertions":  [
+                       "Foundation focused and negative-control acceptance suite"
+                   ],
+    "validation":  {
+                       "status":  "VERIFIED",
+                       "kind":  "pytest-junit",
+                       "minimum_tests":  1110,
+                       "validator_ref":  "PO-authorized R\u0026D002 Corrective Recovery current Design-C acceptance, 2026-10-06. One fresh canonical full local regression: pytest exit 0; 1130 passed, zero failures/errors/skips. Required focused coverage passed: authority resolution 18, transition guard 56, authority continuity 26, authority workflow contract 6, Design-C repository 49, Design-C hardening 14. Corrected native supersession test executed and passed. Claim-specific applicability and validation sufficiency established for DC-FOUNDATION, DC-CONTINUITY and DC-REGRESSION. Existing claims, acceptance boundaries, proof class and dependency keys preserved. Historical receipts and artifacts retained unchanged. LEVEL 1 only; no external delivery or Production proof.",
+                       "evidence_sha256":  "754e057c28d860e1c9cb969ff688e6c997734cd00563a0165047c1c05f48095c"
+                   },
+    "subject_hashes":  {
+                           "tools/resolve_authority.py":  "a764785e40488ad7be9d4326c6e050189f48146a032c8f643fef30d1b35cee05",
+                           "AGENTS.md":  "09da5795bb5e2fb9b687a657735d423c84619273a5b717275e1318c22d2452af",
+                           "tests/test_authority_resolution.py":  "1628da8e89171d1709ee5f8e0d015f0a5b4b7a2e59f9a82bb3645cdccb5718fa",
+                           "tests/test_transition_guard.py":  "163eb6c46265053bd938364b1818a7181a4ec37a05021cb753729a1c37bf15c5",
+                           "tests/test_authority_continuity.py":  "3802dba5b568a51cae5c0c52e50163f6d3b32dfa668d18fb5bdcae979ac1d821",
+                           "tests/test_authority_workflow_contract.py":  "853b9cad52d586dc9738ce15bd24f12b669d8506883cc408d4baee63c7d25607",
+                           "tests/test_support/design_c_fixture.py":  "5e694b5c6fc530173fbe0f265172d4a72cfdf8769d70a696d7d3881857e8ffe1",
+                           "tests/test_design_c_repository.py":  "f86f831b59bd9fd634c4ed197d35c2de50b4124cfed0e5238b072ee063a04760",
+                           "tests/test_design_c_hardening.py":  "68a5791f0401f6f36103bcb0705c40dedc316fcc26aaf40d34c9df36e3b76114",
+                           "docs/03-ניהול-הפיתוח-ההנדסי/decision-bindings.json":  "eabf20ec64d02e8d0c6fc31429a4d7482f1a6470fd46db1c48a907ef93e623e1",
+                           "docs/03-ניהול-הפיתוח-ההנדסי/obligation-coverage-baseline.json":  "872509619f0e55fec4901c0a2a29e369302bff4e2e81553ea3ab9367603cced2"
+                       }
+},
+{
+    "id":  "E-DC-CONTINUITY-RENEWAL-20261006",
+    "obligation_id":  "DC-CONTINUITY",
+    "path":  "tests/evidence/rnd002-corrective-design-c-full-pass-20261006.xml",
+    "sha256":  "754e057c28d860e1c9cb969ff688e6c997734cd00563a0165047c1c05f48095c",
+    "proof_class":  "LEVEL_1",
+    "scope":  "R\u0026D 002",
+    "assertions":  [
+                       "Native repository continuity and same-station persistence replay"
+                   ],
+    "validation":  {
+                       "status":  "VERIFIED",
+                       "kind":  "pytest-junit",
+                       "minimum_tests":  1110,
+                       "validator_ref":  "PO-authorized R\u0026D002 Corrective Recovery current Design-C acceptance, 2026-10-06. One fresh canonical full local regression: pytest exit 0; 1130 passed, zero failures/errors/skips. Required focused coverage passed: authority resolution 18, transition guard 56, authority continuity 26, authority workflow contract 6, Design-C repository 49, Design-C hardening 14. Corrected native supersession test executed and passed. Claim-specific applicability and validation sufficiency established for DC-FOUNDATION, DC-CONTINUITY and DC-REGRESSION. Existing claims, acceptance boundaries, proof class and dependency keys preserved. Historical receipts and artifacts retained unchanged. LEVEL 1 only; no external delivery or Production proof.",
+                       "evidence_sha256":  "754e057c28d860e1c9cb969ff688e6c997734cd00563a0165047c1c05f48095c"
+                   },
+    "subject_hashes":  {
+                           "tools/resolve_authority.py":  "a764785e40488ad7be9d4326c6e050189f48146a032c8f643fef30d1b35cee05",
+                           "AGENTS.md":  "09da5795bb5e2fb9b687a657735d423c84619273a5b717275e1318c22d2452af",
+                           "tests/test_authority_resolution.py":  "1628da8e89171d1709ee5f8e0d015f0a5b4b7a2e59f9a82bb3645cdccb5718fa",
+                           "tests/test_transition_guard.py":  "163eb6c46265053bd938364b1818a7181a4ec37a05021cb753729a1c37bf15c5",
+                           "tests/test_authority_continuity.py":  "3802dba5b568a51cae5c0c52e50163f6d3b32dfa668d18fb5bdcae979ac1d821",
+                           "tests/test_authority_workflow_contract.py":  "853b9cad52d586dc9738ce15bd24f12b669d8506883cc408d4baee63c7d25607",
+                           "tests/test_support/design_c_fixture.py":  "5e694b5c6fc530173fbe0f265172d4a72cfdf8769d70a696d7d3881857e8ffe1",
+                           "tests/test_design_c_repository.py":  "f86f831b59bd9fd634c4ed197d35c2de50b4124cfed0e5238b072ee063a04760",
+                           "tests/test_design_c_hardening.py":  "68a5791f0401f6f36103bcb0705c40dedc316fcc26aaf40d34c9df36e3b76114",
+                           "docs/03-ניהול-הפיתוח-ההנדסי/decision-bindings.json":  "eabf20ec64d02e8d0c6fc31429a4d7482f1a6470fd46db1c48a907ef93e623e1",
+                           "docs/03-ניהול-הפיתוח-ההנדסי/obligation-coverage-baseline.json":  "872509619f0e55fec4901c0a2a29e369302bff4e2e81553ea3ab9367603cced2"
+                       }
+},
+{
+    "id":  "E-DC-REGRESSION-RENEWAL-20261006",
+    "obligation_id":  "DC-REGRESSION",
+    "path":  "tests/evidence/rnd002-corrective-design-c-full-pass-20261006.xml",
+    "sha256":  "754e057c28d860e1c9cb969ff688e6c997734cd00563a0165047c1c05f48095c",
+    "proof_class":  "LEVEL_1",
+    "scope":  "R\u0026D 002",
+    "assertions":  [
+                       "Full local regression on synchronized foundation"
+                   ],
+    "validation":  {
+                       "status":  "VERIFIED",
+                       "kind":  "pytest-junit",
+                       "minimum_tests":  1110,
+                       "validator_ref":  "PO-authorized R\u0026D002 Corrective Recovery current Design-C acceptance, 2026-10-06. One fresh canonical full local regression: pytest exit 0; 1130 passed, zero failures/errors/skips. Required focused coverage passed: authority resolution 18, transition guard 56, authority continuity 26, authority workflow contract 6, Design-C repository 49, Design-C hardening 14. Corrected native supersession test executed and passed. Claim-specific applicability and validation sufficiency established for DC-FOUNDATION, DC-CONTINUITY and DC-REGRESSION. Existing claims, acceptance boundaries, proof class and dependency keys preserved. Historical receipts and artifacts retained unchanged. LEVEL 1 only; no external delivery or Production proof.",
+                       "evidence_sha256":  "754e057c28d860e1c9cb969ff688e6c997734cd00563a0165047c1c05f48095c"
+                   },
+    "subject_hashes":  {
+                           "tools/resolve_authority.py":  "a764785e40488ad7be9d4326c6e050189f48146a032c8f643fef30d1b35cee05",
+                           "AGENTS.md":  "09da5795bb5e2fb9b687a657735d423c84619273a5b717275e1318c22d2452af",
+                           "tests/test_authority_resolution.py":  "1628da8e89171d1709ee5f8e0d015f0a5b4b7a2e59f9a82bb3645cdccb5718fa",
+                           "tests/test_transition_guard.py":  "163eb6c46265053bd938364b1818a7181a4ec37a05021cb753729a1c37bf15c5",
+                           "tests/test_authority_continuity.py":  "3802dba5b568a51cae5c0c52e50163f6d3b32dfa668d18fb5bdcae979ac1d821",
+                           "tests/test_authority_workflow_contract.py":  "853b9cad52d586dc9738ce15bd24f12b669d8506883cc408d4baee63c7d25607",
+                           "tests/test_support/design_c_fixture.py":  "5e694b5c6fc530173fbe0f265172d4a72cfdf8769d70a696d7d3881857e8ffe1",
+                           "tests/test_design_c_repository.py":  "f86f831b59bd9fd634c4ed197d35c2de50b4124cfed0e5238b072ee063a04760",
+                           "tests/test_design_c_hardening.py":  "68a5791f0401f6f36103bcb0705c40dedc316fcc26aaf40d34c9df36e3b76114",
+                           "docs/03-ניהול-הפיתוח-ההנדסי/decision-bindings.json":  "eabf20ec64d02e8d0c6fc31429a4d7482f1a6470fd46db1c48a907ef93e623e1",
+                           "docs/03-ניהול-הפיתוח-ההנדסי/obligation-coverage-baseline.json":  "872509619f0e55fec4901c0a2a29e369302bff4e2e81553ea3ab9367603cced2"
+                       }
+}
+,
+{
+  "id": "E-DC-FOUNDATION-RENEWAL-GOVERNANCE-APPLICABILITY-20261006",
+  "obligation_id": "DC-FOUNDATION",
+  "path": "tests/evidence/rnd002-corrective-governance-applicability-full-pass-20261006.xml",
+  "sha256": "acbf4f280e1d54d340feafe4cb7e52626af835f93f764ad0e6b8e85a73564471",
+  "proof_class": "LEVEL_1",
+  "scope": "R&D 002",
+  "assertions": [
+    "Foundation focused and negative-control acceptance suite"
+  ],
+  "validation": {
+    "status": "VERIFIED",
+    "kind": "pytest-junit",
+    "minimum_tests": 1110,
+    "validator_ref": "PO-authorized claim-specific Controlled Renewal after Governance Revision Applicability implementation and bounded fixture corrections, 2026-10-06. Current canonical full regression: 1139 passed, zero failures/errors/skips, pytest exit 0. Required focused coverage executed in this artifact: authority resolution 18, transition guard 56, authority continuity 26, authority workflow contract 6, Design-C repository 58, hardening 14. Prior focused applicability 9 PASS and directly affected identity/synchronization/terminal controls PASS; current full run covers the corrected integrations. Existing claims, acceptance boundaries, proof class, scope and all eleven dependency keys preserved; five changed dependencies refreshed and six retained hashes verified unchanged. Historical receipts/artifacts preserved. LEVEL 1 local/contract proof only; no applicability determination for actual Closure, X2 delivery proof, O28 renewal or external/Production evidence.",
+    "evidence_sha256": "acbf4f280e1d54d340feafe4cb7e52626af835f93f764ad0e6b8e85a73564471"
+  },
+  "subject_hashes": {
+    "tools/resolve_authority.py": "b4df51f8cc004d77fd3cb902793f015679edc68b67231f33c8bf7b05ff5edd2a",
+    "AGENTS.md": "09da5795bb5e2fb9b687a657735d423c84619273a5b717275e1318c22d2452af",
+    "tests/test_authority_resolution.py": "1628da8e89171d1709ee5f8e0d015f0a5b4b7a2e59f9a82bb3645cdccb5718fa",
+    "tests/test_transition_guard.py": "dfdd8da650c8cc7e1158c92822b4e11c3aa3acfdeb60c00f17e806d85a4c76c6",
+    "tests/test_authority_continuity.py": "d4c46727267bcd9ee3f720235c82b11a0d3675bbce5a14deca3a62886dfd15de",
+    "tests/test_authority_workflow_contract.py": "853b9cad52d586dc9738ce15bd24f12b669d8506883cc408d4baee63c7d25607",
+    "tests/test_support/design_c_fixture.py": "5e694b5c6fc530173fbe0f265172d4a72cfdf8769d70a696d7d3881857e8ffe1",
+    "tests/test_design_c_repository.py": "65e058dd4e93cb2f9719251807607f436ddca9f3bfa797daf94f8cb3e33a3ff1",
+    "tests/test_design_c_hardening.py": "68a5791f0401f6f36103bcb0705c40dedc316fcc26aaf40d34c9df36e3b76114",
+    "docs/03-ניהול-הפיתוח-ההנדסי/decision-bindings.json": "e73c091521c57e63876c7fe176b108521b46806fd16c0fb852db38cd810d32d8",
+    "docs/03-ניהול-הפיתוח-ההנדסי/obligation-coverage-baseline.json": "872509619f0e55fec4901c0a2a29e369302bff4e2e81553ea3ab9367603cced2"
+  }
+},
+{
+  "id": "E-DC-CONTINUITY-RENEWAL-GOVERNANCE-APPLICABILITY-20261006",
+  "obligation_id": "DC-CONTINUITY",
+  "path": "tests/evidence/rnd002-corrective-governance-applicability-full-pass-20261006.xml",
+  "sha256": "acbf4f280e1d54d340feafe4cb7e52626af835f93f764ad0e6b8e85a73564471",
+  "proof_class": "LEVEL_1",
+  "scope": "R&D 002",
+  "assertions": [
+    "Native repository continuity and same-station persistence replay"
+  ],
+  "validation": {
+    "status": "VERIFIED",
+    "kind": "pytest-junit",
+    "minimum_tests": 1110,
+    "validator_ref": "PO-authorized claim-specific Controlled Renewal after Governance Revision Applicability implementation and bounded fixture corrections, 2026-10-06. Current canonical full regression: 1139 passed, zero failures/errors/skips, pytest exit 0. Required focused coverage executed in this artifact: authority resolution 18, transition guard 56, authority continuity 26, authority workflow contract 6, Design-C repository 58, hardening 14. Prior focused applicability 9 PASS and directly affected identity/synchronization/terminal controls PASS; current full run covers the corrected integrations. Existing claims, acceptance boundaries, proof class, scope and all eleven dependency keys preserved; five changed dependencies refreshed and six retained hashes verified unchanged. Historical receipts/artifacts preserved. LEVEL 1 local/contract proof only; no applicability determination for actual Closure, X2 delivery proof, O28 renewal or external/Production evidence.",
+    "evidence_sha256": "acbf4f280e1d54d340feafe4cb7e52626af835f93f764ad0e6b8e85a73564471"
+  },
+  "subject_hashes": {
+    "tools/resolve_authority.py": "b4df51f8cc004d77fd3cb902793f015679edc68b67231f33c8bf7b05ff5edd2a",
+    "AGENTS.md": "09da5795bb5e2fb9b687a657735d423c84619273a5b717275e1318c22d2452af",
+    "tests/test_authority_resolution.py": "1628da8e89171d1709ee5f8e0d015f0a5b4b7a2e59f9a82bb3645cdccb5718fa",
+    "tests/test_transition_guard.py": "dfdd8da650c8cc7e1158c92822b4e11c3aa3acfdeb60c00f17e806d85a4c76c6",
+    "tests/test_authority_continuity.py": "d4c46727267bcd9ee3f720235c82b11a0d3675bbce5a14deca3a62886dfd15de",
+    "tests/test_authority_workflow_contract.py": "853b9cad52d586dc9738ce15bd24f12b669d8506883cc408d4baee63c7d25607",
+    "tests/test_support/design_c_fixture.py": "5e694b5c6fc530173fbe0f265172d4a72cfdf8769d70a696d7d3881857e8ffe1",
+    "tests/test_design_c_repository.py": "65e058dd4e93cb2f9719251807607f436ddca9f3bfa797daf94f8cb3e33a3ff1",
+    "tests/test_design_c_hardening.py": "68a5791f0401f6f36103bcb0705c40dedc316fcc26aaf40d34c9df36e3b76114",
+    "docs/03-ניהול-הפיתוח-ההנדסי/decision-bindings.json": "e73c091521c57e63876c7fe176b108521b46806fd16c0fb852db38cd810d32d8",
+    "docs/03-ניהול-הפיתוח-ההנדסי/obligation-coverage-baseline.json": "872509619f0e55fec4901c0a2a29e369302bff4e2e81553ea3ab9367603cced2"
+  }
+},
+{
+  "id": "E-DC-REGRESSION-RENEWAL-GOVERNANCE-APPLICABILITY-20261006",
+  "obligation_id": "DC-REGRESSION",
+  "path": "tests/evidence/rnd002-corrective-governance-applicability-full-pass-20261006.xml",
+  "sha256": "acbf4f280e1d54d340feafe4cb7e52626af835f93f764ad0e6b8e85a73564471",
+  "proof_class": "LEVEL_1",
+  "scope": "R&D 002",
+  "assertions": [
+    "Full local regression on synchronized foundation"
+  ],
+  "validation": {
+    "status": "VERIFIED",
+    "kind": "pytest-junit",
+    "minimum_tests": 1110,
+    "validator_ref": "PO-authorized claim-specific Controlled Renewal after Governance Revision Applicability implementation and bounded fixture corrections, 2026-10-06. Current canonical full regression: 1139 passed, zero failures/errors/skips, pytest exit 0. Required focused coverage executed in this artifact: authority resolution 18, transition guard 56, authority continuity 26, authority workflow contract 6, Design-C repository 58, hardening 14. Prior focused applicability 9 PASS and directly affected identity/synchronization/terminal controls PASS; current full run covers the corrected integrations. Existing claims, acceptance boundaries, proof class, scope and all eleven dependency keys preserved; five changed dependencies refreshed and six retained hashes verified unchanged. Historical receipts/artifacts preserved. LEVEL 1 local/contract proof only; no applicability determination for actual Closure, X2 delivery proof, O28 renewal or external/Production evidence.",
+    "evidence_sha256": "acbf4f280e1d54d340feafe4cb7e52626af835f93f764ad0e6b8e85a73564471"
+  },
+  "subject_hashes": {
+    "tools/resolve_authority.py": "b4df51f8cc004d77fd3cb902793f015679edc68b67231f33c8bf7b05ff5edd2a",
+    "AGENTS.md": "09da5795bb5e2fb9b687a657735d423c84619273a5b717275e1318c22d2452af",
+    "tests/test_authority_resolution.py": "1628da8e89171d1709ee5f8e0d015f0a5b4b7a2e59f9a82bb3645cdccb5718fa",
+    "tests/test_transition_guard.py": "dfdd8da650c8cc7e1158c92822b4e11c3aa3acfdeb60c00f17e806d85a4c76c6",
+    "tests/test_authority_continuity.py": "d4c46727267bcd9ee3f720235c82b11a0d3675bbce5a14deca3a62886dfd15de",
+    "tests/test_authority_workflow_contract.py": "853b9cad52d586dc9738ce15bd24f12b669d8506883cc408d4baee63c7d25607",
+    "tests/test_support/design_c_fixture.py": "5e694b5c6fc530173fbe0f265172d4a72cfdf8769d70a696d7d3881857e8ffe1",
+    "tests/test_design_c_repository.py": "65e058dd4e93cb2f9719251807607f436ddca9f3bfa797daf94f8cb3e33a3ff1",
+    "tests/test_design_c_hardening.py": "68a5791f0401f6f36103bcb0705c40dedc316fcc26aaf40d34c9df36e3b76114",
+    "docs/03-ניהול-הפיתוח-ההנדסי/decision-bindings.json": "e73c091521c57e63876c7fe176b108521b46806fd16c0fb852db38cd810d32d8",
+    "docs/03-ניהול-הפיתוח-ההנדסי/obligation-coverage-baseline.json": "872509619f0e55fec4901c0a2a29e369302bff4e2e81553ea3ab9367603cced2"
+  }
+}
+],
     "approvals":  [
+      {
+        "id": "PO-EV-X2-POST-PUSH-CORRECTIVE-20261005",
+        "issuer": "PRODUCT_OWNER",
+        "action": "SUPERSESSION",
+        "scope": "R&D 002",
+        "action_id": "rnd002-x2-corrective-supersession-20261005",
+        "provenance": "PO APPROVED_AND_LOCKED X2 Corrective Same-Lineage Successor Disposition and explicit Step 2 identifier/materialization authorization. Preserve R-specific predecessor assertions, seals and historical OPEN meaning, unchanged G recovery base and baseline/pin, Production OFF. Local materialization only; no Commit, Push, CI, Railway or Production action. Seal records the authorized disposition, not authenticated authorship.",
+        "disposition_sha256": "b9b4c4ad5d0438abcf215be8f8ba2540ab75a9874618f8f0998eea9f09fb7f2d"
+      },
       {
         "id": "PO-EV-X2-POST-PUSH-20261004", "issuer": "PRODUCT_OWNER", "action": "SUPERSESSION",
         "scope": "R&D 002", "action_id": "rnd002-x2-local-completion-20261004",
@@ -1229,6 +1426,50 @@ remains OPEN with evidence_refs=[]; baseline/pin and Release Subject R are uncha
                       }
                   ],
     "dispositions": [
+      {
+        "id": "EV-X2-POST-PUSH-CORRECTIVE-20261005",
+        "kind": "SUPERSESSION",
+        "from": "B-X2-POST-PUSH",
+        "to": "B-X2-POST-PUSH-CORRECTIVE",
+        "scope": "R&D 002",
+        "authority_ref": "docs/03-ניהול-הפיתוח-ההנדסי/החלטות-הנדסיות.md#R&D002 — X2 Corrective Same-Lineage Successor Disposition",
+        "approval_ref": "PO-EV-X2-POST-PUSH-CORRECTIVE-20261005",
+        "evolution": {
+          "contracts": {
+            "B-X2-POST-PUSH": "6fde41c0d825f91060f23c4cd72ba57698884ab6fc1be0532ce35ed6101b66a4",
+            "B-X2-POST-PUSH-CORRECTIVE": "aa19e02a6ddd5bfae748eb81e9b65b3daebbb92a8ca94c27ad59b31653b9805b"
+          },
+          "consumers": {
+            "B-X2-POST-PUSH": [
+              "Acquisition",
+              "Opening",
+              "Telegram",
+              "WorkEvidence"
+            ],
+            "B-X2-POST-PUSH-CORRECTIVE": [
+              "Acquisition",
+              "Opening",
+              "Telegram",
+              "WorkEvidence"
+            ]
+          },
+          "obligations": [
+            {
+              "from": "X2-POST-PUSH",
+              "to": "X2-POST-PUSH-CORRECTIVE",
+              "contracts": {
+                "X2-POST-PUSH": "f79f8f2eff775491fc96971dd427dd2845a19ef460b0540c1463a186e8f3732d",
+                "X2-POST-PUSH-CORRECTIVE": "0b7866ca95c802a088cd9033c923aa2c6127d075ddfa7d703b8f38ebd9d314e6"
+              },
+              "historical_status": "OPEN",
+              "historical_evidence_refs": [],
+              "evidence_policy": "RENEWAL_REQUIRED",
+              "reusable_evidence": {},
+              "reason": "PO-approved corrective S-specific POST_PUSH successor in the same rooted X2 lineage; preserve failed immutable R and predecessor contract; require exact-S delivery proof without predecessor evidence reuse."
+            }
+          ]
+        }
+      },
       {
         "id": "EV-X2-POST-PUSH-20261004", "kind": "SUPERSESSION",
         "from": "B-X2", "to": "B-X2-POST-PUSH", "scope": "R&D 002",
@@ -2786,3 +3027,131 @@ proof. It is not current-byte evidence and does not renew any other receipt.
   }
 }
 ```
+
+
+## Controlled Renewal issuance - 2026-10-06
+
+PO-authorized R&D002 Corrective Recovery Controlled Renewal, with the technical
+receipt identity decision approved and locked in the current session.
+Exactly three new immutable receipts were issued in the existing Evidence registry:
+E-DC-FOUNDATION-RENEWAL-20261006,
+E-DC-CONTINUITY-RENEWAL-20261006 and
+E-DC-REGRESSION-RENEWAL-20261006.
+Their corresponding obligations reference these current receipts. Historical
+X2 receipts and validation artifacts remain unchanged.
+
+Claim-specific current acceptance passed for foundation focused/negative-control
+validation, native continuity and same-station persistence, and full local
+regression on the synchronized foundation. One fresh canonical full regression
+returned pytest exit 0: 1130 passed, zero failures, errors or skips.
+Required focused coverage executed and passed: authority resolution 18,
+transition guard 56, authority continuity 26, authority workflow contract 6,
+Design-C repository 49 and Design-C hardening 14. The corrected native
+supersession test executed and passed inside that full regression.
+Existing claims, acceptance boundaries, proof classes and dependency-key sets
+were preserved. The renewed receipts carry the established current subject hashes.
+
+Durable copies:
+- [Current Design-C full regression](../../tests/evidence/rnd002-corrective-design-c-full-pass-20261006.xml);
+  SHA256 754e057c28d860e1c9cb969ff688e6c997734cd00563a0165047c1c05f48095c.
+
+The minimum Resolver consumption check accepted all three renewed receipts,
+with no evidence-validity or renewal diagnostic against their obligations.
+The overall result remained UNRESOLVED, exit 2, solely with EVIDENCE_NOT_LINKED
+for WDS-RECOVERY-FOUNDATION-PROOF, WDS-RECOVERY-CONTINUITY-PROOF and
+WDS-RECOVERY-REGRESSION-PROOF. Those are local R&D002 Design-C station outcomes;
+they are not WDS execution proof. This reconciliation aligns only their receipt,
+artifact and current-event Traceability references. Post-reconciliation Resolver
+consumption/persistence validation remains pending.
+
+LEVEL 1 — LOCAL / CONTRACT PROOF only. Incidental O28 test execution did not
+change O28 applicability or renew its receipt. WDS remains NOT EXECUTED in
+R&D002 and transferred to R&D003. No X2 release-delivery proof, external action,
+Production change, Commit, Push, CI action or R&D002 Closure is claimed.
+
+Forward continuity — Governance Revision Applicability renewal, 2026-10-06:
+
+Exactly three new immutable receipts supersede the prior current selections:
+E-DC-FOUNDATION-RENEWAL-GOVERNANCE-APPLICABILITY-20261006,
+E-DC-CONTINUITY-RENEWAL-GOVERNANCE-APPLICABILITY-20261006 and
+E-DC-REGRESSION-RENEWAL-GOVERNANCE-APPLICABILITY-20261006.
+The prior RENEWAL-20261006 receipts remain unchanged historical records.
+Their eleven dependency keys are preserved: current hashes recorded for the
+five changed dependencies; all six retained hashes verified unchanged.
+
+Current canonical full regression: 1139 passed, zero failures/errors/skips,
+pytest exit 0. The artifact includes the nine applicability cases and corrected
+PRE_CLOSURE identity, synchronization, terminal observation and evidence controls.
+The unchanged foundation, continuity and synchronized-regression claims are
+renewed at LEVEL 1 — LOCAL / CONTRACT PROOF only.
+
+Durable copies (current Governance Applicability renewal):
+- [Current canonical full regression](../../tests/evidence/rnd002-corrective-governance-applicability-full-pass-20261006.xml);
+  SHA256 acbf4f280e1d54d340feafe4cb7e52626af835f93f764ad0e6b8e85a73564471.
+
+The three Design-C obligation and station proof references select these receipts.
+Post-write Resolver consumption/persistence validation is pending; no current
+Resolver PASS is claimed by this persistence record. O28 is unchanged and its
+bindings-dependency consequence remains outside this renewal. No actual Closure
+applicability receipt, X2 delivery proof or Closure PASS is issued. R and G remain
+unchanged; prospective S remains uncommitted with no SHA. Production remains OFF.
+No Commit, Push, CI, Railway or external action is performed.
+
+## R&D002 corrective S — forward synchronization - 2026-10-06
+
+Continuation of Controlled Renewal issuance - 2026-10-06: its pending
+post-write consumption observation is now completed. Established Resolver
+result: RESOLVED_CONTEXT, exit 0, diagnostics NONE. Current receipts consumable YES:
+- E-DC-FOUNDATION-RENEWAL-GOVERNANCE-APPLICABILITY-20261006
+- E-DC-CONTINUITY-RENEWAL-GOVERNANCE-APPLICABILITY-20261006
+- E-DC-REGRESSION-RENEWAL-GOVERNANCE-APPLICABILITY-20261006
+
+Complete eleven-key dependency basis and existing receipts remain unchanged.
+Current LEVEL 1 — LOCAL / CONTRACT PROOF: 1139 collected/passed, 0 failures,
+errors or skips, 26 warnings, exit 0.
+Artifact: `tests/evidence/rnd002-corrective-governance-applicability-full-pass-20261006.xml`;
+SHA256 `acbf4f280e1d54d340feafe4cb7e52626af835f93f764ad0e6b8e85a73564471`.
+This record absorbs existing execution evidence; no pytest or Resolver rerun.
+
+R = `781f0c3d7bf289d4c350120df18483583571a13b` remains immutable failed historical
+Release Subject: authoritative remote main received R, required exact-R CI FAILED
+from deterministic governance/CI-contract inconsistency.
+G = `1abaf4c9f347bd18900d3a5ca72e3da85b3862e5` is the unchanged Recovery base.
+S is prospective, without SHA, Commit, Push or CI. Same-lineage
+X2-POST-PUSH-CORRECTIVE is the active OPEN terminal, evidence_refs=[].
+Governance Revision Applicability is implemented and locally validated;
+GOVERNANCE-REVISION-APPLICABILITY remains OPEN at PRE_CLOSURE, evidence_refs=[],
+without a real-candidate verdict. O28 remains NOT_CURRENTLY_APPLICABLE here,
+its historical stale receipt non-consumable; renewal deferred to PRE_EXTERNAL_WORK.
+
+Bounded PO artifact disposition, APPROVED_AND_LOCKED in the current execution
+instruction after the completed provenance/role/consumer/capability/process review:
+- `tests/evidence/rnd002-post-rc1-rc3-rc4-rc2-full-regression-20261004.xml`:
+  known historical local failed regression, timestamp
+  2026-10-04T07:43:09.696632+03:00, 1127 tests, 6 failures, 0 errors;
+  SHA256 `c62b08ee9858098190a0a76d670264d99cef0ee3c42b528518699ef86a69079c`.
+- `tests/evidence/rnd002-shared-full-regression-20261003-b22774cf.xml`:
+  known historical local failed regression, timestamp
+  2026-10-03T23:55:17.141076+03:00, 1127 tests, 8 failures, 0 errors;
+  SHA256 `2999422274df8aa5cdf267118885bb53042e65c4ff38615bca908607f8399977`.
+
+For each exact path: HISTORICAL_PROVENANCE_UNRESOLVED; authoritative source
+action, exact subject and acceptance boundary remain unresolved and are not
+invented. Raw XML is excluded from corrective S by this bounded PO decision,
+preserved unchanged locally, and not accepted/current/Closure evidence.
+No evidence receipt is created. Recorded content identity does not establish
+historical source provenance. No general retention rule is created.
+
+Future-work linkage — Minimum Closure Steps / Maximum Assurance, next sprint:
+evaluate orphan-artifact prevention at validation completion/output registration.
+Current incident exposes missing early provenance enforcement (classification C).
+Prospective invariant: meaningful durable validation output must have sufficient
+provenance/disposition or immediately surface an actionable fail-closed condition.
+Failure artifacts may remain physically preserved. This is a process finding,
+not implemented prevention, a new Gate or a pre-S implementation requirement.
+
+Current Truth and R&D002 Chronicle carry this coordinated forward continuation.
+Next boundary: exact S candidate validation/integrity/fingerprint and freeze proof,
+then separate Commit authorization. No candidate freeze or Closure PASS exists.
+Baseline/pin, WDS transfer and R/G remain unchanged. Production remains OFF.
+No S Commit, Push, CI, Railway activation or external action is performed.

@@ -95,11 +95,27 @@
                                               ]
                         },
                         {
-                            "obligation_id": "X2-POST-PUSH",
-                            "binding_ref": "B-X2-POST-PUSH",
-                            "origin_ref": "docs/06-ניהול-הידע-ורציפות-התיעוד/chronicle/ספרינטים/2026-09-06-alpha-portfolio-initial-integration.md#Design C GREEN",
-                            "scope": "R&D 002", "status": "OPEN",
-                            "required_before": ["POST_PUSH"], "evidence_refs": []
+                          "obligation_id": "X2-POST-PUSH",
+                          "binding_ref": "B-X2-POST-PUSH",
+                          "origin_ref": "docs/06-ניהול-הידע-ורציפות-התיעוד/chronicle/ספרינטים/2026-09-06-alpha-portfolio-initial-integration.md#Design C GREEN",
+                          "scope": "R&D 002",
+                          "status": "SUPERSEDED",
+                          "required_before": [
+                            "POST_PUSH"
+                          ],
+                          "evidence_refs": [],
+                          "disposition_ref": "EV-X2-POST-PUSH-CORRECTIVE-20261005"
+                        },
+                        {
+                          "obligation_id": "X2-POST-PUSH-CORRECTIVE",
+                          "binding_ref": "B-X2-POST-PUSH-CORRECTIVE",
+                          "origin_ref": "docs/03-ניהול-הפיתוח-ההנדסי/החלטות-הנדסיות.md#R&D002 — X2 Corrective Same-Lineage Successor Disposition",
+                          "scope": "R&D 002",
+                          "status": "OPEN",
+                          "required_before": [
+                            "POST_PUSH"
+                          ],
+                          "evidence_refs": []
                         },
                         {
                             "obligation_id":  "X3",
@@ -150,7 +166,7 @@
                                                     "PRE_COMMIT"
                                                 ],
                             "evidence_refs":  [
-                                                  "E-DC-FOUNDATION-X2-20261004"
+                                                  "E-DC-FOUNDATION-RENEWAL-GOVERNANCE-APPLICABILITY-20261006"
                                               ]
                         },
                         {
@@ -164,7 +180,7 @@
                                                     "PRE_COMMIT"
                                                 ],
                             "evidence_refs":  [
-                                                  "E-DC-CONTINUITY-X2-20261004"
+                                                  "E-DC-CONTINUITY-RENEWAL-GOVERNANCE-APPLICABILITY-20261006"
                                               ]
                         },
                         {
@@ -178,8 +194,18 @@
                                                     "PRE_COMMIT"
                                                 ],
                             "evidence_refs":  [
-                                                  "E-DC-REGRESSION-X2-20261004"
+                                                  "E-DC-REGRESSION-RENEWAL-GOVERNANCE-APPLICABILITY-20261006"
                                               ]
+                        }
+                        ,
+                        {
+                            "obligation_id": "GOVERNANCE-REVISION-APPLICABILITY",
+                            "binding_ref": "B-GOVERNANCE-REVISION-APPLICABILITY",
+                            "origin_ref": "docs/03-ניהול-הפיתוח-ההנדסי/החלטות-הנדסיות.md#Governance Revision applicability proof",
+                            "scope": "R&D 002",
+                            "status": "OPEN",
+                            "required_before": ["PRE_CLOSURE"],
+                            "evidence_refs": []
                         }
                     ]
 }

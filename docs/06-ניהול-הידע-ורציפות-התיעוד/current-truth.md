@@ -695,3 +695,50 @@ This is LEVEL 1 — LOCAL / CONTRACT PROOF; X2 remains OPEN, not Closure PASS.
 Future POST_PUSH proof and O28/closure governance requirements remain carried.
 No Commit, Push, network, Deployment or Production action is authorized here.
 FINAL / HANDOFF COMMIT: PENDING.
+
+## R&D002 corrective S — current recovery state, 2026-10-06
+
+This forward continuation supersedes the current-state interpretation of the
+historical X2 POST_PUSH checkpoint above; its historical facts remain preserved.
+R = `781f0c3d7bf289d4c350120df18483583571a13b` is the immutable failed historical
+Release Subject: authoritative remote main received R, and required exact-R CI
+ran and FAILED from deterministic governance/CI-contract inconsistency.
+G = `1abaf4c9f347bd18900d3a5ca72e3da85b3862e5` is the unchanged Recovery base.
+Corrective S is prospective: no S Commit SHA, Commit, Push or CI exists.
+The single same-lineage active terminal is X2-POST-PUSH-CORRECTIVE, OPEN,
+evidence_refs=[]; predecessor contracts and history remain preserved.
+
+Governance Revision Applicability Representation A is implemented and locally
+validated. GOVERNANCE-REVISION-APPLICABILITY remains OPEN at PRE_CLOSURE with
+evidence_refs=[]; no real-candidate REQUIRED/NOT_REQUIRED determination exists.
+Applicability acceptance does not waive independent governance synchronization
+or terminal/non-recursive observation requirements.
+
+Current LEVEL 1 — LOCAL / CONTRACT PROOF: 1139 collected, 1139 passed,
+0 failed/errors/skipped, 26 warnings, pytest exit 0.
+Artifact: `tests/evidence/rnd002-corrective-governance-applicability-full-pass-20261006.xml`.
+SHA256: `acbf4f280e1d54d340feafe4cb7e52626af835f93f764ad0e6b8e85a73564471`.
+Current Design-C receipts, preserving all eleven dependency keys:
+- E-DC-FOUNDATION-RENEWAL-GOVERNANCE-APPLICABILITY-20261006
+- E-DC-CONTINUITY-RENEWAL-GOVERNANCE-APPLICABILITY-20261006
+- E-DC-REGRESSION-RENEWAL-GOVERNANCE-APPLICABILITY-20261006
+
+Completed post-renewal Resolver consumption: RESOLVED_CONTEXT, exit 0,
+diagnostics NONE; all three current receipts consumable YES. This is the
+established observation, not a new Resolver execution or Closure PASS.
+O28 is NOT_CURRENTLY_APPLICABLE at this resolver boundary; its stale historical
+receipt is non-consumable, with renewal deferred to PRE_EXTERNAL_WORK consumption.
+
+Bounded PO APPROVED_AND_LOCKED disposition: the two exact historical XML paths
+below are HISTORICAL_PROVENANCE_UNRESOLVED, excluded from corrective S and
+preserved unchanged locally, without accepted/current/Closure evidence status:
+- tests/evidence/rnd002-post-rc1-rc3-rc4-rc2-full-regression-20261004.xml
+- tests/evidence/rnd002-shared-full-regression-20261003-b22774cf.xml
+
+Their source action, exact subject and acceptance boundary remain unresolved.
+This decision creates no general retention rule. Historical facts and the
+next-sprint prevention follow-up are recorded in Chronicle and Traceability.
+Next: exact corrective S candidate validation, integrity, fingerprint and
+candidate freeze proof, followed by separate Commit authorization. No freeze
+has occurred. R&D002 Closure remains OPEN; Production remains OFF, Railway
+has not been activated by Recovery. No S Commit/Push/CI success is claimed.
