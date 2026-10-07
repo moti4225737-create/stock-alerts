@@ -107,16 +107,17 @@
                           "disposition_ref": "EV-X2-POST-PUSH-CORRECTIVE-20261005"
                         },
                         {
-                          "obligation_id": "X2-POST-PUSH-CORRECTIVE",
-                          "binding_ref": "B-X2-POST-PUSH-CORRECTIVE",
-                          "origin_ref": "docs/03-ניהול-הפיתוח-ההנדסי/החלטות-הנדסיות.md#R&D002 — X2 Corrective Same-Lineage Successor Disposition",
-                          "scope": "R&D 002",
-                          "status": "OPEN",
-                          "required_before": [
-                            "POST_PUSH"
-                          ],
-                          "evidence_refs": []
-                        },
+  "obligation_id": "X2-POST-PUSH-CORRECTIVE",
+  "binding_ref": "B-X2-POST-PUSH-CORRECTIVE",
+  "origin_ref": "docs/03-ניהול-הפיתוח-ההנדסי/החלטות-הנדסיות.md#R&D002 — X2 Corrective Same-Lineage Successor Disposition",
+  "scope": "R&D 002",
+  "status": "SUPERSEDED",
+  "required_before": [
+    "POST_PUSH"
+  ],
+  "evidence_refs": [],
+  "disposition_ref": "EV-X2-POST-PUSH-CORRECTIVE-RELEASE-DELIVERY-20261006"
+},
                         {
                             "obligation_id":  "X3",
                             "disposition_ref": "EV-X3-20260927",
@@ -166,7 +167,7 @@
                                                     "PRE_COMMIT"
                                                 ],
                             "evidence_refs":  [
-                                                  "E-DC-FOUNDATION-RENEWAL-GOVERNANCE-APPLICABILITY-20261006"
+                                                  "E-DC-FOUNDATION-RENEWAL-RELEASE-DELIVERY-20261007"
                                               ]
                         },
                         {
@@ -180,7 +181,7 @@
                                                     "PRE_COMMIT"
                                                 ],
                             "evidence_refs":  [
-                                                  "E-DC-CONTINUITY-RENEWAL-GOVERNANCE-APPLICABILITY-20261006"
+                                                  "E-DC-CONTINUITY-RENEWAL-RELEASE-DELIVERY-20261007"
                                               ]
                         },
                         {
@@ -194,7 +195,7 @@
                                                     "PRE_COMMIT"
                                                 ],
                             "evidence_refs":  [
-                                                  "E-DC-REGRESSION-RENEWAL-GOVERNANCE-APPLICABILITY-20261006"
+                                                  "E-DC-REGRESSION-RENEWAL-RELEASE-DELIVERY-20261007"
                                               ]
                         }
                         ,
@@ -206,6 +207,17 @@
                             "status": "OPEN",
                             "required_before": ["PRE_CLOSURE"],
                             "evidence_refs": []
-                        }
-                    ]
+                        },
+{
+  "obligation_id": "X2-POST-PUSH-CORRECTIVE-RELEASE-DELIVERY",
+  "binding_ref": "B-X2-POST-PUSH-CORRECTIVE-RELEASE-DELIVERY",
+  "origin_ref": "docs/03-ניהול-הפיתוח-ההנדסי/החלטות-הנדסיות.md#R&D002 ? X2 Corrective Release Delivery Successor Disposition",
+  "scope": "R&D 002",
+  "status": "OPEN",
+  "required_before": [
+    "POST_PUSH"
+  ],
+  "evidence_refs": []
+}
+  ]
 }

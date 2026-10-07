@@ -1276,6 +1276,99 @@ remains OPEN with evidence_refs=[]; baseline/pin and Release Subject R are uncha
     "docs/03-ניהול-הפיתוח-ההנדסי/decision-bindings.json": "e73c091521c57e63876c7fe176b108521b46806fd16c0fb852db38cd810d32d8",
     "docs/03-ניהול-הפיתוח-ההנדסי/obligation-coverage-baseline.json": "872509619f0e55fec4901c0a2a29e369302bff4e2e81553ea3ab9367603cced2"
   }
+},
+{
+  "id": "E-DC-FOUNDATION-RENEWAL-RELEASE-DELIVERY-20261007",
+  "obligation_id": "DC-FOUNDATION",
+  "path": "tests/evidence/rnd002-corrective-release-delivery-full-20261007.xml",
+  "sha256": "d21c3dac5aa77e033eac02e7709bafe07fdad4df4137d53e248e10a0735c26b7",
+  "proof_class": "LEVEL_1",
+  "scope": "R&D 002",
+  "assertions": [
+    "Foundation focused and negative-control acceptance suite"
+  ],
+  "validation": {
+    "status": "VERIFIED",
+    "kind": "pytest-junit",
+    "minimum_tests": 1110,
+    "validator_ref": "PO-authorized claim-specific Controlled Renewal for the corrective release-delivery successor, 2026-10-07. Current canonical full local regression: 1139 passed, zero failures/errors/skips, exit 0. Executed coverage: authority resolution 18, transition guard 56, authority continuity 26, authority workflow contract 6, Design-C repository 58, hardening 14. Current proof sufficiency established for all three unchanged Design-C claims; previous focused 6 PASS and Resolver evolution/persistence observations support this boundary. All eleven dependency keys retained and current raw bytes fingerprinted. LEVEL 1 local/contract proof only; no C2/X1 renewal, X2 delivery evidence or Closure acceptance.",
+    "evidence_sha256": "d21c3dac5aa77e033eac02e7709bafe07fdad4df4137d53e248e10a0735c26b7"
+  },
+  "subject_hashes": {
+    "tools/resolve_authority.py": "b4df51f8cc004d77fd3cb902793f015679edc68b67231f33c8bf7b05ff5edd2a",
+    "AGENTS.md": "09da5795bb5e2fb9b687a657735d423c84619273a5b717275e1318c22d2452af",
+    "tests/test_authority_resolution.py": "1628da8e89171d1709ee5f8e0d015f0a5b4b7a2e59f9a82bb3645cdccb5718fa",
+    "tests/test_transition_guard.py": "dfdd8da650c8cc7e1158c92822b4e11c3aa3acfdeb60c00f17e806d85a4c76c6",
+    "tests/test_authority_continuity.py": "d4c46727267bcd9ee3f720235c82b11a0d3675bbce5a14deca3a62886dfd15de",
+    "tests/test_authority_workflow_contract.py": "853b9cad52d586dc9738ce15bd24f12b669d8506883cc408d4baee63c7d25607",
+    "tests/test_support/design_c_fixture.py": "5e694b5c6fc530173fbe0f265172d4a72cfdf8769d70a696d7d3881857e8ffe1",
+    "tests/test_design_c_repository.py": "086bd6aba8a33bfa5b32372ffa044c0a993053a868a528bc870f3f301d18ce03",
+    "tests/test_design_c_hardening.py": "68a5791f0401f6f36103bcb0705c40dedc316fcc26aaf40d34c9df36e3b76114",
+    "docs/03-ניהול-הפיתוח-ההנדסי/decision-bindings.json": "4881b8a1e2a7c1ebf879c34b227bca5c715005366150199a2badcd8577f90888",
+    "docs/03-ניהול-הפיתוח-ההנדסי/obligation-coverage-baseline.json": "872509619f0e55fec4901c0a2a29e369302bff4e2e81553ea3ab9367603cced2"
+  }
+},
+{
+  "id": "E-DC-CONTINUITY-RENEWAL-RELEASE-DELIVERY-20261007",
+  "obligation_id": "DC-CONTINUITY",
+  "path": "tests/evidence/rnd002-corrective-release-delivery-full-20261007.xml",
+  "sha256": "d21c3dac5aa77e033eac02e7709bafe07fdad4df4137d53e248e10a0735c26b7",
+  "proof_class": "LEVEL_1",
+  "scope": "R&D 002",
+  "assertions": [
+    "Native repository continuity and same-station persistence replay"
+  ],
+  "validation": {
+    "status": "VERIFIED",
+    "kind": "pytest-junit",
+    "minimum_tests": 1110,
+    "validator_ref": "PO-authorized claim-specific Controlled Renewal for the corrective release-delivery successor, 2026-10-07. Current canonical full local regression: 1139 passed, zero failures/errors/skips, exit 0. Executed coverage: authority resolution 18, transition guard 56, authority continuity 26, authority workflow contract 6, Design-C repository 58, hardening 14. Current proof sufficiency established for all three unchanged Design-C claims; previous focused 6 PASS and Resolver evolution/persistence observations support this boundary. All eleven dependency keys retained and current raw bytes fingerprinted. LEVEL 1 local/contract proof only; no C2/X1 renewal, X2 delivery evidence or Closure acceptance.",
+    "evidence_sha256": "d21c3dac5aa77e033eac02e7709bafe07fdad4df4137d53e248e10a0735c26b7"
+  },
+  "subject_hashes": {
+    "tools/resolve_authority.py": "b4df51f8cc004d77fd3cb902793f015679edc68b67231f33c8bf7b05ff5edd2a",
+    "AGENTS.md": "09da5795bb5e2fb9b687a657735d423c84619273a5b717275e1318c22d2452af",
+    "tests/test_authority_resolution.py": "1628da8e89171d1709ee5f8e0d015f0a5b4b7a2e59f9a82bb3645cdccb5718fa",
+    "tests/test_transition_guard.py": "dfdd8da650c8cc7e1158c92822b4e11c3aa3acfdeb60c00f17e806d85a4c76c6",
+    "tests/test_authority_continuity.py": "d4c46727267bcd9ee3f720235c82b11a0d3675bbce5a14deca3a62886dfd15de",
+    "tests/test_authority_workflow_contract.py": "853b9cad52d586dc9738ce15bd24f12b669d8506883cc408d4baee63c7d25607",
+    "tests/test_support/design_c_fixture.py": "5e694b5c6fc530173fbe0f265172d4a72cfdf8769d70a696d7d3881857e8ffe1",
+    "tests/test_design_c_repository.py": "086bd6aba8a33bfa5b32372ffa044c0a993053a868a528bc870f3f301d18ce03",
+    "tests/test_design_c_hardening.py": "68a5791f0401f6f36103bcb0705c40dedc316fcc26aaf40d34c9df36e3b76114",
+    "docs/03-ניהול-הפיתוח-ההנדסי/decision-bindings.json": "4881b8a1e2a7c1ebf879c34b227bca5c715005366150199a2badcd8577f90888",
+    "docs/03-ניהול-הפיתוח-ההנדסי/obligation-coverage-baseline.json": "872509619f0e55fec4901c0a2a29e369302bff4e2e81553ea3ab9367603cced2"
+  }
+},
+{
+  "id": "E-DC-REGRESSION-RENEWAL-RELEASE-DELIVERY-20261007",
+  "obligation_id": "DC-REGRESSION",
+  "path": "tests/evidence/rnd002-corrective-release-delivery-full-20261007.xml",
+  "sha256": "d21c3dac5aa77e033eac02e7709bafe07fdad4df4137d53e248e10a0735c26b7",
+  "proof_class": "LEVEL_1",
+  "scope": "R&D 002",
+  "assertions": [
+    "Full local regression on synchronized foundation"
+  ],
+  "validation": {
+    "status": "VERIFIED",
+    "kind": "pytest-junit",
+    "minimum_tests": 1110,
+    "validator_ref": "PO-authorized claim-specific Controlled Renewal for the corrective release-delivery successor, 2026-10-07. Current canonical full local regression: 1139 passed, zero failures/errors/skips, exit 0. Executed coverage: authority resolution 18, transition guard 56, authority continuity 26, authority workflow contract 6, Design-C repository 58, hardening 14. Current proof sufficiency established for all three unchanged Design-C claims; previous focused 6 PASS and Resolver evolution/persistence observations support this boundary. All eleven dependency keys retained and current raw bytes fingerprinted. LEVEL 1 local/contract proof only; no C2/X1 renewal, X2 delivery evidence or Closure acceptance.",
+    "evidence_sha256": "d21c3dac5aa77e033eac02e7709bafe07fdad4df4137d53e248e10a0735c26b7"
+  },
+  "subject_hashes": {
+    "tools/resolve_authority.py": "b4df51f8cc004d77fd3cb902793f015679edc68b67231f33c8bf7b05ff5edd2a",
+    "AGENTS.md": "09da5795bb5e2fb9b687a657735d423c84619273a5b717275e1318c22d2452af",
+    "tests/test_authority_resolution.py": "1628da8e89171d1709ee5f8e0d015f0a5b4b7a2e59f9a82bb3645cdccb5718fa",
+    "tests/test_transition_guard.py": "dfdd8da650c8cc7e1158c92822b4e11c3aa3acfdeb60c00f17e806d85a4c76c6",
+    "tests/test_authority_continuity.py": "d4c46727267bcd9ee3f720235c82b11a0d3675bbce5a14deca3a62886dfd15de",
+    "tests/test_authority_workflow_contract.py": "853b9cad52d586dc9738ce15bd24f12b669d8506883cc408d4baee63c7d25607",
+    "tests/test_support/design_c_fixture.py": "5e694b5c6fc530173fbe0f265172d4a72cfdf8769d70a696d7d3881857e8ffe1",
+    "tests/test_design_c_repository.py": "086bd6aba8a33bfa5b32372ffa044c0a993053a868a528bc870f3f301d18ce03",
+    "tests/test_design_c_hardening.py": "68a5791f0401f6f36103bcb0705c40dedc316fcc26aaf40d34c9df36e3b76114",
+    "docs/03-ניהול-הפיתוח-ההנדסי/decision-bindings.json": "4881b8a1e2a7c1ebf879c34b227bca5c715005366150199a2badcd8577f90888",
+    "docs/03-ניהול-הפיתוח-ההנדסי/obligation-coverage-baseline.json": "872509619f0e55fec4901c0a2a29e369302bff4e2e81553ea3ab9367603cced2"
+  }
 }
 ],
     "approvals":  [
@@ -1423,8 +1516,17 @@ remains OPEN with evidence_refs=[]; baseline/pin and Release Subject R are uncha
                                                      "engines/autonomous_acquisition_coordinator.py",
                                                      "engines/runtime_engine.py"
                                                  ]
-                      }
-                  ],
+                      },
+{
+  "id": "PO-EV-X2-POST-PUSH-CORRECTIVE-RELEASE-DELIVERY-20261006",
+  "issuer": "PRODUCT_OWNER",
+  "action": "SUPERSESSION",
+  "scope": "R&D 002",
+  "action_id": "rnd002-x2-release-delivery-supersession-20261006",
+  "provenance": "Explicit in-session PO approval of T as the single corrective successor to failed S, final RELEASE-DELIVERY identifiers and frozen seven-file materialization blueprint; execution authorization attachment a480bf7a-b85a-4020-aa0e-ad93f3197c8d/Pasted text.txt. Same X2 lineage, preserve S assertions and historical OPEN/empty evidence; local mutation/readback only, no validation, Commit, Push, CI, Railway or Production authority. Seal records disposition integrity, not authenticated authorship.",
+  "disposition_sha256": "9371370168edb06437302194d4b6378e49c633631796a9c9621ca01c8cc4901a"
+}
+],
     "dispositions": [
       {
         "id": "EV-X2-POST-PUSH-CORRECTIVE-20261005",
@@ -1576,8 +1678,52 @@ remains OPEN with evidence_refs=[]; baseline/pin and Release Subject R are uncha
             "reusable_evidence": {"E-X3": "d408b48a2fbc0a536eb3554452c61d41488e389be2593f9c248dc629cc816c47"}
           }]
         }
+      },
+{
+  "id": "EV-X2-POST-PUSH-CORRECTIVE-RELEASE-DELIVERY-20261006",
+  "kind": "SUPERSESSION",
+  "from": "B-X2-POST-PUSH-CORRECTIVE",
+  "to": "B-X2-POST-PUSH-CORRECTIVE-RELEASE-DELIVERY",
+  "scope": "R&D 002",
+  "authority_ref": "docs/03-ניהול-הפיתוח-ההנדסי/החלטות-הנדסיות.md#R&D002 ? X2 Corrective Release Delivery Successor Disposition",
+  "approval_ref": "PO-EV-X2-POST-PUSH-CORRECTIVE-RELEASE-DELIVERY-20261006",
+  "evolution": {
+    "contracts": {
+      "B-X2-POST-PUSH-CORRECTIVE": "aa19e02a6ddd5bfae748eb81e9b65b3daebbb92a8ca94c27ad59b31653b9805b",
+      "B-X2-POST-PUSH-CORRECTIVE-RELEASE-DELIVERY": "b860d2c460930ed1c9ee1db644a737c9c6b67b81434a8c82ad14c28ca103fdd6"
+    },
+    "consumers": {
+      "B-X2-POST-PUSH-CORRECTIVE": [
+        "Acquisition",
+        "Opening",
+        "Telegram",
+        "WorkEvidence"
+      ],
+      "B-X2-POST-PUSH-CORRECTIVE-RELEASE-DELIVERY": [
+        "Acquisition",
+        "Opening",
+        "Telegram",
+        "WorkEvidence"
+      ]
+    },
+    "obligations": [
+      {
+        "from": "X2-POST-PUSH-CORRECTIVE",
+        "to": "X2-POST-PUSH-CORRECTIVE-RELEASE-DELIVERY",
+        "contracts": {
+          "X2-POST-PUSH-CORRECTIVE": "0b7866ca95c802a088cd9033c923aa2c6127d075ddfa7d703b8f38ebd9d314e6",
+          "X2-POST-PUSH-CORRECTIVE-RELEASE-DELIVERY": "37ba1304f681d677283c8e44d6ca477892330855f5639396a518c7b1dc3493e9"
+        },
+        "historical_status": "OPEN",
+        "historical_evidence_refs": [],
+        "evidence_policy": "RENEWAL_REQUIRED",
+        "reusable_evidence": {},
+        "reason": "PO-approved T-specific corrective release-delivery successor after exact-S CI failure; preserve immutable S and predecessor contract/history; require exact-T POST_PUSH proof without predecessor evidence reuse."
       }
     ]
+  }
+}
+]
 }
 ```
 
@@ -3155,3 +3301,80 @@ Next boundary: exact S candidate validation/integrity/fingerprint and freeze pro
 then separate Commit authorization. No candidate freeze or Closure PASS exists.
 Baseline/pin, WDS transfer and R/G remain unchanged. Production remains OFF.
 No S Commit, Push, CI, Railway activation or external action is performed.
+
+
+## R&D002 corrective release-delivery successor ? 2026-10-06
+
+S = 634fc88698ad73eb78d964e93979b2b69b5a2295 remains immutable historical
+Release Subject; it was pushed, and exact-S CI run 37503111736 FAILED:
+5 failed, 1134 passed. Earlier pre-Commit/Push checkpoint descriptions remain
+historical snapshots, not the current continuation. PO approved T as the single
+prospective corrective successor inside the same R&D002 Recovery. T has no SHA,
+Commit, Push, CI PASS or delivery evidence.
+
+Same logical X2 lineage now extends from X2-POST-PUSH-CORRECTIVE (SUPERSEDED,
+historical OPEN/evidence_refs=[] preserved) to X2-POST-PUSH-CORRECTIVE-RELEASE-DELIVERY
+(single active OPEN terminal, POST_PUSH, evidence_refs=[]). S assertions and
+contract seals remain preserved; no predecessor evidence is transferred.
+Governance Applicability remains OPEN at PRE_CLOSURE with no real-candidate
+verdict. This materialization changes the Design-C test/bindings dependencies:
+E-DC-FOUNDATION-RENEWAL-GOVERNANCE-APPLICABILITY-20261006,
+E-DC-CONTINUITY-RENEWAL-GOVERNANCE-APPLICABILITY-20261006 and
+E-DC-REGRESSION-RENEWAL-GOVERNANCE-APPLICABILITY-20261006 are retained as historical
+receipts; current consumability requires claim-specific validation and renewal.
+No new validation or renewal has run. C2/X1 remain historically CLOSED; current
+proof consumability work remains required before PRE_CLOSURE, outside immediate
+CI correction. Current tests preserve fail-closed proof consumption rather than
+waive these requirements.
+
+Next: focused validation, relevant Resolver checks, applicable fresh Design-C
+proof/renewal, full regression and exact candidate integrity/fingerprint/freeze.
+No freeze, Closure PASS, Commit or Push is authorized by this local mutation.
+R/G, baseline/pin and historical evidence remain unchanged. Production/Railway
+remain OFF; WDS remains NOT EXECUTED in R&D002 and transferred to R&D003.
+
+
+## Controlled Renewal issuance - 2026-10-07
+
+PO-authorized claim-specific renewal for the corrective release-delivery
+successor: exactly three immutable receipts issued; unchanged claims, proof
+class, scope, minimum_tests and complete eleven-key dependency basis retained.
+- E-DC-FOUNDATION-RENEWAL-RELEASE-DELIVERY-20261007
+- E-DC-CONTINUITY-RENEWAL-RELEASE-DELIVERY-20261007
+- E-DC-REGRESSION-RENEWAL-RELEASE-DELIVERY-20261007
+
+Current canonical full regression: 1139 passed, zero failures/errors/skips,
+exit 0. Executed foundation/continuity coverage: authority resolution 18,
+transition guard 56, authority continuity 26, workflow contract 6, Design-C
+repository 58, hardening 14. Historical proof was not promoted to current proof.
+
+Durable copy:
+- [Current corrective release-delivery full regression](../../tests/evidence/rnd002-corrective-release-delivery-full-20261007.xml);
+  SHA256 d21c3dac5aa77e033eac02e7709bafe07fdad4df4137d53e248e10a0735c26b7.
+
+Three Design-C obligation and station proof references select these receipts.
+Historical receipts, approvals, dispositions and artifacts remain unchanged.
+Post-renewal Resolver consumption is pending, not claimed PASS here.
+Successor X2-POST-PUSH-CORRECTIVE-RELEASE-DELIVERY remains OPEN/POST_PUSH with
+evidence_refs=[]; no release-delivery evidence created. C2/X1 renewal remains
+carried before PRE_CLOSURE. S failure history, baseline/pin and WDS transfer to
+R&D003 remain unchanged. Production/Railway remain OFF. No Commit, Push, CI
+action, external action or Closure acceptance. LEVEL 1 local/contract proof only.
+
+Forward consumption checkpoint — 2026-10-07: earlier materialization-only pending
+statements above are historical. Current Design-C local proof, renewal and
+Resolver consumption are complete for this candidate dependency state.
+The existing Resolver consumed these fresh receipts as VALID current evidence:
+- E-DC-FOUNDATION-RENEWAL-RELEASE-DELIVERY-20261007
+- E-DC-CONTINUITY-RENEWAL-RELEASE-DELIVERY-20261007
+- E-DC-REGRESSION-RENEWAL-RELEASE-DELIVERY-20261007
+
+No Design-C EVIDENCE_INVALID remains. POST_PUSH observation: TRANSITION_BLOCKED,
+exit 2, solely OBLIGATION_DUE for X2-POST-PUSH-CORRECTIVE-RELEASE-DELIVERY,
+still OPEN with evidence_refs=[]. Consumption PASS is not transition permission
+or Closure PASS. C2/X1 current-consumability work remains carried before
+PRE_CLOSURE; no readiness or waiver is inferred. Current regression artifact,
+receipts and historical S/R/G records are unchanged. No corrective successor
+Commit, Push, exact-CI PASS, delivery or X2 satisfaction exists. Production/Railway
+remain OFF; WDS remains R&D003. Next: exact candidate population, integrity,
+raw hashes, fingerprint and freeze before separate Commit authorization.

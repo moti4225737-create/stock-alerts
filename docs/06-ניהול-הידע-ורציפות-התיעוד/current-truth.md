@@ -742,3 +742,52 @@ Next: exact corrective S candidate validation, integrity, fingerprint and
 candidate freeze proof, followed by separate Commit authorization. No freeze
 has occurred. R&D002 Closure remains OPEN; Production remains OFF, Railway
 has not been activated by Recovery. No S Commit/Push/CI success is claimed.
+
+
+## R&D002 corrective release-delivery successor ? 2026-10-06
+
+S = 634fc88698ad73eb78d964e93979b2b69b5a2295 remains immutable historical
+Release Subject; it was pushed, and exact-S CI run 37503111736 FAILED:
+5 failed, 1134 passed. Earlier pre-Commit/Push checkpoint descriptions remain
+historical snapshots, not the current continuation. PO approved T as the single
+prospective corrective successor inside the same R&D002 Recovery. T has no SHA,
+Commit, Push, CI PASS or delivery evidence.
+
+Same logical X2 lineage now extends from X2-POST-PUSH-CORRECTIVE (SUPERSEDED,
+historical OPEN/evidence_refs=[] preserved) to X2-POST-PUSH-CORRECTIVE-RELEASE-DELIVERY
+(single active OPEN terminal, POST_PUSH, evidence_refs=[]). S assertions and
+contract seals remain preserved; no predecessor evidence is transferred.
+Governance Applicability remains OPEN at PRE_CLOSURE with no real-candidate
+verdict. This materialization changes the Design-C test/bindings dependencies:
+E-DC-FOUNDATION-RENEWAL-GOVERNANCE-APPLICABILITY-20261006,
+E-DC-CONTINUITY-RENEWAL-GOVERNANCE-APPLICABILITY-20261006 and
+E-DC-REGRESSION-RENEWAL-GOVERNANCE-APPLICABILITY-20261006 are retained as historical
+receipts; current consumability requires claim-specific validation and renewal.
+No new validation or renewal has run. C2/X1 remain historically CLOSED; current
+proof consumability work remains required before PRE_CLOSURE, outside immediate
+CI correction. Current tests preserve fail-closed proof consumption rather than
+waive these requirements.
+
+Next: focused validation, relevant Resolver checks, applicable fresh Design-C
+proof/renewal, full regression and exact candidate integrity/fingerprint/freeze.
+No freeze, Closure PASS, Commit or Push is authorized by this local mutation.
+R/G, baseline/pin and historical evidence remain unchanged. Production/Railway
+remain OFF; WDS remains NOT EXECUTED in R&D002 and transferred to R&D003.
+
+Forward consumption checkpoint — 2026-10-07: earlier materialization-only pending
+statements above are historical. Current Design-C local proof, renewal and
+Resolver consumption are complete for this candidate dependency state.
+The existing Resolver consumed these fresh receipts as VALID current evidence:
+- E-DC-FOUNDATION-RENEWAL-RELEASE-DELIVERY-20261007
+- E-DC-CONTINUITY-RENEWAL-RELEASE-DELIVERY-20261007
+- E-DC-REGRESSION-RENEWAL-RELEASE-DELIVERY-20261007
+
+No Design-C EVIDENCE_INVALID remains. POST_PUSH observation: TRANSITION_BLOCKED,
+exit 2, solely OBLIGATION_DUE for X2-POST-PUSH-CORRECTIVE-RELEASE-DELIVERY,
+still OPEN with evidence_refs=[]. Consumption PASS is not transition permission
+or Closure PASS. C2/X1 current-consumability work remains carried before
+PRE_CLOSURE; no readiness or waiver is inferred. Current regression artifact,
+receipts and historical S/R/G records are unchanged. No corrective successor
+Commit, Push, exact-CI PASS, delivery or X2 satisfaction exists. Production/Railway
+remain OFF; WDS remains R&D003. Next: exact candidate population, integrity,
+raw hashes, fingerprint and freeze before separate Commit authorization.

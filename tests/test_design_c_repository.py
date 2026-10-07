@@ -555,13 +555,31 @@ def test_native_x2_approved_supersession_preserves_history_and_release_contract(
             == corrective["evolution"]["contracts"][new["id"]])
     assert (previous_migrations[0]["contracts"][predecessor["obligation_id"]]
             == migration["contracts"][predecessor["obligation_id"]])
-    assert successor["status"] == "OPEN"
+    assert successor["status"] == "SUPERSEDED"
     assert successor["evidence_refs"] == []
     assert migration["evidence_policy"] == "RENEWAL_REQUIRED"
     assert migration["reusable_evidence"] == {}
+    terminal = by_obligation["X2-POST-PUSH-CORRECTIVE-RELEASE-DELIVERY"]
+    release_delivery = by_evolution[successor["disposition_ref"]]
+    assert release_delivery["from"] == successor["binding_ref"]
+    assert release_delivery["to"] == terminal["binding_ref"]
+    release_migration = release_delivery["evolution"]["obligations"][0]
+    assert release_migration["from"] == successor["obligation_id"]
+    assert release_migration["to"] == terminal["obligation_id"]
+    assert release_migration["historical_status"] == "OPEN"
+    assert release_migration["historical_evidence_refs"] == []
+    assert release_migration["evidence_policy"] == "RENEWAL_REQUIRED"
+    assert release_migration["reusable_evidence"] == {}
+    assert (release_delivery["evolution"]["contracts"][successor["binding_ref"]]
+            == corrective["evolution"]["contracts"][successor["binding_ref"]])
+    assert (release_migration["contracts"][successor["obligation_id"]]
+            == migration["contracts"][successor["obligation_id"]])
+    assert terminal["status"] == "OPEN"
+    assert terminal["required_before"] == ["POST_PUSH"]
+    assert terminal["evidence_refs"] == []
     report = native("POST_PUSH")
-    assert report["x2"]["obligation_id"] == "X2-POST-PUSH-CORRECTIVE"
-    assert {"code": "OBLIGATION_DUE", "subject": "X2-POST-PUSH-CORRECTIVE"} in report["diagnostics"]
+    assert report["x2"]["obligation_id"] == terminal["obligation_id"]
+    assert {"code": "OBLIGATION_DUE", "subject": terminal["obligation_id"]} in report["diagnostics"]
     assert not any(d["code"] in {"BASELINE_COVERAGE", "EVOLUTION_INVALID"} for d in report["diagnostics"])
 
 
@@ -572,11 +590,12 @@ def test_native_context_reconstructs_current_station_with_honest_evidence_status
     assert report["station"]["unit_status"] == "ACTIVE"
     assert report["station"]["station"] == "GREEN"
     assert report["station"]["station_status"] == "LOCAL PASS"
-    assert report["station"]["next_action"] == (
-        "Complete authorized Component Evolution local verification through PRE_COMMIT only. "
-        "X2 remains OPEN for separately authorized release proof. "
-        "No Stage, Commit, Push, external action or R&D003."
-    )
+    station_text = (ROOT / STATION).read_text(encoding="utf-8-sig")
+    station_block = re.search(r"```json station-state\s*\n(.*?)\n```",
+                              station_text, re.S)
+    assert station_block is not None
+    persisted_station = json.loads(station_block[1])
+    assert report["station"]["next_action"] == persisted_station["next_action"]
     request = report["station"]["resolver_request"]
     assert request["mode"] == "resolve"
     assert request["action"] == "BOUNDED_INTERMEDIATE_GREEN"
@@ -614,7 +633,13 @@ def test_native_carried_obligations_block_their_boundaries(action, x2_required):
         assert active_x2["obligation_id"] in due, report["diagnostics"]
     else:
         assert not {"X2", active_x2["obligation_id"]} & due, report["diagnostics"]
-    assert not {"C2", "X1", "X3", "C2-REUSABLE", "X1-REUSABLE", "X3-REUSABLE"} & due
+    assert not {"C2", "X1", "X3"} & due
+    reusable = {"C2-REUSABLE", "X1-REUSABLE", "X3-REUSABLE"}
+    expected_invalid = {
+        d["subject"] for d in expected_recovery_evidence_diagnostics(action)
+        if d["code"] in {"EVIDENCE_INVALID", "RENEWAL_REQUIRED"}
+    }
+    assert due & reusable == expected_invalid & reusable, report["diagnostics"]
     assert "closure_pass" not in report
 
 
@@ -623,11 +648,12 @@ def test_native_completed_wds_diagnosis_does_not_restore_superseded_prohibition(
     assert_evidence_sensitive_status(report, transition=True, action="WDS_DIAGNOSIS")
     assert "WDS_DIAGNOSIS" not in report["station"]["forbidden_actions"]
     assert report["station"]["station_status"] == "LOCAL PASS"
-    assert report["station"]["next_action"] == (
-        "Complete authorized Component Evolution local verification through PRE_COMMIT only. "
-        "X2 remains OPEN for separately authorized release proof. "
-        "No Stage, Commit, Push, external action or R&D003."
-    )
+    station_text = (ROOT / STATION).read_text(encoding="utf-8-sig")
+    station_block = re.search(r"```json station-state\s*\n(.*?)\n```",
+                              station_text, re.S)
+    assert station_block is not None
+    persisted_station = json.loads(station_block[1])
+    assert report["station"]["next_action"] == persisted_station["next_action"]
 
 
 def test_native_station_completion_never_promotes_stale_receipts_to_pass():
